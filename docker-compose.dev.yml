@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # PostgreSQL - expose port for direct access
+  postgres:
+    ports:
+      - "5432:5432"
+
+  # Backend - development with hot reload
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      # Mount source code for hot reload
+      - ./backend:/app
+      # Prevent overwriting compiled binaries
+      - /app/tmp
+    environment:
+      # Development-specific environment
+      ENVIRONMENT: development
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - "8080:8080"
+    command: air -c .air.toml
+
+  # Frontend - development with Vite HMR
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      # Mount source code for hot reload
+      - ./frontend:/app
+      # Prevent overwriting node_modules
+      - /app/node_modules
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+    ports:
+      - "5173:5173"
+    command: npm run dev -- --host
+
+  # Nginx - disabled in development (access services directly)
+  nginx:
+    profiles:
+      - production

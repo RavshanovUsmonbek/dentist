@@ -1,0 +1,27 @@
+package models
+
+import "time"
+
+// GalleryImage represents a gallery image in the database
+type GalleryImage struct {
+	ID           uint      `json:"id" gorm:"primaryKey"`
+	Filename     string    `json:"filename" gorm:"type:varchar(255);not null"`
+	AltText      string    `json:"alt_text" gorm:"type:varchar(500);not null"`
+	DisplayOrder int       `json:"display_order" gorm:"default:0"`
+	Active       bool      `json:"active" gorm:"default:true"`
+	CreatedAt    time.Time `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt    time.Time `json:"updated_at" gorm:"autoUpdateTime"`
+}
+
+// TableName specifies the table name for GalleryImage
+func (GalleryImage) TableName() string {
+	return "gallery_images"
+}
+
+// GalleryImageRequest represents the request body for creating/updating a gallery image
+type GalleryImageRequest struct {
+	Filename     string `json:"filename" validate:"required,max=255"`
+	AltText      string `json:"alt_text" validate:"required,min=2,max=500"`
+	DisplayOrder int    `json:"display_order" validate:"omitempty,min=0"`
+	Active       *bool  `json:"active" validate:"omitempty"`
+}
