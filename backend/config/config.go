@@ -18,6 +18,8 @@ type Config struct {
 	SMTPUsername    string
 	SMTPPassword    string
 	EmailRecipient  string
+	UploadPath      string
+	UploadURLPrefix string
 }
 
 func Load() *Config {
@@ -37,6 +39,8 @@ func Load() *Config {
 		SMTPUsername:    getEnv("SMTP_USERNAME", ""),
 		SMTPPassword:    getEnv("SMTP_PASSWORD", ""),
 		EmailRecipient:  getEnv("EMAIL_RECIPIENT", ""),
+		UploadPath:      getEnv("UPLOAD_PATH", "./uploads"),
+		UploadURLPrefix: getEnv("UPLOAD_URL_PREFIX", "/uploads"),
 	}
 }
 

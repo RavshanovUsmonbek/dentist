@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
+import { useSite } from '../../context/SiteContext';
 import Input from '../ui/Input';
 import Textarea from '../ui/Textarea';
 import Button from '../ui/Button';
 import { submitContactForm } from '../../services/api';
 
 const Contact = () => {
+  const { settings, content, loading } = useSite();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -47,6 +50,30 @@ const Contact = () => {
       });
     }
   };
+
+  // Extract contact information from settings and content
+  const contactContent = content?.contact || {};
+  const phone = settings?.business_phone || '(555) 123-4567';
+  const email = settings?.business_email || 'info@smiledentalcare.com';
+  const address = settings?.business_address || '123 Dental Street, Suite 100';
+  const city = settings?.business_city || 'Your City, ST 12345';
+  const hoursWeekday = settings?.hours_weekday || 'Monday - Friday: 8:00 AM - 6:00 PM';
+  const hoursSaturday = settings?.hours_saturday || 'Saturday: 9:00 AM - 3:00 PM';
+  const hoursSunday = settings?.hours_sunday || 'Sunday: Closed';
+  const emergencyPhone = contactContent.contact_emergency_phone || '(555) 999-8888';
+  const emergencyMessage = contactContent.contact_emergency_message || 'If you have a dental emergency outside of our regular hours, please call our emergency line at';
+
+  if (loading) {
+    return (
+      <section id="contact" className="section-padding bg-white">
+        <div className="container-custom">
+          <div className="text-center">
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="contact" className="section-padding bg-white">
@@ -139,7 +166,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-1">Phone</h4>
-                  <p className="text-gray-600">(555) 123-4567</p>
+                  <p className="text-gray-600">{phone}</p>
                   <p className="text-sm text-gray-500">Call us during business hours</p>
                 </div>
               </div>
@@ -152,7 +179,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-1">Email</h4>
-                  <p className="text-gray-600">info@smiledentalcare.com</p>
+                  <p className="text-gray-600">{email}</p>
                   <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
                 </div>
               </div>
@@ -165,8 +192,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-1">Address</h4>
-                  <p className="text-gray-600">123 Dental Street, Suite 100</p>
-                  <p className="text-gray-600">Your City, ST 12345</p>
+                  <p className="text-gray-600">{address}</p>
+                  <p className="text-gray-600">{city}</p>
                 </div>
               </div>
 
@@ -179,9 +206,9 @@ const Contact = () => {
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-2">Office Hours</h4>
                   <div className="space-y-1 text-gray-600">
-                    <p>Monday - Friday: 8:00 AM - 6:00 PM</p>
-                    <p>Saturday: 9:00 AM - 3:00 PM</p>
-                    <p>Sunday: Closed</p>
+                    <p>{hoursWeekday}</p>
+                    <p>{hoursSaturday}</p>
+                    <p>{hoursSunday}</p>
                   </div>
                 </div>
               </div>
@@ -189,7 +216,7 @@ const Contact = () => {
               <div className="mt-8 p-6 bg-primary-50 rounded-lg">
                 <h4 className="font-semibold text-gray-800 mb-2">Emergency Care</h4>
                 <p className="text-gray-600 text-sm">
-                  If you have a dental emergency outside of our regular hours, please call our emergency line at <strong>(555) 999-8888</strong>
+                  {emergencyMessage} <strong>{emergencyPhone}</strong>
                 </p>
               </div>
             </div>

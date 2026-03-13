@@ -1,6 +1,10 @@
 import Button from '../ui/Button';
+import { useSite } from '../../context/SiteContext';
+import heroImage from '../../assets/hero.png';
 
 const Hero = () => {
+  const { content, loading } = useSite();
+
   const scrollToContact = (e) => {
     e.preventDefault();
     const contactSection = document.querySelector('#contact');
@@ -9,29 +13,53 @@ const Hero = () => {
     }
   };
 
+  // Default content with fallbacks
+  const heroContent = content?.hero || {};
+  const title = heroContent.hero_title || 'Your Smile, Our Priority';
+  const subtitle = heroContent.hero_subtitle || 'Experience exceptional dental care with state-of-the-art technology and a compassionate team dedicated to your oral health.';
+  const primaryButtonText = heroContent.hero_button_primary || 'Schedule Appointment';
+  const secondaryButtonText = heroContent.hero_button_secondary || 'Our Services';
+
+  if (loading) {
+    return (
+      <section id="hero" className="relative min-h-screen flex items-center justify-center text-white">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-900 to-primary-700" />
+        <div className="relative z-10 text-center">
+          <p className="text-white">Loading...</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center bg-gradient-to-r from-primary-700 to-primary-900 text-white"
+      className="relative min-h-screen flex items-center justify-center text-white"
     >
-      <div className="absolute inset-0 bg-black opacity-40"></div>
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroImage})` }}
+      />
+      {/* Gradient Overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-primary-700/70" />
 
       <div className="relative z-10 container-custom px-4 sm:px-6 lg:px-8 text-center animate-fade-in">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
-          Your Smile, Our Priority
+          {title}
         </h1>
         <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto">
-          Experience exceptional dental care with state-of-the-art technology and a compassionate team dedicated to your oral health.
+          {subtitle}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button size="lg" variant="accent" onClick={scrollToContact}>
-            Schedule Appointment
+            {primaryButtonText}
           </Button>
-          <Button size="lg" variant="secondary" onClick={(e) => {
+          <Button size="lg" variant="outline" onClick={(e) => {
             e.preventDefault();
             document.querySelector('#services')?.scrollIntoView({ behavior: 'smooth' });
           }}>
-            Our Services
+            {secondaryButtonText}
           </Button>
         </div>
       </div>

@@ -1,5 +1,9 @@
 version: '3.8'
 
+# Simplified Docker Compose - Works for both dev and production
+# Development (default): docker compose up --build
+# Production: docker compose --profile production up --build
+
 services:
   # PostgreSQL Database
   postgres:
@@ -9,11 +13,11 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-dentist_db}
       POSTGRES_USER: ${POSTGRES_USER:-dentist_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dentist_dev_pass}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dentist_user}"]
       interval: 10s
@@ -26,20 +30,26 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: ${BACKEND_DOCKERFILE:-Dockerfile.dev}
     container_name: dentist_backend
     restart: unless-stopped
     environment:
       PORT: ${BACKEND_PORT:-8080}
-      FRONTEND_URL: ${FRONTEND_URL}
-      DATABASE_URL: ${DATABASE_URL}
-      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      DATABASE_URL: ${DATABASE_URL:-postgres://dentist_user:dentist_dev_pass@postgres:5432/dentist_db?sslmode=disable}
+      JWT_SECRET: ${JWT_SECRET:-insecure_dev_secret_min_32_chars}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-24h}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_USERNAME: ${SMTP_USERNAME}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
-      EMAIL_RECIPIENT: ${EMAIL_RECIPIENT}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_RECIPIENT: ${EMAIL_RECIPIENT:-}
+      UPLOAD_PATH: /app/uploads
+      UPLOAD_URL_PREFIX: /uploads
+    volumes:
+      - ./backend:/app
+      - /app/tmp
+      - uploads_data:/app/uploads
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     depends_on:
@@ -53,33 +63,44 @@ services:
       start_period: 40s
     networks:
       - dentist_network
+    command: ${BACKEND_COMMAND:-air -c .air.toml}
 
   # React Frontend
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: ${FRONTEND_DOCKERFILE:-Dockerfile.dev}
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:8080/api}
     container_name: dentist_frontend
     restart: unless-stopped
     environment:
-      VITE_API_URL: ${VITE_API_URL}
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/api}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "${FRONTEND_PORT:-5173}:${FRONTEND_INTERNAL_PORT:-5173}"
     depends_on:
       - backend
     networks:
       - dentist_network
+    command: ${FRONTEND_COMMAND:-npm run dev -- --host 0.0.0.0}
 
-  # Nginx Reverse Proxy (Production)
+  # Nginx Reverse Proxy (Production only)
   nginx:
     image: nginx:alpine
     container_name: dentist_nginx
     restart: unless-stopped
+    profiles:
+      - production
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ${NGINX_SSL_PATH:-./nginx/ssl}:/etc/nginx/ssl:ro
     depends_on:
       - backend
       - frontend
@@ -88,6 +109,8 @@ services:
 
 volumes:
   postgres_data:
+    driver: local
+  uploads_data:
     driver: local
 
 networks:

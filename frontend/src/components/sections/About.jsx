@@ -1,6 +1,33 @@
 import { FaUserMd, FaAward, FaGraduationCap } from 'react-icons/fa';
+import { useSite } from '../../context/SiteContext';
 
 const About = () => {
+  const { content, loading } = useSite();
+
+  // Default content with fallbacks
+  const aboutContent = content?.about || {};
+  const doctorName = aboutContent.about_doctor_name || 'Dr. Sarah Smith, DDS';
+  const bio1 = aboutContent.about_bio_1 || "Welcome to Smile Dental Care! I'm Dr. Sarah Smith, and I've been passionate about dentistry for over 15 years. My commitment is to provide you with the highest quality dental care in a comfortable, welcoming environment.";
+  const bio2 = aboutContent.about_bio_2 || "I believe that every patient deserves personalized attention and a treatment plan tailored to their unique needs. Whether you're here for a routine cleaning or a complete smile makeover, you can trust that you're in capable, caring hands.";
+  const education1 = aboutContent.about_education_1 || 'Doctor of Dental Surgery, University of California';
+  const education2 = aboutContent.about_education_2 || 'Advanced Cosmetic Dentistry Certification';
+  const experience1 = aboutContent.about_experience_1 || '15+ years of dental practice';
+  const experience2 = aboutContent.about_experience_2 || 'Specialist in cosmetic and restorative dentistry';
+  const awards1 = aboutContent.about_awards_1 || 'American Dental Association Member';
+  const awards2 = aboutContent.about_awards_2 || 'Best Dentist Award 2023';
+
+  if (loading) {
+    return (
+      <section id="about" className="section-padding bg-white">
+        <div className="container-custom">
+          <div className="text-center">
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="about" className="section-padding bg-white">
       <div className="container-custom">
@@ -11,14 +38,12 @@ const About = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h3 className="text-3xl font-bold text-gray-800">Dr. Sarah Smith, DDS</h3>
+            <h3 className="text-3xl font-bold text-gray-800">{doctorName}</h3>
             <p className="text-gray-600 leading-relaxed">
-              Welcome to Smile Dental Care! I'm Dr. Sarah Smith, and I've been passionate about dentistry for over 15 years.
-              My commitment is to provide you with the highest quality dental care in a comfortable, welcoming environment.
+              {bio1}
             </p>
             <p className="text-gray-600 leading-relaxed">
-              I believe that every patient deserves personalized attention and a treatment plan tailored to their unique needs.
-              Whether you're here for a routine cleaning or a complete smile makeover, you can trust that you're in capable, caring hands.
+              {bio2}
             </p>
 
             <div className="space-y-4 pt-4">
@@ -28,8 +53,8 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800">Education</h4>
-                  <p className="text-gray-600">Doctor of Dental Surgery, University of California</p>
-                  <p className="text-gray-600">Advanced Cosmetic Dentistry Certification</p>
+                  <p className="text-gray-600">{education1}</p>
+                  <p className="text-gray-600">{education2}</p>
                 </div>
               </div>
 
@@ -39,8 +64,8 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800">Experience</h4>
-                  <p className="text-gray-600">15+ years of dental practice</p>
-                  <p className="text-gray-600">Specialist in cosmetic and restorative dentistry</p>
+                  <p className="text-gray-600">{experience1}</p>
+                  <p className="text-gray-600">{experience2}</p>
                 </div>
               </div>
 
@@ -50,8 +75,8 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800">Memberships & Awards</h4>
-                  <p className="text-gray-600">American Dental Association Member</p>
-                  <p className="text-gray-600">Best Dentist Award 2023</p>
+                  <p className="text-gray-600">{awards1}</p>
+                  <p className="text-gray-600">{awards2}</p>
                 </div>
               </div>
             </div>

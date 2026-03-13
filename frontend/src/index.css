@@ -1,25 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    @apply text-gray-800 bg-gray-50;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
-@layer utilities {
-  .section-padding {
-    @apply py-16 px-4 sm:px-6 lg:px-8;
-  }
+body {
+  color: var(--color-gray-800);
+  background-color: var(--color-gray-50);
+}
 
-  .container-custom {
-    @apply max-w-7xl mx-auto;
-  }
+@utility section-padding {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@utility container-custom {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @keyframes fadeIn {

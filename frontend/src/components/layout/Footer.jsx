@@ -1,27 +1,63 @@
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
+import { useSite } from '../../context/SiteContext';
 
 const Footer = () => {
+  const { settings, content } = useSite();
   const currentYear = new Date().getFullYear();
+
+  // Extract footer content
+  const footerContent = content?.footer || {};
+  const businessName = settings?.business_name || 'Smile Dental Care';
+  const footerDescription = footerContent.footer_description || 'Providing exceptional dental care with compassion and expertise. Your smile is our priority.';
+  const phone = settings?.business_phone || '(555) 123-4567';
+  const email = settings?.business_email || 'info@smiledentalcare.com';
+  const address = settings?.business_address || '123 Dental Street, Suite 100';
+  const city = settings?.business_city || 'Your City, ST 12345';
+  const facebookUrl = settings?.social_facebook || '#';
+  const twitterUrl = settings?.social_twitter || '#';
+  const instagramUrl = settings?.social_instagram || '#';
+  const hoursWeekday = settings?.hours_weekday || 'Monday - Friday: 8:00 AM - 6:00 PM';
+  const hoursSaturday = settings?.hours_saturday || 'Saturday: 9:00 AM - 3:00 PM';
+  const hoursSunday = settings?.hours_sunday || 'Sunday: Closed';
+
+  // Parse hours to separate label and time
+  const parseHours = (hoursString) => {
+    const parts = hoursString.split(':');
+    if (parts.length === 2) {
+      return { label: parts[0].trim(), time: parts[1].trim() };
+    }
+    return { label: hoursString, time: '' };
+  };
+
+  const weekday = parseHours(hoursWeekday);
+  const saturday = parseHours(hoursSaturday);
+  const sunday = parseHours(hoursSunday);
 
   return (
     <footer className="bg-primary-900 text-white">
       <div className="container-custom section-padding">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">Smile Dental Care</h3>
+            <h3 className="text-xl font-bold mb-4">{businessName}</h3>
             <p className="text-gray-300 mb-4">
-              Providing exceptional dental care with compassion and expertise. Your smile is our priority.
+              {footerDescription}
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-accent-500 transition-colors duration-200" aria-label="Facebook">
-                <FaFacebook className="text-2xl" />
-              </a>
-              <a href="#" className="hover:text-accent-500 transition-colors duration-200" aria-label="Twitter">
-                <FaTwitter className="text-2xl" />
-              </a>
-              <a href="#" className="hover:text-accent-500 transition-colors duration-200" aria-label="Instagram">
-                <FaInstagram className="text-2xl" />
-              </a>
+              {facebookUrl && facebookUrl !== '#' && (
+                <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-500 transition-colors duration-200" aria-label="Facebook">
+                  <FaFacebook className="text-2xl" />
+                </a>
+              )}
+              {twitterUrl && twitterUrl !== '#' && (
+                <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-500 transition-colors duration-200" aria-label="Twitter">
+                  <FaTwitter className="text-2xl" />
+                </a>
+              )}
+              {instagramUrl && instagramUrl !== '#' && (
+                <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-500 transition-colors duration-200" aria-label="Instagram">
+                  <FaInstagram className="text-2xl" />
+                </a>
+              )}
             </div>
           </div>
 
@@ -30,15 +66,15 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center space-x-3">
                 <FaPhone className="text-accent-500" />
-                <span>(555) 123-4567</span>
+                <span>{phone}</span>
               </li>
               <li className="flex items-center space-x-3">
                 <FaEnvelope className="text-accent-500" />
-                <span>info@smiledentalcare.com</span>
+                <span>{email}</span>
               </li>
               <li className="flex items-center space-x-3">
                 <FaMapMarkerAlt className="text-accent-500" />
-                <span>123 Dental Street, Suite 100<br />Your City, ST 12345</span>
+                <span>{address}<br />{city}</span>
               </li>
             </ul>
           </div>
@@ -47,23 +83,23 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">Office Hours</h3>
             <ul className="space-y-2 text-gray-300">
               <li className="flex justify-between">
-                <span>Monday - Friday:</span>
-                <span>8:00 AM - 6:00 PM</span>
+                <span>{weekday.label}:</span>
+                <span>{weekday.time}</span>
               </li>
               <li className="flex justify-between">
-                <span>Saturday:</span>
-                <span>9:00 AM - 3:00 PM</span>
+                <span>{saturday.label}:</span>
+                <span>{saturday.time}</span>
               </li>
               <li className="flex justify-between">
-                <span>Sunday:</span>
-                <span>Closed</span>
+                <span>{sunday.label}:</span>
+                <span>{sunday.time}</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-8 pt-8 border-t border-primary-800 text-center text-gray-400">
-          <p>&copy; {currentYear} Smile Dental Care. All rights reserved.</p>
+          <p>&copy; {currentYear} {businessName}. All rights reserved.</p>
         </div>
       </div>
     </footer>

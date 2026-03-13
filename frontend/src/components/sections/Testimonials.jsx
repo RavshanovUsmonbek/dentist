@@ -1,8 +1,26 @@
 import { FaStar, FaQuoteLeft } from 'react-icons/fa';
 import Card from '../ui/Card';
-import { testimonials } from '../../data/testimonials';
+import { useSite } from '../../context/SiteContext';
+import { testimonials as fallbackTestimonials } from '../../data/testimonials';
 
 const Testimonials = () => {
+  const { testimonials, loading } = useSite();
+
+  // Use API data if available, otherwise fallback to static data
+  const displayTestimonials = testimonials && testimonials.length > 0 ? testimonials : fallbackTestimonials;
+
+  if (loading) {
+    return (
+      <section id="testimonials" className="section-padding bg-gray-50">
+        <div className="container-custom">
+          <div className="text-center">
+            <p className="text-gray-600">Loading testimonials...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="testimonials" className="section-padding bg-gray-50">
       <div className="container-custom">
@@ -15,7 +33,7 @@ const Testimonials = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((testimonial) => (
+          {displayTestimonials.map((testimonial) => (
             <Card key={testimonial.id} hover={true}>
               <div className="flex flex-col h-full">
                 <div className="flex items-center mb-4">

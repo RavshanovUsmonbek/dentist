@@ -1,6 +1,7 @@
 import { FaTooth, FaSmile, FaStethoscope, FaAmbulance } from 'react-icons/fa';
 import Card from '../ui/Card';
-import { services } from '../../data/services';
+import { useSite } from '../../context/SiteContext';
+import { services as fallbackServices } from '../../data/services';
 
 const iconMap = {
   FaTooth: FaTooth,
@@ -11,6 +12,23 @@ const iconMap = {
 };
 
 const Services = () => {
+  const { services, loading } = useSite();
+
+  // Use API data if available, otherwise fallback to static data
+  const displayServices = services && services.length > 0 ? services : fallbackServices;
+
+  if (loading) {
+    return (
+      <section id="services" className="section-padding bg-gray-50">
+        <div className="container-custom">
+          <div className="text-center">
+            <p className="text-gray-600">Loading services...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="services" className="section-padding bg-gray-50">
       <div className="container-custom">
@@ -24,7 +42,7 @@ const Services = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service) => {
+          {displayServices.map((service) => {
             const IconComponent = iconMap[service.icon] || FaTooth;
 
             return (

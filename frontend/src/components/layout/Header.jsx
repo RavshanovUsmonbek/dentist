@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { FaBars, FaTimes, FaTooth } from 'react-icons/fa';
+import { useSite } from '../../context/SiteContext';
 
 const Header = () => {
+  const { settings } = useSite();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -13,6 +15,8 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const businessName = settings?.business_name || 'Smile Dental Care';
 
   const navItems = [
     { name: 'Home', href: '#hero' },
@@ -43,7 +47,7 @@ const Header = () => {
           <div className="flex items-center space-x-2">
             <FaTooth className={`text-2xl ${scrolled ? 'text-primary-600' : 'text-white'}`} />
             <span className={`text-xl font-bold ${scrolled ? 'text-primary-700' : 'text-white'}`}>
-              Smile Dental Care
+              {businessName}
             </span>
           </div>
 

@@ -33,56 +33,86 @@ A modern, professional single-page dentist profile website with a Go REST API ba
 - **Node.js 18+** - [Download](https://nodejs.org/)
 - **npm** - Comes with Node.js
 
-## Quick Start
+## Quick Start with Docker (Recommended)
 
-### 1. Clone the Repository
+### 1. Prerequisites
+
+- Docker Desktop installed and running
+- Docker Compose v2.0 or later
+
+### 2. Start the Application
 
 ```bash
-cd /Users/usmonbek/WORK/dentist
+# Option 1: Use the startup script (checks prerequisites)
+./start-dev.sh
+
+# Option 2: Use Make
+make dev
+
+# Option 3: Use Docker Compose directly
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
 
-### 2. Setup Backend
+### 3. Access the Application
+
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8080/api/health
+- **Database**: localhost:5432
+
+### 4. Default Admin Login
+
+- **Username**: `admin`
+- **Password**: `admin123`
+
+### 5. View Logs
+
+```bash
+make logs              # All services
+make logs-backend      # Backend only
+make logs-frontend     # Frontend only
+make logs-db           # Database only
+```
+
+### 6. Stop the Application
+
+```bash
+make stop              # Stop containers
+make down              # Stop and remove containers
+make clean             # Remove everything including volumes
+```
+
+## Manual Setup (Without Docker)
+
+If you prefer to run services without Docker:
+
+### 1. Setup Backend
 
 ```bash
 cd backend
-
-# Copy environment template
 cp .env.example .env
-
-# Edit .env with your SMTP credentials
-# For Gmail, use an App Password: https://support.google.com/accounts/answer/185833
-
-# Install dependencies
+# Edit .env with your credentials
 go mod download
-
-# Run the backend
 go run cmd/api/main.go
 ```
 
-Backend will run on http://localhost:8080
-
-### 3. Setup Frontend
-
-Open a new terminal:
+### 2. Setup Frontend
 
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Run the development server
 npm run dev
 ```
 
-Frontend will run on http://localhost:5173
+### 3. Setup PostgreSQL
 
-### 4. Access the Website
+Install PostgreSQL 16 and create database:
+```sql
+CREATE DATABASE dentist_db;
+CREATE USER dentist_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE dentist_db TO dentist_user;
+```
 
-Open your browser and navigate to:
-```
-http://localhost:5173
-```
+Update `DATABASE_URL` in backend `.env`
 
 ## Project Structure
 
