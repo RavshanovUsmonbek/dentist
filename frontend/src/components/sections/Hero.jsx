@@ -22,8 +22,8 @@ const Hero = () => {
 
   if (loading) {
     return (
-      <section id="hero" className="relative min-h-screen flex items-center justify-center text-white">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-900 to-primary-700" />
+      <section id="hero" className="relative min-h-screen flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-500" />
         <div className="relative z-10 text-center">
           <p className="text-white">Loading...</p>
         </div>
@@ -34,28 +34,23 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center text-white"
+      className="relative min-h-screen flex items-center justify-center"
     >
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      />
-      {/* Gradient Overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-primary-700/70" />
+      {/* Blue gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-500" />
 
       <div className="relative z-10 container-custom px-4 sm:px-6 lg:px-8 text-center animate-fade-in">
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white">
           {title}
         </h1>
-        <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto">
+        <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
           {subtitle}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" variant="accent" onClick={scrollToContact}>
+          <Button size="lg" variant="primary" onClick={scrollToContact}>
             {primaryButtonText}
           </Button>
-          <Button size="lg" variant="outline" onClick={(e) => {
+          <Button size="lg" variant="secondary" onClick={(e) => {
             e.preventDefault();
             document.querySelector('#services')?.scrollIntoView({ behavior: 'smooth' });
           }}>

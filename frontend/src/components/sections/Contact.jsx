@@ -144,7 +144,7 @@ const Contact = () => {
 
               <Button
                 type="submit"
-                variant="primary"
+                variant="accent"
                 size="lg"
                 loading={formStatus.loading}
                 className="w-full"

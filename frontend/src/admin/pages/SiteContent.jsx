@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaSave } from 'react-icons/fa';
+import { FaSave, FaUpload } from 'react-icons/fa';
 import { adminApi } from '../services/adminApi';
 
 const SiteContent = () => {
@@ -8,6 +8,8 @@ const SiteContent = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [activeTab, setActiveTab] = useState('hero');
+  const [uploading, setUploading] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
   const sections = [
     { id: 'hero', label: 'Hero Section' },
@@ -25,6 +27,7 @@ const SiteContent = () => {
     ],
     about: [
       { key: 'doctor_name', label: 'Doctor Name', type: 'text' },
+      { key: 'doctor_photo', label: 'Doctor Photo', type: 'image' },
       { key: 'welcome_text', label: 'Welcome Paragraph', type: 'textarea' },
       { key: 'philosophy_text', label: 'Philosophy Paragraph', type: 'textarea' },
       { key: 'education', label: 'Education (JSON array)', type: 'textarea' },
@@ -92,6 +95,31 @@ const SiteContent = () => {
     });
   };
 
+  const handleImageUpload = async (section, key, file) => {
+    if (!file) return;
+
+    setUploading(true);
+    setMessage('Uploading image...');
+
+    try {
+      const uploadResponse = await adminApi.uploadFile(file);
+      const imageUrl = uploadResponse.url || uploadResponse.data?.url;
+
+      if (imageUrl) {
+        handleChange(section, key, imageUrl);
+        setMessage('Image uploaded successfully! Don\'t forget to save.');
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        setMessage('Failed to upload image. No URL returned.');
+      }
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      setMessage('Failed to upload image. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -135,7 +163,47 @@ const SiteContent = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {label}
               </label>
-              {type === 'textarea' ? (
+              {type === 'image' ? (
+                <div className="space-y-3">
+                  {content[activeTab]?.[key] && (
+                    <div className="relative inline-block">
+                      <img
+                        src={`${API_URL.replace('/api', '')}${content[activeTab][key]}`}
+                        alt={label}
+                        className="w-48 h-48 object-cover rounded-lg border-2 border-gray-300"
+                      />
+                    </div>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors cursor-pointer">
+                      <FaUpload />
+                      <span>{content[activeTab]?.[key] ? 'Change Image' : 'Upload Image'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleImageUpload(activeTab, key, file);
+                        }}
+                        className="hidden"
+                        disabled={uploading}
+                      />
+                    </label>
+                    {content[activeTab]?.[key] && (
+                      <button
+                        type="button"
+                        onClick={() => handleChange(activeTab, key, '')}
+                        className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  {uploading && (
+                    <p className="text-sm text-cyan-600">Uploading...</p>
+                  )}
+                </div>
+              ) : type === 'textarea' ? (
                 <textarea
                   value={content[activeTab]?.[key] || ''}
                   onChange={(e) => handleChange(activeTab, key, e.target.value)}

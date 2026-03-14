@@ -30,26 +30,26 @@ export const SiteProvider = ({ children }) => {
           testimonialsRes,
           galleryRes
         ] = await Promise.all([
-          axios.get(`${API_URL}/settings`).catch(() => ({ data: { success: false, settings: {} } })),
-          axios.get(`${API_URL}/content/hero`).catch(() => ({ data: { success: false, content: {} } })),
-          axios.get(`${API_URL}/content/about`).catch(() => ({ data: { success: false, content: {} } })),
-          axios.get(`${API_URL}/content/contact`).catch(() => ({ data: { success: false, content: {} } })),
-          axios.get(`${API_URL}/content/footer`).catch(() => ({ data: { success: false, content: {} } })),
-          axios.get(`${API_URL}/services`).catch(() => ({ data: { success: false, services: [] } })),
-          axios.get(`${API_URL}/testimonials`).catch(() => ({ data: { success: false, testimonials: [] } })),
-          axios.get(`${API_URL}/gallery`).catch(() => ({ data: { success: false, gallery: [] } }))
+          axios.get(`${API_URL}/settings`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/hero`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/about`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/contact`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/footer`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/services`).catch(() => ({ data: { success: false, data: [] } })),
+          axios.get(`${API_URL}/testimonials`).catch(() => ({ data: { success: false, data: [] } })),
+          axios.get(`${API_URL}/gallery`).catch(() => ({ data: { success: false, data: [] } }))
         ]);
 
         // Combine settings
-        const allSettings = settingsRes.data.success ? settingsRes.data.settings : {};
+        const allSettings = settingsRes.data.success ? settingsRes.data.data : {};
         setSettings(allSettings);
 
         // Combine content sections
         const allContent = {
-          hero: heroRes.data.success ? heroRes.data.content : {},
-          about: aboutRes.data.success ? aboutRes.data.content : {},
-          contact: contactRes.data.success ? contactRes.data.content : {},
-          footer: footerRes.data.success ? footerRes.data.content : {}
+          hero: heroRes.data.success ? heroRes.data.data : {},
+          about: aboutRes.data.success ? aboutRes.data.data : {},
+          contact: contactRes.data.success ? contactRes.data.data : {},
+          footer: footerRes.data.success ? footerRes.data.data : {}
         };
         setContent(allContent);
 
@@ -67,8 +67,70 @@ export const SiteProvider = ({ children }) => {
       }
     };
 
+    // Initial fetch
     fetchSiteData();
+
+    // Set up automatic refresh every 30 seconds
+    const intervalId = setInterval(() => {
+      fetchSiteData();
+    }, 30000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
   }, []);
+
+  // Function to manually refresh site data
+  const refreshSiteData = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch all public data in parallel
+      const [
+        settingsRes,
+        heroRes,
+        aboutRes,
+        contactRes,
+        footerRes,
+        servicesRes,
+        testimonialsRes,
+        galleryRes
+      ] = await Promise.all([
+        axios.get(`${API_URL}/settings`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/hero`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/about`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/contact`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/footer`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/services`).catch(() => ({ data: { success: false, data: [] } })),
+        axios.get(`${API_URL}/testimonials`).catch(() => ({ data: { success: false, data: [] } })),
+        axios.get(`${API_URL}/gallery`).catch(() => ({ data: { success: false, data: [] } }))
+      ]);
+
+      // Combine settings
+      const allSettings = settingsRes.data.success ? settingsRes.data.data : {};
+      setSettings(allSettings);
+
+      // Combine content sections
+      const allContent = {
+        hero: heroRes.data.success ? heroRes.data.data : {},
+        about: aboutRes.data.success ? aboutRes.data.data : {},
+        contact: contactRes.data.success ? contactRes.data.data : {},
+        footer: footerRes.data.success ? footerRes.data.data : {}
+      };
+      setContent(allContent);
+
+      // Set data arrays
+      setServices(servicesRes.data.success ? servicesRes.data.data : []);
+      setTestimonials(testimonialsRes.data.success ? testimonialsRes.data.data : []);
+      setGallery(galleryRes.data.success ? galleryRes.data.data : []);
+
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching site data:', err);
+      setError('Failed to load site data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const value = {
     settings,
@@ -77,7 +139,8 @@ export const SiteProvider = ({ children }) => {
     testimonials,
     gallery,
     loading,
-    error
+    error,
+    refreshSiteData
   };
 
   return (

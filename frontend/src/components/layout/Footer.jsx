@@ -44,17 +44,17 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               {facebookUrl && facebookUrl !== '#' && (
-                <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-500 transition-colors duration-200" aria-label="Facebook">
+                <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-400 transition-colors duration-200" aria-label="Facebook">
                   <FaFacebook className="text-2xl" />
                 </a>
               )}
               {twitterUrl && twitterUrl !== '#' && (
-                <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-500 transition-colors duration-200" aria-label="Twitter">
+                <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-400 transition-colors duration-200" aria-label="Twitter">
                   <FaTwitter className="text-2xl" />
                 </a>
               )}
               {instagramUrl && instagramUrl !== '#' && (
-                <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-500 transition-colors duration-200" aria-label="Instagram">
+                <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-400 transition-colors duration-200" aria-label="Instagram">
                   <FaInstagram className="text-2xl" />
                 </a>
               )}
@@ -65,15 +65,15 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">Contact Info</h3>
             <ul className="space-y-3">
               <li className="flex items-center space-x-3">
-                <FaPhone className="text-accent-500" />
+                <FaPhone className="text-accent-400" />
                 <span>{phone}</span>
               </li>
               <li className="flex items-center space-x-3">
-                <FaEnvelope className="text-accent-500" />
+                <FaEnvelope className="text-accent-400" />
                 <span>{email}</span>
               </li>
               <li className="flex items-center space-x-3">
-                <FaMapMarkerAlt className="text-accent-500" />
+                <FaMapMarkerAlt className="text-accent-400" />
                 <span>{address}<br />{city}</span>
               </li>
             </ul>

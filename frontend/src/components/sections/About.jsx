@@ -6,15 +6,53 @@ const About = () => {
 
   // Default content with fallbacks
   const aboutContent = content?.about || {};
-  const doctorName = aboutContent.about_doctor_name || 'Dr. Sarah Smith, DDS';
-  const bio1 = aboutContent.about_bio_1 || "Welcome to Smile Dental Care! I'm Dr. Sarah Smith, and I've been passionate about dentistry for over 15 years. My commitment is to provide you with the highest quality dental care in a comfortable, welcoming environment.";
-  const bio2 = aboutContent.about_bio_2 || "I believe that every patient deserves personalized attention and a treatment plan tailored to their unique needs. Whether you're here for a routine cleaning or a complete smile makeover, you can trust that you're in capable, caring hands.";
-  const education1 = aboutContent.about_education_1 || 'Doctor of Dental Surgery, University of California';
-  const education2 = aboutContent.about_education_2 || 'Advanced Cosmetic Dentistry Certification';
-  const experience1 = aboutContent.about_experience_1 || '15+ years of dental practice';
-  const experience2 = aboutContent.about_experience_2 || 'Specialist in cosmetic and restorative dentistry';
-  const awards1 = aboutContent.about_awards_1 || 'American Dental Association Member';
-  const awards2 = aboutContent.about_awards_2 || 'Best Dentist Award 2023';
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+
+  const doctorName = aboutContent.doctor_name || 'Dr. Sarah Smith, DDS';
+  const doctorPhoto = aboutContent.doctor_photo || '';
+  const welcomeText = aboutContent.welcome_text || "Welcome to Smile Dental Care! I'm Dr. Sarah Smith, and I've been passionate about dentistry for over 15 years. My commitment is to provide you with the highest quality dental care in a comfortable, welcoming environment.";
+  const philosophyText = aboutContent.philosophy_text || "I believe that every patient deserves personalized attention and a treatment plan tailored to their unique needs. Whether you're here for a routine cleaning or a complete smile makeover, you can trust that you're in capable, caring hands.";
+
+  // Parse JSON arrays with fallbacks
+  let education = [];
+  let experience = [];
+  let awards = [];
+
+  try {
+    education = aboutContent.education ? JSON.parse(aboutContent.education) : [
+      'Doctor of Dental Surgery, University of California',
+      'Advanced Cosmetic Dentistry Certification'
+    ];
+  } catch (e) {
+    education = [
+      'Doctor of Dental Surgery, University of California',
+      'Advanced Cosmetic Dentistry Certification'
+    ];
+  }
+
+  try {
+    experience = aboutContent.experience ? JSON.parse(aboutContent.experience) : [
+      '15+ years of dental practice',
+      'Specialist in cosmetic and restorative dentistry'
+    ];
+  } catch (e) {
+    experience = [
+      '15+ years of dental practice',
+      'Specialist in cosmetic and restorative dentistry'
+    ];
+  }
+
+  try {
+    awards = aboutContent.awards ? JSON.parse(aboutContent.awards) : [
+      'American Dental Association Member',
+      'Best Dentist Award 2023'
+    ];
+  } catch (e) {
+    awards = [
+      'American Dental Association Member',
+      'Best Dentist Award 2023'
+    ];
+  }
 
   if (loading) {
     return (
@@ -40,10 +78,10 @@ const About = () => {
           <div className="space-y-6">
             <h3 className="text-3xl font-bold text-gray-800">{doctorName}</h3>
             <p className="text-gray-600 leading-relaxed">
-              {bio1}
+              {welcomeText}
             </p>
             <p className="text-gray-600 leading-relaxed">
-              {bio2}
+              {philosophyText}
             </p>
 
             <div className="space-y-4 pt-4">
@@ -53,8 +91,9 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800">Education</h4>
-                  <p className="text-gray-600">{education1}</p>
-                  <p className="text-gray-600">{education2}</p>
+                  {education.map((item, index) => (
+                    <p key={index} className="text-gray-600">{item}</p>
+                  ))}
                 </div>
               </div>
 
@@ -64,8 +103,9 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800">Experience</h4>
-                  <p className="text-gray-600">{experience1}</p>
-                  <p className="text-gray-600">{experience2}</p>
+                  {experience.map((item, index) => (
+                    <p key={index} className="text-gray-600">{item}</p>
+                  ))}
                 </div>
               </div>
 
@@ -75,20 +115,31 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800">Memberships & Awards</h4>
-                  <p className="text-gray-600">{awards1}</p>
-                  <p className="text-gray-600">{awards2}</p>
+                  {awards.map((item, index) => (
+                    <p key={index} className="text-gray-600">{item}</p>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
 
           <div className="relative">
-            <div className="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg flex items-center justify-center">
-              <div className="text-center p-8">
-                <FaUserMd className="text-9xl text-primary-600 mx-auto mb-4" />
-                <p className="text-gray-600 italic">Professional dentist photo placeholder</p>
+            {doctorPhoto ? (
+              <div className="aspect-square rounded-lg overflow-hidden shadow-xl">
+                <img
+                  src={`${API_URL.replace('/api', '')}${doctorPhoto}`}
+                  alt={doctorName}
+                  className="w-full h-full object-cover"
+                />
               </div>
-            </div>
+            ) : (
+              <div className="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg flex items-center justify-center">
+                <div className="text-center p-8">
+                  <FaUserMd className="text-9xl text-primary-600 mx-auto mb-4" />
+                  <p className="text-gray-600 italic">Professional dentist photo placeholder</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
