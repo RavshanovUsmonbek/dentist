@@ -72,19 +72,21 @@ func main() {
 	serviceRepo := repository.NewServiceRepository(db)
 	testimonialRepo := repository.NewTestimonialRepository(db)
 	galleryRepo := repository.NewGalleryRepository(db)
+	locationRepo := repository.NewLocationRepository(db)
 	contactRepo := repository.NewContactRepository(db)
 	settingsRepo := repository.NewSettingsRepository(db)
 
 	// Initialize handlers
 	contactHandler := handlers.NewContactHandler(emailService, validator)
 	uploadHandler := handlers.NewUploadHandler(cfg.UploadPath, cfg.UploadURLPrefix, 10<<20) // 10MB max
-	publicHandler := handlers.NewPublicHandler(serviceRepo, testimonialRepo, galleryRepo, settingsRepo)
+	publicHandler := handlers.NewPublicHandler(serviceRepo, testimonialRepo, galleryRepo, locationRepo, settingsRepo)
 
 	// Admin handlers
 	adminAuthHandler := handlers.NewAdminAuthHandler(adminRepo, authService, validator)
 	adminServicesHandler := handlers.NewAdminServicesHandler(serviceRepo, validator)
 	adminTestimonialsHandler := handlers.NewAdminTestimonialsHandler(testimonialRepo, validator)
 	adminGalleryHandler := handlers.NewAdminGalleryHandler(galleryRepo, validator)
+	adminLocationsHandler := handlers.NewAdminLocationsHandler(locationRepo, validator)
 	adminContactsHandler := handlers.NewAdminContactsHandler(contactRepo)
 	adminSettingsHandler := handlers.NewAdminSettingsHandler(settingsRepo)
 
@@ -99,6 +101,7 @@ func main() {
 	mux.HandleFunc("/api/services", publicHandler.HandleServices)
 	mux.HandleFunc("/api/testimonials", publicHandler.HandleTestimonials)
 	mux.HandleFunc("/api/gallery", publicHandler.HandleGallery)
+	mux.HandleFunc("/api/locations", publicHandler.HandleLocations)
 	mux.HandleFunc("/api/settings", publicHandler.HandleSettings)
 	mux.HandleFunc("/api/content/", publicHandler.HandleContent)
 
@@ -126,6 +129,12 @@ func main() {
 		mux.HandleFunc("/api/admin/gallery", middleware.AuthFunc(authService, adminGalleryHandler.HandleGallery))
 		mux.Handle("/api/admin/gallery/", middleware.Auth(authService)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			adminGalleryHandler.HandleGalleryImage(w, r)
+		})))
+
+		// Admin locations
+		mux.HandleFunc("/api/admin/locations", middleware.AuthFunc(authService, adminLocationsHandler.HandleLocations))
+		mux.Handle("/api/admin/locations/", middleware.Auth(authService)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			adminLocationsHandler.HandleLocation(w, r)
 		})))
 
 		// Admin contacts

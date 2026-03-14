@@ -4,6 +4,13 @@ import { adminApi } from '../services/adminApi';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
 
+const GALLERY_CATEGORIES = [
+  { value: 'general', label: 'General' },
+  { value: 'case_studies', label: 'Case Studies' },
+  { value: 'diplomas', label: 'Diplomas & Certifications' },
+  { value: 'conferences', label: 'Conferences & Events' }
+];
+
 const Gallery = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,9 +18,12 @@ const Gallery = () => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [formData, setFormData] = useState({
     filename: '',
     alt_text: '',
+    category: 'general',
+    tags: '',
     active: true
   });
 
@@ -70,6 +80,8 @@ const Gallery = () => {
     setFormData({
       filename: image.filename,
       alt_text: image.alt_text,
+      category: image.category || 'general',
+      tags: image.tags || '',
       active: image.active
     });
     setIsModalOpen(true);
@@ -86,7 +98,7 @@ const Gallery = () => {
 
   const resetForm = () => {
     setSelectedImage(null);
-    setFormData({ filename: '', alt_text: '', active: true });
+    setFormData({ filename: '', alt_text: '', category: 'general', tags: '', active: true });
   };
 
   const getImageUrl = (filename) => {
@@ -111,6 +123,11 @@ const Gallery = () => {
     );
   }
 
+  // Filter images by category
+  const filteredImages = categoryFilter === 'all'
+    ? images
+    : images.filter(img => img.category === categoryFilter);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -123,37 +140,70 @@ const Gallery = () => {
         </button>
       </div>
 
+      {/* Category Filter */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Category</label>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+        >
+          <option value="all">All Categories</option>
+          {GALLERY_CATEGORIES.map(cat => (
+            <option key={cat.value} value={cat.value}>{cat.label}</option>
+          ))}
+        </select>
+        <span className="ml-3 text-sm text-gray-600">
+          Showing {filteredImages.length} of {images.length} images
+        </span>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {images.map((image) => (
-          <div key={image.id} className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="aspect-square bg-gray-100 relative">
-              <img
-                src={getImageUrl(image.filename)}
-                alt={image.alt_text}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '';
-                  e.target.parentElement.innerHTML = `<div class="flex items-center justify-center h-full"><div class="text-center text-gray-400"><svg class="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg><p class="text-sm">Image not found</p></div></div>`;
-                }}
-              />
-              <div className={`absolute top-2 right-2 px-2 py-1 text-xs rounded-full ${image.active ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'}`}>
-                {image.active ? 'Active' : 'Inactive'}
+        {filteredImages.map((image) => {
+          const categoryLabel = GALLERY_CATEGORIES.find(c => c.value === (image.category || 'general'))?.label || 'General';
+          return (
+            <div key={image.id} className="bg-white rounded-xl shadow-md overflow-hidden">
+              <div className="aspect-square bg-gray-100 relative">
+                <img
+                  src={getImageUrl(image.filename)}
+                  alt={image.alt_text}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '';
+                    e.target.parentElement.innerHTML = `<div class="flex items-center justify-center h-full"><div class="text-center text-gray-400"><svg class="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg><p class="text-sm">Image not found</p></div></div>`;
+                  }}
+                />
+                <div className="absolute top-2 left-2 px-2 py-1 text-xs rounded-full bg-cyan-600 text-white">
+                  {categoryLabel}
+                </div>
+                <div className={`absolute top-2 right-2 px-2 py-1 text-xs rounded-full ${image.active ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'}`}>
+                  {image.active ? 'Active' : 'Inactive'}
+                </div>
+              </div>
+              <div className="p-4">
+                <p className="text-sm text-gray-600 line-clamp-2">{image.alt_text}</p>
+                {image.tags && (
+                  <p className="text-xs text-gray-500 mt-1">Tags: {image.tags}</p>
+                )}
+                <div className="flex justify-end gap-2 mt-3">
+                  <button onClick={() => handleEdit(image)} className="text-blue-600 hover:text-blue-800 p-2">
+                    <FaEdit />
+                  </button>
+                  <button onClick={() => { setSelectedImage(image); setIsDeleteOpen(true); }} className="text-red-600 hover:text-red-800 p-2">
+                    <FaTrash />
+                  </button>
+                </div>
               </div>
             </div>
-            <div className="p-4">
-              <p className="text-sm text-gray-600 line-clamp-2">{image.alt_text}</p>
-              <div className="flex justify-end gap-2 mt-3">
-                <button onClick={() => handleEdit(image)} className="text-blue-600 hover:text-blue-800 p-2">
-                  <FaEdit />
-                </button>
-                <button onClick={() => { setSelectedImage(image); setIsDeleteOpen(true); }} className="text-red-600 hover:text-red-800 p-2">
-                  <FaTrash />
-                </button>
-              </div>
-            </div>
+          );
+        })}
+        {filteredImages.length === 0 && images.length > 0 && (
+          <div className="col-span-full bg-white rounded-xl shadow-md p-8 text-center">
+            <FaImage className="text-4xl text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">No images in this category.</p>
           </div>
-        ))}
+        )}
         {images.length === 0 && (
           <div className="col-span-full bg-white rounded-xl shadow-md p-8 text-center">
             <FaImage className="text-4xl text-gray-300 mx-auto mb-4" />
@@ -230,6 +280,28 @@ const Gallery = () => {
               onChange={(e) => setFormData({ ...formData, alt_text: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            >
+              {GALLERY_CATEGORIES.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+            <input
+              type="text"
+              value={formData.tags}
+              onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              placeholder="e.g., orthodontics, smile makeover"
             />
           </div>
           <div className="flex items-center gap-2">

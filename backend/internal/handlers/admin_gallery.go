@@ -92,9 +92,17 @@ func (h *AdminGalleryHandler) createGalleryImage(w http.ResponseWriter, r *http.
 		active = *req.Active
 	}
 
+	// Use default category if not provided
+	category := req.Category
+	if category == "" {
+		category = "general"
+	}
+
 	image := &models.GalleryImage{
 		Filename:     req.Filename,
 		AltText:      req.AltText,
+		Category:     category,
+		Tags:         req.Tags,
 		DisplayOrder: maxOrder + 1,
 		Active:       active,
 	}
@@ -127,6 +135,10 @@ func (h *AdminGalleryHandler) updateGalleryImage(w http.ResponseWriter, r *http.
 
 	image.Filename = req.Filename
 	image.AltText = req.AltText
+	if req.Category != "" {
+		image.Category = req.Category
+	}
+	image.Tags = req.Tags
 	if req.DisplayOrder > 0 {
 		image.DisplayOrder = req.DisplayOrder
 	}

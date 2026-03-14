@@ -14,6 +14,7 @@ const SiteContent = () => {
   const sections = [
     { id: 'hero', label: 'Hero Section' },
     { id: 'about', label: 'About Section' },
+    { id: 'gallery', label: 'Gallery Content' },
     { id: 'contact', label: 'Contact Section' },
     { id: 'footer', label: 'Footer' },
   ];
@@ -33,6 +34,16 @@ const SiteContent = () => {
       { key: 'education', label: 'Education (JSON array)', type: 'textarea' },
       { key: 'experience', label: 'Experience (JSON array)', type: 'textarea' },
       { key: 'awards', label: 'Awards (JSON array)', type: 'textarea' },
+    ],
+    gallery: [
+      { key: 'title_general', label: 'General Gallery Title', type: 'text' },
+      { key: 'subtitle_general', label: 'General Gallery Subtitle', type: 'textarea' },
+      { key: 'title_case_studies', label: 'Case Studies Title', type: 'text' },
+      { key: 'subtitle_case_studies', label: 'Case Studies Subtitle', type: 'textarea' },
+      { key: 'title_diplomas', label: 'Diplomas & Certifications Title', type: 'text' },
+      { key: 'subtitle_diplomas', label: 'Diplomas & Certifications Subtitle', type: 'textarea' },
+      { key: 'title_conferences', label: 'Conferences & Events Title', type: 'text' },
+      { key: 'subtitle_conferences', label: 'Conferences & Events Subtitle', type: 'textarea' },
     ],
     contact: [
       { key: 'title', label: 'Section Title', type: 'text' },

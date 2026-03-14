@@ -30,6 +30,13 @@ func (r *GalleryRepository) FindActive() ([]models.GalleryImage, error) {
 	return images, err
 }
 
+// FindActiveByCategory returns active gallery images filtered by category
+func (r *GalleryRepository) FindActiveByCategory(category string) ([]models.GalleryImage, error) {
+	var images []models.GalleryImage
+	err := r.db.Where("active = ? AND category = ?", true, category).Order("display_order ASC").Find(&images).Error
+	return images, err
+}
+
 // FindByID finds a gallery image by ID
 func (r *GalleryRepository) FindByID(id uint) (*models.GalleryImage, error) {
 	var image models.GalleryImage

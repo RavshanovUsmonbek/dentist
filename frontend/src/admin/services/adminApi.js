@@ -102,6 +102,27 @@ export const adminApi = {
     return response.data;
   },
 
+  // Locations CRUD
+  getLocations: async () => {
+    const response = await adminAxios.get('/admin/locations');
+    return response.data;
+  },
+
+  createLocation: async (data) => {
+    const response = await adminAxios.post('/admin/locations', data);
+    return response.data;
+  },
+
+  updateLocation: async (id, data) => {
+    const response = await adminAxios.put(`/admin/locations/${id}`, data);
+    return response.data;
+  },
+
+  deleteLocation: async (id) => {
+    const response = await adminAxios.delete(`/admin/locations/${id}`);
+    return response.data;
+  },
+
   // Contacts
   getContacts: async () => {
     const response = await adminAxios.get('/admin/contacts');

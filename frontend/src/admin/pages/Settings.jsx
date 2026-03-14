@@ -183,6 +183,62 @@ const Settings = () => {
               </div>
             </div>
           </div>
+
+          {/* Gallery Categories */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-6">Gallery Categories</h2>
+            <p className="text-sm text-gray-600 mb-4">Control which gallery categories are visible on your site</p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="gallery_enable_general"
+                  checked={settings.gallery_enable_general === 'true' || settings.gallery_enable_general === true}
+                  onChange={(e) => handleChange('gallery_enable_general', e.target.checked ? 'true' : 'false')}
+                  className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500"
+                />
+                <label htmlFor="gallery_enable_general" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Enable General Gallery
+                </label>
+              </div>
+              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="gallery_enable_case_studies"
+                  checked={settings.gallery_enable_case_studies === 'true' || settings.gallery_enable_case_studies === true}
+                  onChange={(e) => handleChange('gallery_enable_case_studies', e.target.checked ? 'true' : 'false')}
+                  className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500"
+                />
+                <label htmlFor="gallery_enable_case_studies" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Enable Case Studies
+                </label>
+              </div>
+              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="gallery_enable_diplomas"
+                  checked={settings.gallery_enable_diplomas === 'true' || settings.gallery_enable_diplomas === true}
+                  onChange={(e) => handleChange('gallery_enable_diplomas', e.target.checked ? 'true' : 'false')}
+                  className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500"
+                />
+                <label htmlFor="gallery_enable_diplomas" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Enable Diplomas & Certifications
+                </label>
+              </div>
+              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="gallery_enable_conferences"
+                  checked={settings.gallery_enable_conferences === 'true' || settings.gallery_enable_conferences === true}
+                  onChange={(e) => handleChange('gallery_enable_conferences', e.target.checked ? 'true' : 'false')}
+                  className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500"
+                />
+                <label htmlFor="gallery_enable_conferences" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Enable Conferences & Events
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="mt-8 flex justify-end">

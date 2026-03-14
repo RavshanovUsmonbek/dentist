@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/usmonbek/dentist-backend/internal/models"
 	"github.com/usmonbek/dentist-backend/internal/repository"
 )
 
@@ -11,6 +12,7 @@ type PublicHandler struct {
 	serviceRepo     *repository.ServiceRepository
 	testimonialRepo *repository.TestimonialRepository
 	galleryRepo     *repository.GalleryRepository
+	locationRepo    *repository.LocationRepository
 	settingsRepo    *repository.SettingsRepository
 }
 
@@ -19,12 +21,14 @@ func NewPublicHandler(
 	serviceRepo *repository.ServiceRepository,
 	testimonialRepo *repository.TestimonialRepository,
 	galleryRepo *repository.GalleryRepository,
+	locationRepo *repository.LocationRepository,
 	settingsRepo *repository.SettingsRepository,
 ) *PublicHandler {
 	return &PublicHandler{
 		serviceRepo:     serviceRepo,
 		testimonialRepo: testimonialRepo,
 		galleryRepo:     galleryRepo,
+		locationRepo:    locationRepo,
 		settingsRepo:    settingsRepo,
 	}
 }
@@ -60,13 +64,27 @@ func (h *PublicHandler) HandleTestimonials(w http.ResponseWriter, r *http.Reques
 }
 
 // HandleGallery handles GET /api/gallery (public)
+// Supports optional ?category=X query parameter to filter by category
 func (h *PublicHandler) HandleGallery(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		sendMethodNotAllowed(w)
 		return
 	}
 
-	images, err := h.galleryRepo.FindActive()
+	// Check for category query parameter
+	category := r.URL.Query().Get("category")
+
+	var images []models.GalleryImage
+	var err error
+
+	if category != "" {
+		// Filter by category if specified
+		images, err = h.galleryRepo.FindActiveByCategory(category)
+	} else {
+		// Return all active images if no category specified
+		images, err = h.galleryRepo.FindActive()
+	}
+
 	if err != nil {
 		sendInternalError(w, "Failed to fetch gallery images")
 		return
@@ -108,4 +126,19 @@ func (h *PublicHandler) HandleContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sendSuccess(w, content)
+}
+
+// HandleLocations handles GET /api/locations (public)
+func (h *PublicHandler) HandleLocations(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		sendMethodNotAllowed(w)
+		return
+	}
+
+	locations, err := h.locationRepo.FindActive()
+	if err != nil {
+		sendInternalError(w, "Failed to fetch locations")
+		return
+	}
+	sendSuccess(w, locations)
 }

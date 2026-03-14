@@ -52,11 +52,45 @@ const GalleryImage = ({ image }) => {
   );
 };
 
+const CATEGORY_INFO = {
+  general: { value: 'general', label: 'General' },
+  case_studies: { value: 'case_studies', label: 'Case Studies' },
+  diplomas: { value: 'diplomas', label: 'Diplomas & Certifications' },
+  conferences: { value: 'conferences', label: 'Conferences & Events' }
+};
+
 const Gallery = () => {
-  const { gallery, loading } = useSite();
+  const { gallery, loading, settings, content } = useSite();
+  const [activeCategory, setActiveCategory] = useState('general');
 
   // Use API data if available, otherwise fallback to static data
   const displayGallery = gallery && gallery.length > 0 ? gallery : fallbackGallery;
+
+  // Get enabled categories from settings
+  const enabledCategories = Object.keys(CATEGORY_INFO).filter(cat => {
+    const settingKey = `gallery_enable_${cat}`;
+    return settings?.[settingKey] === 'true' || settings?.[settingKey] === true;
+  });
+
+  // If no categories enabled, show all
+  const categoriesToShow = enabledCategories.length > 0 ? enabledCategories : Object.keys(CATEGORY_INFO);
+
+  // Filter images by active category
+  const filteredImages = displayGallery.filter(img =>
+    (img.category || 'general') === activeCategory
+  );
+
+  // Get dynamic content for current category
+  const galleryContent = content?.gallery || {};
+  const currentTitle = galleryContent[`title_${activeCategory}`] || CATEGORY_INFO[activeCategory]?.label || 'Gallery';
+  const currentSubtitle = galleryContent[`subtitle_${activeCategory}`] || 'Browse our professional gallery.';
+
+  // Set initial active category to first enabled category
+  useState(() => {
+    if (categoriesToShow.length > 0 && !categoriesToShow.includes(activeCategory)) {
+      setActiveCategory(categoriesToShow[0]);
+    }
+  }, [categoriesToShow]);
 
   if (loading) {
     return (
@@ -74,22 +108,48 @@ const Gallery = () => {
     <section id="gallery" className="section-padding bg-white">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-sky-700 mb-4">Our Facility</h2>
+          <h2 className="text-4xl font-bold text-sky-700 mb-4">{currentTitle}</h2>
           <div className="w-24 h-1 bg-cyan-500 mx-auto mb-4"></div>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Take a virtual tour of our modern, state-of-the-art dental practice equipped with the latest technology.
+            {currentSubtitle}
           </p>
         </div>
 
+        {/* Category Tabs */}
+        {categoriesToShow.length > 1 && (
+          <div className="flex justify-center flex-wrap gap-2 mb-8">
+            {categoriesToShow.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-6 py-2 rounded-full font-medium transition-all ${
+                  activeCategory === cat
+                    ? 'bg-cyan-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {CATEGORY_INFO[cat]?.label || cat}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayGallery.map((image) => (
-            <div
-              key={image.id}
-              className="relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
-            >
-              <GalleryImage image={image} />
+          {filteredImages.length > 0 ? (
+            filteredImages.map((image) => (
+              <div
+                key={image.id}
+                className="relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+              >
+                <GalleryImage image={image} />
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <FaImage className="text-6xl text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">No images in this category yet.</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </section>
