@@ -52,45 +52,40 @@ const GalleryImage = ({ image }) => {
   );
 };
 
-const CATEGORY_INFO = {
-  general: { value: 'general', label: 'General' },
-  case_studies: { value: 'case_studies', label: 'Case Studies' },
-  diplomas: { value: 'diplomas', label: 'Diplomas & Certifications' },
-  conferences: { value: 'conferences', label: 'Conferences & Events' }
-};
-
 const Gallery = () => {
-  const { gallery, loading, settings, content } = useSite();
-  const [activeCategory, setActiveCategory] = useState('general');
+  const { gallery, galleryCategories, loading, content } = useSite();
+  const [activeCategory, setActiveCategory] = useState(null);
 
   // Use API data if available, otherwise fallback to static data
   const displayGallery = gallery && gallery.length > 0 ? gallery : fallbackGallery;
 
-  // Get enabled categories from settings
-  const enabledCategories = Object.keys(CATEGORY_INFO).filter(cat => {
-    const settingKey = `gallery_enable_${cat}`;
-    return settings?.[settingKey] === 'true' || settings?.[settingKey] === true;
-  });
-
-  // If no categories enabled, show all
-  const categoriesToShow = enabledCategories.length > 0 ? enabledCategories : Object.keys(CATEGORY_INFO);
-
-  // Filter images by active category
-  const filteredImages = displayGallery.filter(img =>
-    (img.category || 'general') === activeCategory
-  );
-
-  // Get dynamic content for current category
-  const galleryContent = content?.gallery || {};
-  const currentTitle = galleryContent[`title_${activeCategory}`] || CATEGORY_INFO[activeCategory]?.label || 'Gallery';
-  const currentSubtitle = galleryContent[`subtitle_${activeCategory}`] || 'Browse our professional gallery.';
+  // Use dynamic categories from API
+  const categoriesToShow = galleryCategories && galleryCategories.length > 0
+    ? galleryCategories.filter(cat => cat.enabled)
+    : [];
 
   // Set initial active category to first enabled category
   useState(() => {
-    if (categoriesToShow.length > 0 && !categoriesToShow.includes(activeCategory)) {
-      setActiveCategory(categoriesToShow[0]);
+    if (categoriesToShow.length > 0 && !activeCategory) {
+      setActiveCategory(categoriesToShow[0].slug);
     }
   }, [categoriesToShow]);
+
+  // If no active category set yet, set it to first category
+  if (!activeCategory && categoriesToShow.length > 0) {
+    setActiveCategory(categoriesToShow[0].slug);
+  }
+
+  // Filter images by active category
+  const filteredImages = activeCategory
+    ? displayGallery.filter(img => (img.category || 'general') === activeCategory)
+    : displayGallery;
+
+  // Get dynamic content for current category
+  const galleryContent = content?.gallery || {};
+  const currentCategoryObj = categoriesToShow.find(cat => cat.slug === activeCategory);
+  const currentTitle = galleryContent[`title_${activeCategory}`] || currentCategoryObj?.label || 'Gallery';
+  const currentSubtitle = galleryContent[`subtitle_${activeCategory}`] || currentCategoryObj?.description || 'Browse our professional gallery.';
 
   if (loading) {
     return (
@@ -120,15 +115,15 @@ const Gallery = () => {
           <div className="flex justify-center flex-wrap gap-2 mb-8">
             {categoriesToShow.map(cat => (
               <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
+                key={cat.slug}
+                onClick={() => setActiveCategory(cat.slug)}
                 className={`px-6 py-2 rounded-full font-medium transition-all ${
-                  activeCategory === cat
+                  activeCategory === cat.slug
                     ? 'bg-cyan-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                {CATEGORY_INFO[cat]?.label || cat}
+                {cat.label}
               </button>
             ))}
           </div>

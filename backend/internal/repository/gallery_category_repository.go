@@ -29,6 +29,19 @@ func (r *GalleryCategoryRepository) FindEnabled() ([]models.GalleryCategory, err
 	return categories, err
 }
 
+// FindEnabledWithImages retrieves enabled categories that have at least one active image
+func (r *GalleryCategoryRepository) FindEnabledWithImages() ([]models.GalleryCategory, error) {
+	var categories []models.GalleryCategory
+	err := r.db.
+		Distinct("gallery_categories.*").
+		Table("gallery_categories").
+		Joins("INNER JOIN gallery_images ON gallery_images.category = gallery_categories.slug").
+		Where("gallery_categories.enabled = ? AND gallery_images.active = ?", true, true).
+		Order("gallery_categories.display_order ASC").
+		Find(&categories).Error
+	return categories, err
+}
+
 // FindByID retrieves a gallery category by ID
 func (r *GalleryCategoryRepository) FindByID(id uint) (*models.GalleryCategory, error) {
 	var category models.GalleryCategory

@@ -24,7 +24,7 @@ func (GalleryImage) TableName() string {
 type GalleryImageRequest struct {
 	Filename     string `json:"filename" validate:"required,max=255"`
 	AltText      string `json:"alt_text" validate:"required,min=2,max=500"`
-	Category     string `json:"category" validate:"omitempty,oneof=general case_studies diplomas conferences"`
+	Category     string `json:"category" validate:"omitempty,max=50"`
 	Tags         string `json:"tags" validate:"omitempty"`
 	DisplayOrder int    `json:"display_order" validate:"omitempty,min=0"`
 	Active       *bool  `json:"active" validate:"omitempty"`

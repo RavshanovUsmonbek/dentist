@@ -44,6 +44,8 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       EMAIL_RECIPIENT: ${EMAIL_RECIPIENT:-}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
       UPLOAD_PATH: /app/uploads
       UPLOAD_URL_PREFIX: /uploads
     volumes:

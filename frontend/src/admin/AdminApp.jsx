@@ -6,6 +6,8 @@ import Dashboard from './pages/Dashboard';
 import Services from './pages/Services';
 import Testimonials from './pages/Testimonials';
 import Gallery from './pages/Gallery';
+import GalleryCategories from './pages/GalleryCategories';
+import Locations from './pages/Locations';
 import Contacts from './pages/Contacts';
 import Settings from './pages/Settings';
 import SiteContent from './pages/SiteContent';
@@ -20,6 +22,8 @@ const AdminApp = () => {
           <Route path="services" element={<Services />} />
           <Route path="testimonials" element={<Testimonials />} />
           <Route path="gallery" element={<Gallery />} />
+          <Route path="gallery-categories" element={<GalleryCategories />} />
+          <Route path="locations" element={<Locations />} />
           <Route path="contacts" element={<Contacts />} />
           <Route path="settings" element={<Settings />} />
           <Route path="content" element={<SiteContent />} />

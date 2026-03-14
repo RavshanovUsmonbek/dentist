@@ -7,63 +7,72 @@ import (
 	"time"
 
 	"github.com/usmonbek/dentist-backend/internal/models"
+	"github.com/usmonbek/dentist-backend/internal/repository"
 	"github.com/usmonbek/dentist-backend/internal/services"
 )
 
 type ContactHandler struct {
-	emailService *services.EmailService
-	validator    *services.Validator
+	contactRepo      *repository.ContactRepository
+	telegramService  *services.TelegramService
+	validator        *services.Validator
 }
 
-func NewContactHandler(emailService *services.EmailService, validator *services.Validator) *ContactHandler {
+func NewContactHandler(contactRepo *repository.ContactRepository, telegramService *services.TelegramService, validator *services.Validator) *ContactHandler {
 	return &ContactHandler{
-		emailService: emailService,
-		validator:    validator,
+		contactRepo:     contactRepo,
+		telegramService: telegramService,
+		validator:       validator,
 	}
 }
 
 func (h *ContactHandler) HandleContact(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		sendErrorResponse(w, "Method not allowed", http.StatusMethodNotAllowed)
+		sendError(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	var contact models.ContactRequest
 	if err := json.NewDecoder(r.Body).Decode(&contact); err != nil {
-		sendErrorResponse(w, "Invalid request body", http.StatusBadRequest)
+		sendBadRequest(w, "Invalid request body")
 		return
 	}
 
 	contact.Timestamp = time.Now()
 
 	if err := h.validator.Validate(&contact); err != nil {
-		sendErrorResponse(w, err.Error(), http.StatusBadRequest)
+		sendError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := h.emailService.SendContactEmail(&contact); err != nil {
-		log.Printf("Failed to send email: %v", err)
-		sendErrorResponse(w, "Failed to send message. Please try again later.", http.StatusInternalServerError)
+	// Create contact submission entity
+	submission := &models.ContactSubmission{
+		Name:    contact.Name,
+		Email:   contact.Email,
+		Phone:   contact.Phone,
+		Message: contact.Message,
+		Read:    false,
+	}
+
+	// Save to database (PRIMARY OPERATION - must succeed)
+	if err := h.contactRepo.Create(submission); err != nil {
+		log.Printf("Failed to save contact submission: %v", err)
+		sendInternalError(w, "Failed to save contact submission")
 		return
 	}
 
-	response := models.ContactResponse{
-		Success: true,
-		Message: "Thank you for contacting us! We'll get back to you soon.",
-	}
+	// Send Telegram notification (NON-BLOCKING - errors logged but don't fail request)
+	go func() {
+		err := h.telegramService.SendContactNotification(
+			submission.Name,
+			submission.Email,
+			submission.Phone,
+			submission.Message,
+		)
+		if err != nil {
+			log.Printf("Failed to send Telegram notification: %v", err)
+		}
+	}()
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	sendSuccessMessage(w, "Thank you for contacting us! We'll get back to you soon.")
 }
 
-func sendErrorResponse(w http.ResponseWriter, message string, statusCode int) {
-	response := models.ContactResponse{
-		Success: false,
-		Error:   message,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(response)
-}

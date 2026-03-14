@@ -20,6 +20,9 @@ type Config struct {
 	EmailRecipient  string
 	UploadPath      string
 	UploadURLPrefix string
+	// Telegram Bot Configuration
+	TelegramBotToken string
+	TelegramChatID   string
 }
 
 func Load() *Config {
@@ -29,18 +32,20 @@ func Load() *Config {
 	}
 
 	return &Config{
-		Port:            getEnv("PORT", "8080"),
-		FrontendURL:     getEnv("FRONTEND_URL", "http://localhost:5173"),
-		DatabaseURL:     getEnv("DATABASE_URL", ""),
-		JWTSecret:       getEnv("JWT_SECRET", ""),
-		JWTExpiration:   getEnv("JWT_EXPIRATION", "24h"),
-		SMTPHost:        getEnv("SMTP_HOST", "smtp.gmail.com"),
-		SMTPPort:        getEnv("SMTP_PORT", "587"),
-		SMTPUsername:    getEnv("SMTP_USERNAME", ""),
-		SMTPPassword:    getEnv("SMTP_PASSWORD", ""),
-		EmailRecipient:  getEnv("EMAIL_RECIPIENT", ""),
-		UploadPath:      getEnv("UPLOAD_PATH", "./uploads"),
-		UploadURLPrefix: getEnv("UPLOAD_URL_PREFIX", "/uploads"),
+		Port:             getEnv("PORT", "8080"),
+		FrontendURL:      getEnv("FRONTEND_URL", "http://localhost:5173"),
+		DatabaseURL:      getEnv("DATABASE_URL", ""),
+		JWTSecret:        getEnv("JWT_SECRET", ""),
+		JWTExpiration:    getEnv("JWT_EXPIRATION", "24h"),
+		SMTPHost:         getEnv("SMTP_HOST", "smtp.gmail.com"),
+		SMTPPort:         getEnv("SMTP_PORT", "587"),
+		SMTPUsername:     getEnv("SMTP_USERNAME", ""),
+		SMTPPassword:     getEnv("SMTP_PASSWORD", ""),
+		EmailRecipient:   getEnv("EMAIL_RECIPIENT", ""),
+		UploadPath:       getEnv("UPLOAD_PATH", "./uploads"),
+		UploadURLPrefix:  getEnv("UPLOAD_URL_PREFIX", "/uploads"),
+		TelegramBotToken: getEnv("TELEGRAM_BOT_TOKEN", ""),
+		TelegramChatID:   getEnv("TELEGRAM_CHAT_ID", ""),
 	}
 }
 

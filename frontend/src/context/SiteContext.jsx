@@ -11,6 +11,8 @@ export const SiteProvider = ({ children }) => {
   const [services, setServices] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [gallery, setGallery] = useState([]);
+  const [galleryCategories, setGalleryCategories] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -26,18 +28,24 @@ export const SiteProvider = ({ children }) => {
           aboutRes,
           contactRes,
           footerRes,
+          galleryRes,
           servicesRes,
           testimonialsRes,
-          galleryRes
+          galleryImagesRes,
+          galleryCategoriesRes,
+          locationsRes
         ] = await Promise.all([
           axios.get(`${API_URL}/settings`).catch(() => ({ data: { success: false, data: {} } })),
           axios.get(`${API_URL}/content/hero`).catch(() => ({ data: { success: false, data: {} } })),
           axios.get(`${API_URL}/content/about`).catch(() => ({ data: { success: false, data: {} } })),
           axios.get(`${API_URL}/content/contact`).catch(() => ({ data: { success: false, data: {} } })),
           axios.get(`${API_URL}/content/footer`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/gallery`).catch(() => ({ data: { success: false, data: {} } })),
           axios.get(`${API_URL}/services`).catch(() => ({ data: { success: false, data: [] } })),
           axios.get(`${API_URL}/testimonials`).catch(() => ({ data: { success: false, data: [] } })),
-          axios.get(`${API_URL}/gallery`).catch(() => ({ data: { success: false, data: [] } }))
+          axios.get(`${API_URL}/gallery`).catch(() => ({ data: { success: false, data: [] } })),
+          axios.get(`${API_URL}/gallery-categories`).catch(() => ({ data: { success: false, data: [] } })),
+          axios.get(`${API_URL}/locations`).catch(() => ({ data: { success: false, data: [] } }))
         ]);
 
         // Combine settings
@@ -49,14 +57,17 @@ export const SiteProvider = ({ children }) => {
           hero: heroRes.data.success ? heroRes.data.data : {},
           about: aboutRes.data.success ? aboutRes.data.data : {},
           contact: contactRes.data.success ? contactRes.data.data : {},
-          footer: footerRes.data.success ? footerRes.data.data : {}
+          footer: footerRes.data.success ? footerRes.data.data : {},
+          gallery: galleryRes.data.success ? galleryRes.data.data : {}
         };
         setContent(allContent);
 
         // Set data arrays
         setServices(servicesRes.data.success ? servicesRes.data.data : []);
         setTestimonials(testimonialsRes.data.success ? testimonialsRes.data.data : []);
-        setGallery(galleryRes.data.success ? galleryRes.data.data : []);
+        setGallery(galleryImagesRes.data.success ? galleryImagesRes.data.data : []);
+        setGalleryCategories(galleryCategoriesRes.data.success ? galleryCategoriesRes.data.data : []);
+        setLocations(locationsRes.data.success ? locationsRes.data.data : []);
 
         setError(null);
       } catch (err) {
@@ -91,18 +102,24 @@ export const SiteProvider = ({ children }) => {
         aboutRes,
         contactRes,
         footerRes,
+        galleryRes,
         servicesRes,
         testimonialsRes,
-        galleryRes
+        galleryImagesRes,
+        galleryCategoriesRes,
+        locationsRes
       ] = await Promise.all([
         axios.get(`${API_URL}/settings`).catch(() => ({ data: { success: false, data: {} } })),
         axios.get(`${API_URL}/content/hero`).catch(() => ({ data: { success: false, data: {} } })),
         axios.get(`${API_URL}/content/about`).catch(() => ({ data: { success: false, data: {} } })),
         axios.get(`${API_URL}/content/contact`).catch(() => ({ data: { success: false, data: {} } })),
         axios.get(`${API_URL}/content/footer`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/gallery`).catch(() => ({ data: { success: false, data: {} } })),
         axios.get(`${API_URL}/services`).catch(() => ({ data: { success: false, data: [] } })),
         axios.get(`${API_URL}/testimonials`).catch(() => ({ data: { success: false, data: [] } })),
-        axios.get(`${API_URL}/gallery`).catch(() => ({ data: { success: false, data: [] } }))
+        axios.get(`${API_URL}/gallery`).catch(() => ({ data: { success: false, data: [] } })),
+        axios.get(`${API_URL}/gallery-categories`).catch(() => ({ data: { success: false, data: [] } })),
+        axios.get(`${API_URL}/locations`).catch(() => ({ data: { success: false, data: [] } }))
       ]);
 
       // Combine settings
@@ -114,14 +131,17 @@ export const SiteProvider = ({ children }) => {
         hero: heroRes.data.success ? heroRes.data.data : {},
         about: aboutRes.data.success ? aboutRes.data.data : {},
         contact: contactRes.data.success ? contactRes.data.data : {},
-        footer: footerRes.data.success ? footerRes.data.data : {}
+        footer: footerRes.data.success ? footerRes.data.data : {},
+        gallery: galleryRes.data.success ? galleryRes.data.data : {}
       };
       setContent(allContent);
 
       // Set data arrays
       setServices(servicesRes.data.success ? servicesRes.data.data : []);
       setTestimonials(testimonialsRes.data.success ? testimonialsRes.data.data : []);
-      setGallery(galleryRes.data.success ? galleryRes.data.data : []);
+      setGallery(galleryImagesRes.data.success ? galleryImagesRes.data.data : []);
+      setGalleryCategories(galleryCategoriesRes.data.success ? galleryCategoriesRes.data.data : []);
+      setLocations(locationsRes.data.success ? locationsRes.data.data : []);
 
       setError(null);
     } catch (err) {
@@ -138,6 +158,8 @@ export const SiteProvider = ({ children }) => {
     services,
     testimonials,
     gallery,
+    galleryCategories,
+    locations,
     loading,
     error,
     refreshSiteData

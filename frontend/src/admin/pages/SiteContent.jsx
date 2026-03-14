@@ -14,7 +14,9 @@ const SiteContent = () => {
   const sections = [
     { id: 'hero', label: 'Hero Section' },
     { id: 'about', label: 'About Section' },
+    { id: 'services', label: 'Services Section' },
     { id: 'gallery', label: 'Gallery Content' },
+    { id: 'testimonials', label: 'Testimonials Section' },
     { id: 'contact', label: 'Contact Section' },
     { id: 'footer', label: 'Footer' },
   ];
@@ -35,6 +37,10 @@ const SiteContent = () => {
       { key: 'experience', label: 'Experience (JSON array)', type: 'textarea' },
       { key: 'awards', label: 'Awards (JSON array)', type: 'textarea' },
     ],
+    services: [
+      { key: 'title', label: 'Section Title', type: 'text' },
+      { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
+    ],
     gallery: [
       { key: 'title_general', label: 'General Gallery Title', type: 'text' },
       { key: 'subtitle_general', label: 'General Gallery Subtitle', type: 'textarea' },
@@ -45,16 +51,23 @@ const SiteContent = () => {
       { key: 'title_conferences', label: 'Conferences & Events Title', type: 'text' },
       { key: 'subtitle_conferences', label: 'Conferences & Events Subtitle', type: 'textarea' },
     ],
+    testimonials: [
+      { key: 'title', label: 'Section Title', type: 'text' },
+      { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
+    ],
     contact: [
       { key: 'title', label: 'Section Title', type: 'text' },
       { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
       { key: 'form_title', label: 'Form Title', type: 'text' },
       { key: 'success_message', label: 'Success Message', type: 'textarea' },
       { key: 'emergency_text', label: 'Emergency Text', type: 'textarea' },
+      { key: 'hours_title', label: 'Hours Title', type: 'text' },
+      { key: 'emergency_title', label: 'Emergency Title', type: 'text' },
     ],
     footer: [
       { key: 'description', label: 'Footer Description', type: 'textarea' },
       { key: 'copyright_text', label: 'Copyright Text', type: 'text' },
+      { key: 'hours_title', label: 'Hours Title', type: 'text' },
     ],
   };
 

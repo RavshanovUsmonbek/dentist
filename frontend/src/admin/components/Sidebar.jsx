@@ -7,7 +7,9 @@ import {
   FaEnvelope,
   FaTooth,
   FaFileAlt,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaFolder,
+  FaMapMarkerAlt
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,6 +21,8 @@ const Sidebar = () => {
     { to: '/admin/services', icon: FaTooth, label: 'Services' },
     { to: '/admin/testimonials', icon: FaComments, label: 'Testimonials' },
     { to: '/admin/gallery', icon: FaImages, label: 'Gallery' },
+    { to: '/admin/gallery-categories', icon: FaFolder, label: 'Gallery Categories' },
+    { to: '/admin/locations', icon: FaMapMarkerAlt, label: 'Locations' },
     { to: '/admin/contacts', icon: FaEnvelope, label: 'Contacts' },
     { to: '/admin/settings', icon: FaCog, label: 'Settings' },
     { to: '/admin/content', icon: FaFileAlt, label: 'Site Content' },

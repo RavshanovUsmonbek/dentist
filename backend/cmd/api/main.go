@@ -40,15 +40,27 @@ func main() {
 	}
 
 	// Initialize services
-	emailService, err := services.NewEmailService(
-		cfg.SMTPHost,
-		cfg.SMTPPort,
-		cfg.SMTPUsername,
-		cfg.SMTPPassword,
-		cfg.EmailRecipient,
+	// NOTE: Email service replaced with Telegram - keeping this commented for reference
+	// emailService, err := services.NewEmailService(
+	// 	cfg.SMTPHost,
+	// 	cfg.SMTPPort,
+	// 	cfg.SMTPUsername,
+	// 	cfg.SMTPPassword,
+	// 	cfg.EmailRecipient,
+	// )
+	// if err != nil {
+	// 	log.Printf("Warning: Email service not configured: %v", err)
+	// }
+
+	// Initialize Telegram service
+	telegramService := services.NewTelegramService(
+		cfg.TelegramBotToken,
+		cfg.TelegramChatID,
 	)
-	if err != nil {
-		log.Printf("Warning: Email service not configured: %v", err)
+	if cfg.TelegramBotToken != "" && cfg.TelegramChatID != "" {
+		log.Println("Telegram notifications enabled")
+	} else {
+		log.Println("Telegram notifications disabled (no bot token or chat ID configured)")
 	}
 
 	validator := services.NewValidator()
@@ -72,20 +84,22 @@ func main() {
 	serviceRepo := repository.NewServiceRepository(db)
 	testimonialRepo := repository.NewTestimonialRepository(db)
 	galleryRepo := repository.NewGalleryRepository(db)
+	galleryCategoryRepo := repository.NewGalleryCategoryRepository(db)
 	locationRepo := repository.NewLocationRepository(db)
 	contactRepo := repository.NewContactRepository(db)
 	settingsRepo := repository.NewSettingsRepository(db)
 
 	// Initialize handlers
-	contactHandler := handlers.NewContactHandler(emailService, validator)
+	contactHandler := handlers.NewContactHandler(contactRepo, telegramService, validator)
 	uploadHandler := handlers.NewUploadHandler(cfg.UploadPath, cfg.UploadURLPrefix, 10<<20) // 10MB max
-	publicHandler := handlers.NewPublicHandler(serviceRepo, testimonialRepo, galleryRepo, locationRepo, settingsRepo)
+	publicHandler := handlers.NewPublicHandler(serviceRepo, testimonialRepo, galleryRepo, galleryCategoryRepo, locationRepo, settingsRepo)
 
 	// Admin handlers
 	adminAuthHandler := handlers.NewAdminAuthHandler(adminRepo, authService, validator)
 	adminServicesHandler := handlers.NewAdminServicesHandler(serviceRepo, validator)
 	adminTestimonialsHandler := handlers.NewAdminTestimonialsHandler(testimonialRepo, validator)
 	adminGalleryHandler := handlers.NewAdminGalleryHandler(galleryRepo, validator)
+	adminGalleryCategoriesHandler := handlers.NewAdminGalleryCategoriesHandler(galleryCategoryRepo, validator)
 	adminLocationsHandler := handlers.NewAdminLocationsHandler(locationRepo, validator)
 	adminContactsHandler := handlers.NewAdminContactsHandler(contactRepo)
 	adminSettingsHandler := handlers.NewAdminSettingsHandler(settingsRepo)
@@ -101,6 +115,7 @@ func main() {
 	mux.HandleFunc("/api/services", publicHandler.HandleServices)
 	mux.HandleFunc("/api/testimonials", publicHandler.HandleTestimonials)
 	mux.HandleFunc("/api/gallery", publicHandler.HandleGallery)
+	mux.HandleFunc("/api/gallery-categories", publicHandler.HandleGalleryCategories)
 	mux.HandleFunc("/api/locations", publicHandler.HandleLocations)
 	mux.HandleFunc("/api/settings", publicHandler.HandleSettings)
 	mux.HandleFunc("/api/content/", publicHandler.HandleContent)
@@ -129,6 +144,12 @@ func main() {
 		mux.HandleFunc("/api/admin/gallery", middleware.AuthFunc(authService, adminGalleryHandler.HandleGallery))
 		mux.Handle("/api/admin/gallery/", middleware.Auth(authService)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			adminGalleryHandler.HandleGalleryImage(w, r)
+		})))
+
+		// Admin gallery categories
+		mux.HandleFunc("/api/admin/gallery-categories", middleware.AuthFunc(authService, adminGalleryCategoriesHandler.HandleGalleryCategories))
+		mux.Handle("/api/admin/gallery-categories/", middleware.Auth(authService)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			adminGalleryCategoriesHandler.HandleGalleryCategory(w, r)
 		})))
 
 		// Admin locations

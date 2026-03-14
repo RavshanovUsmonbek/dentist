@@ -21,7 +21,7 @@ func (GalleryCategory) TableName() string {
 
 // GalleryCategoryRequest represents a request to create/update a gallery category
 type GalleryCategoryRequest struct {
-	Slug         string `json:"slug" validate:"required,max=50,alphanum"`
+	Slug         string `json:"slug" validate:"omitempty,max=50"`
 	Label        string `json:"label" validate:"required,max=100"`
 	Description  string `json:"description"`
 	DisplayOrder int    `json:"display_order"`

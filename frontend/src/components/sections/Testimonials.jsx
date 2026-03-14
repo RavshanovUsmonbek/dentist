@@ -4,10 +4,15 @@ import { useSite } from '../../context/SiteContext';
 import { testimonials as fallbackTestimonials } from '../../data/testimonials';
 
 const Testimonials = () => {
-  const { testimonials, loading } = useSite();
+  const { testimonials, content, loading } = useSite();
 
   // Use API data if available, otherwise fallback to static data
   const displayTestimonials = testimonials && testimonials.length > 0 ? testimonials : fallbackTestimonials;
+
+  // Get dynamic content
+  const testimonialsContent = content?.testimonials || {};
+  const title = testimonialsContent.title || 'Client Testimonials';
+  const subtitle = testimonialsContent.subtitle || 'Hear what our clients have to say about their experience';
 
   if (loading) {
     return (
@@ -25,10 +30,10 @@ const Testimonials = () => {
     <section id="testimonials" className="section-padding bg-gray-50">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-primary-700 mb-4">Patient Testimonials</h2>
+          <h2 className="text-4xl font-bold text-primary-700 mb-4">{title}</h2>
           <div className="w-24 h-1 bg-accent-500 mx-auto mb-4"></div>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Don't just take our word for it. Here's what our patients have to say about their experience with us.
+            {subtitle}
           </p>
         </div>
 

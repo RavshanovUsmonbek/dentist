@@ -12,10 +12,15 @@ const iconMap = {
 };
 
 const Services = () => {
-  const { services, loading } = useSite();
+  const { services, content, loading } = useSite();
 
   // Use API data if available, otherwise fallback to static data
   const displayServices = services && services.length > 0 ? services : fallbackServices;
+
+  // Get dynamic content
+  const servicesContent = content?.services || {};
+  const title = servicesContent.title || 'Our Services';
+  const subtitle = servicesContent.subtitle || 'Comprehensive professional services tailored to your needs';
 
   if (loading) {
     return (
@@ -33,11 +38,10 @@ const Services = () => {
     <section id="services" className="section-padding bg-gray-50">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-primary-700 mb-4">Our Services</h2>
+          <h2 className="text-4xl font-bold text-primary-700 mb-4">{title}</h2>
           <div className="w-24 h-1 bg-accent-500 mx-auto mb-4"></div>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            We offer a comprehensive range of dental services to meet all your oral health needs,
-            from preventive care to advanced cosmetic procedures.
+            {subtitle}
           </p>
         </div>
 

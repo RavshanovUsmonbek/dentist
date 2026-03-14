@@ -9,11 +9,12 @@ import (
 
 // PublicHandler handles public API endpoints (no auth required)
 type PublicHandler struct {
-	serviceRepo     *repository.ServiceRepository
-	testimonialRepo *repository.TestimonialRepository
-	galleryRepo     *repository.GalleryRepository
-	locationRepo    *repository.LocationRepository
-	settingsRepo    *repository.SettingsRepository
+	serviceRepo         *repository.ServiceRepository
+	testimonialRepo     *repository.TestimonialRepository
+	galleryRepo         *repository.GalleryRepository
+	galleryCategoryRepo *repository.GalleryCategoryRepository
+	locationRepo        *repository.LocationRepository
+	settingsRepo        *repository.SettingsRepository
 }
 
 // NewPublicHandler creates a new PublicHandler
@@ -21,15 +22,17 @@ func NewPublicHandler(
 	serviceRepo *repository.ServiceRepository,
 	testimonialRepo *repository.TestimonialRepository,
 	galleryRepo *repository.GalleryRepository,
+	galleryCategoryRepo *repository.GalleryCategoryRepository,
 	locationRepo *repository.LocationRepository,
 	settingsRepo *repository.SettingsRepository,
 ) *PublicHandler {
 	return &PublicHandler{
-		serviceRepo:     serviceRepo,
-		testimonialRepo: testimonialRepo,
-		galleryRepo:     galleryRepo,
-		locationRepo:    locationRepo,
-		settingsRepo:    settingsRepo,
+		serviceRepo:         serviceRepo,
+		testimonialRepo:     testimonialRepo,
+		galleryRepo:         galleryRepo,
+		galleryCategoryRepo: galleryCategoryRepo,
+		locationRepo:        locationRepo,
+		settingsRepo:        settingsRepo,
 	}
 }
 
@@ -141,4 +144,20 @@ func (h *PublicHandler) HandleLocations(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	sendSuccess(w, locations)
+}
+
+// HandleGalleryCategories handles GET /api/gallery-categories (public)
+// Only returns enabled categories that have at least one active image
+func (h *PublicHandler) HandleGalleryCategories(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		sendMethodNotAllowed(w)
+		return
+	}
+
+	categories, err := h.galleryCategoryRepo.FindEnabledWithImages()
+	if err != nil {
+		sendInternalError(w, "Failed to fetch gallery categories")
+		return
+	}
+	sendSuccess(w, categories)
 }

@@ -102,13 +102,7 @@ func (h *AdminLocationsHandler) createLocation(w http.ResponseWriter, r *http.Re
 
 	location := &models.Location{
 		Name:          req.Name,
-		AddressLine1:  req.AddressLine1,
-		AddressLine2:  req.AddressLine2,
-		City:          req.City,
-		State:         req.State,
-		PostalCode:    req.PostalCode,
-		Phone:         req.Phone,
-		Email:         req.Email,
+		Address:       req.Address,
 		DaysOfWeek:    string(daysJSON),
 		HoursWeekday:  req.HoursWeekday,
 		HoursSaturday: req.HoursSaturday,
@@ -151,13 +145,7 @@ func (h *AdminLocationsHandler) updateLocation(w http.ResponseWriter, r *http.Re
 	}
 
 	location.Name = req.Name
-	location.AddressLine1 = req.AddressLine1
-	location.AddressLine2 = req.AddressLine2
-	location.City = req.City
-	location.State = req.State
-	location.PostalCode = req.PostalCode
-	location.Phone = req.Phone
-	location.Email = req.Email
+	location.Address = req.Address
 	location.DaysOfWeek = string(daysJSON)
 	location.HoursWeekday = req.HoursWeekday
 	location.HoursSaturday = req.HoursSaturday

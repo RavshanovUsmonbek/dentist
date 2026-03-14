@@ -4,15 +4,9 @@ import { adminApi } from '../services/adminApi';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
 
-const GALLERY_CATEGORIES = [
-  { value: 'general', label: 'General' },
-  { value: 'case_studies', label: 'Case Studies' },
-  { value: 'diplomas', label: 'Diplomas & Certifications' },
-  { value: 'conferences', label: 'Conferences & Events' }
-];
-
 const Gallery = () => {
   const [images, setImages] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -29,7 +23,17 @@ const Gallery = () => {
 
   useEffect(() => {
     loadGallery();
+    loadCategories();
   }, []);
+
+  const loadCategories = async () => {
+    try {
+      const response = await adminApi.getGalleryCategories();
+      setCategories(response.data || []);
+    } catch (error) {
+      console.error('Failed to load gallery categories:', error);
+    }
+  };
 
   const loadGallery = async () => {
     try {
@@ -149,8 +153,8 @@ const Gallery = () => {
           className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
         >
           <option value="all">All Categories</option>
-          {GALLERY_CATEGORIES.map(cat => (
-            <option key={cat.value} value={cat.value}>{cat.label}</option>
+          {categories.map(cat => (
+            <option key={cat.slug} value={cat.slug}>{cat.label}</option>
           ))}
         </select>
         <span className="ml-3 text-sm text-gray-600">
@@ -160,7 +164,7 @@ const Gallery = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredImages.map((image) => {
-          const categoryLabel = GALLERY_CATEGORIES.find(c => c.value === (image.category || 'general'))?.label || 'General';
+          const categoryLabel = categories.find(c => c.slug === (image.category || 'general'))?.label || image.category || 'General';
           return (
             <div key={image.id} className="bg-white rounded-xl shadow-md overflow-hidden">
               <div className="aspect-square bg-gray-100 relative">
@@ -289,10 +293,19 @@ const Gallery = () => {
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             >
-              {GALLERY_CATEGORIES.map(cat => (
-                <option key={cat.value} value={cat.value}>{cat.label}</option>
-              ))}
+              {categories.length === 0 ? (
+                <option value="general">General</option>
+              ) : (
+                categories.map(cat => (
+                  <option key={cat.slug} value={cat.slug}>{cat.label}</option>
+                ))
+              )}
             </select>
+            {categories.length === 0 && (
+              <p className="text-xs text-amber-600 mt-1">
+                No categories found. Please add categories in Gallery Categories page.
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>

@@ -22,13 +22,7 @@ const Locations = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    address_line1: '',
-    address_line2: '',
-    city: '',
-    state: '',
-    postal_code: '',
-    phone: '',
-    email: '',
+    address: '',
     days_of_week: [],
     hours_weekday: '',
     hours_saturday: '',
@@ -76,13 +70,7 @@ const Locations = () => {
 
     setFormData({
       name: location.name,
-      address_line1: location.address_line1,
-      address_line2: location.address_line2 || '',
-      city: location.city,
-      state: location.state || '',
-      postal_code: location.postal_code || '',
-      phone: location.phone || '',
-      email: location.email || '',
+      address: location.address,
       days_of_week: daysArray,
       hours_weekday: location.hours_weekday || '',
       hours_saturday: location.hours_saturday || '',
@@ -105,13 +93,7 @@ const Locations = () => {
     setSelectedLocation(null);
     setFormData({
       name: '',
-      address_line1: '',
-      address_line2: '',
-      city: '',
-      state: '',
-      postal_code: '',
-      phone: '',
-      email: '',
+      address: '',
       days_of_week: [],
       hours_weekday: '',
       hours_saturday: '',
@@ -174,20 +156,13 @@ const Locations = () => {
                 <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
                   <div>
                     <p className="font-medium text-gray-700 mb-1">Address</p>
-                    <p>{location.address_line1}</p>
-                    {location.address_line2 && <p>{location.address_line2}</p>}
-                    <p>{location.city}{location.state && `, ${location.state}`} {location.postal_code}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-700 mb-1">Contact</p>
-                    {location.phone && <p>📞 {location.phone}</p>}
-                    {location.email && <p>✉️ {location.email}</p>}
+                    <p>{location.address}</p>
                   </div>
                   <div>
                     <p className="font-medium text-gray-700 mb-1">Days Available</p>
                     <p className="text-cyan-600 font-medium">{getDaysDisplay(location.days_of_week)}</p>
                   </div>
-                  <div>
+                  <div className="md:col-span-2">
                     <p className="font-medium text-gray-700 mb-1">Hours</p>
                     {location.hours_weekday && <p>Weekdays: {location.hours_weekday}</p>}
                     {location.hours_saturday && <p>Saturday: {location.hours_saturday}</p>}
@@ -233,78 +208,22 @@ const Locations = () => {
             />
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 1 *</label>
-              <input
-                type="text"
-                value={formData.address_line1}
-                onChange={(e) => setFormData({ ...formData, address_line1: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 2</label>
-              <input
-                type="text"
-                value={formData.address_line2}
-                onChange={(e) => setFormData({ ...formData, address_line2: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
-              <input
-                type="text"
-                value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-              <input
-                type="text"
-                value={formData.state}
-                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
-              <input
-                type="text"
-                value={formData.postal_code}
-                onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Address *
+            </label>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              rows={2}
+              required
+              placeholder="123 Main Street, Tashkent"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Full address including city and region
+            </p>
           </div>
 
           <div>

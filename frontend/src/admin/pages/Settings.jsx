@@ -10,14 +10,9 @@ const Settings = () => {
 
   const settingsConfig = [
     { key: 'business_name', label: 'Business Name', type: 'text' },
-    { key: 'business_phone', label: 'Phone Number', type: 'text' },
+    { key: 'business_phone', label: 'Phone Numbers', type: 'text', placeholder: '+998 93 123 4567, +998 90 987 6543', helpText: 'Comma-separated for multiple numbers' },
     { key: 'business_email', label: 'Email Address', type: 'email' },
-    { key: 'business_address_line1', label: 'Address Line 1', type: 'text' },
-    { key: 'business_address_line2', label: 'Address Line 2', type: 'text' },
     { key: 'emergency_phone', label: 'Emergency Phone', type: 'text' },
-    { key: 'hours_weekday', label: 'Weekday Hours', type: 'text' },
-    { key: 'hours_saturday', label: 'Saturday Hours', type: 'text' },
-    { key: 'hours_sunday', label: 'Sunday Hours', type: 'text' },
     { key: 'social_facebook', label: 'Facebook URL', type: 'url' },
     { key: 'social_twitter', label: 'Twitter URL', type: 'url' },
     { key: 'social_instagram', label: 'Instagram URL', type: 'url' },
@@ -83,21 +78,44 @@ const Settings = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="grid gap-8">
-          {/* Business Information */}
+          {/* Contact Information */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">Business Information</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-6">Contact Information</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Global contact details (phone and email). Addresses are managed in the <strong>Locations</strong> section.
+            </p>
             <div className="grid md:grid-cols-2 gap-4">
-              {settingsConfig.slice(0, 5).map(({ key, label, type }) => (
-                <div key={key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-                  <input
-                    type={type}
-                    value={settings[key] || ''}
-                    onChange={(e) => handleChange(key, e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  />
-                </div>
-              ))}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+                <input
+                  type="text"
+                  value={settings.business_name || ''}
+                  onChange={(e) => handleChange('business_name', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  value={settings.business_email || ''}
+                  onChange={(e) => handleChange('business_email', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Numbers</label>
+                <input
+                  type="text"
+                  value={settings.business_phone || ''}
+                  onChange={(e) => handleChange('business_phone', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  placeholder="+998 93 123 4567, +998 90 987 6543"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Separate multiple phone numbers with commas
+                </p>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Phone</label>
                 <input
@@ -105,43 +123,6 @@ const Settings = () => {
                   value={settings.emergency_phone || ''}
                   onChange={(e) => handleChange('emergency_phone', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Office Hours */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">Office Hours</h2>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Monday - Friday</label>
-                <input
-                  type="text"
-                  value={settings.hours_weekday || ''}
-                  onChange={(e) => handleChange('hours_weekday', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  placeholder="8:00 AM - 6:00 PM"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Saturday</label>
-                <input
-                  type="text"
-                  value={settings.hours_saturday || ''}
-                  onChange={(e) => handleChange('hours_saturday', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  placeholder="9:00 AM - 3:00 PM"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Sunday</label>
-                <input
-                  type="text"
-                  value={settings.hours_sunday || ''}
-                  onChange={(e) => handleChange('hours_sunday', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  placeholder="Closed"
                 />
               </div>
             </div>
@@ -180,62 +161,6 @@ const Settings = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                   placeholder="https://instagram.com/..."
                 />
-              </div>
-            </div>
-          </div>
-
-          {/* Gallery Categories */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">Gallery Categories</h2>
-            <p className="text-sm text-gray-600 mb-4">Control which gallery categories are visible on your site</p>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                <input
-                  type="checkbox"
-                  id="gallery_enable_general"
-                  checked={settings.gallery_enable_general === 'true' || settings.gallery_enable_general === true}
-                  onChange={(e) => handleChange('gallery_enable_general', e.target.checked ? 'true' : 'false')}
-                  className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500"
-                />
-                <label htmlFor="gallery_enable_general" className="text-sm font-medium text-gray-700 cursor-pointer">
-                  Enable General Gallery
-                </label>
-              </div>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                <input
-                  type="checkbox"
-                  id="gallery_enable_case_studies"
-                  checked={settings.gallery_enable_case_studies === 'true' || settings.gallery_enable_case_studies === true}
-                  onChange={(e) => handleChange('gallery_enable_case_studies', e.target.checked ? 'true' : 'false')}
-                  className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500"
-                />
-                <label htmlFor="gallery_enable_case_studies" className="text-sm font-medium text-gray-700 cursor-pointer">
-                  Enable Case Studies
-                </label>
-              </div>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                <input
-                  type="checkbox"
-                  id="gallery_enable_diplomas"
-                  checked={settings.gallery_enable_diplomas === 'true' || settings.gallery_enable_diplomas === true}
-                  onChange={(e) => handleChange('gallery_enable_diplomas', e.target.checked ? 'true' : 'false')}
-                  className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500"
-                />
-                <label htmlFor="gallery_enable_diplomas" className="text-sm font-medium text-gray-700 cursor-pointer">
-                  Enable Diplomas & Certifications
-                </label>
-              </div>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                <input
-                  type="checkbox"
-                  id="gallery_enable_conferences"
-                  checked={settings.gallery_enable_conferences === 'true' || settings.gallery_enable_conferences === true}
-                  onChange={(e) => handleChange('gallery_enable_conferences', e.target.checked ? 'true' : 'false')}
-                  className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500"
-                />
-                <label htmlFor="gallery_enable_conferences" className="text-sm font-medium text-gray-700 cursor-pointer">
-                  Enable Conferences & Events
-                </label>
               </div>
             </div>
           </div>

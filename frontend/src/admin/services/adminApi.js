@@ -102,6 +102,27 @@ export const adminApi = {
     return response.data;
   },
 
+  // Gallery Categories CRUD
+  getGalleryCategories: async () => {
+    const response = await adminAxios.get('/admin/gallery-categories');
+    return response.data;
+  },
+
+  createGalleryCategory: async (data) => {
+    const response = await adminAxios.post('/admin/gallery-categories', data);
+    return response.data;
+  },
+
+  updateGalleryCategory: async (id, data) => {
+    const response = await adminAxios.put(`/admin/gallery-categories/${id}`, data);
+    return response.data;
+  },
+
+  deleteGalleryCategory: async (id) => {
+    const response = await adminAxios.delete(`/admin/gallery-categories/${id}`);
+    return response.data;
+  },
+
   // Locations CRUD
   getLocations: async () => {
     const response = await adminAxios.get('/admin/locations');
