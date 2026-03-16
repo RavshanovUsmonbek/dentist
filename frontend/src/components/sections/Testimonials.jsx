@@ -37,9 +37,9 @@ const Testimonials = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="flex flex-wrap justify-center gap-8">
           {displayTestimonials.map((testimonial) => (
-            <Card key={testimonial.id} hover={true}>
+            <Card key={testimonial.id} hover={true} className="w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.34rem)]">
               <div className="flex flex-col h-full">
                 <div className="flex items-center mb-4">
                   <div className="flex-shrink-0">

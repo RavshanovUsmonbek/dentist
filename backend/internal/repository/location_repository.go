@@ -66,3 +66,54 @@ func (r *LocationRepository) GetMaxOrder() (int, error) {
 	err := r.db.Model(&models.Location{}).Select("COALESCE(MAX(display_order), 0)").Scan(&maxOrder).Error
 	return maxOrder, err
 }
+
+// ExtractLocationTranslation returns location fields in specified language
+func ExtractLocationTranslation(location models.Location, lang string) map[string]interface{} {
+	result := map[string]interface{}{
+		"id":             location.ID,
+		"business_hours": location.BusinessHours,
+		"latitude":       location.Latitude,
+		"longitude":      location.Longitude,
+		"display_order":  location.DisplayOrder,
+		"active":         location.Active,
+		"created_at":     location.CreatedAt,
+		"updated_at":     location.UpdatedAt,
+	}
+
+	// Extract name
+	if nameMap, ok := location.Translations["name"].(map[string]interface{}); ok {
+		if val, exists := nameMap[lang]; exists && val != nil {
+			result["name"] = val
+		} else if val, exists := nameMap["uz"]; exists && val != nil {
+			result["name"] = val
+		}
+	}
+
+	// Extract address
+	if addressMap, ok := location.Translations["address"].(map[string]interface{}); ok {
+		if val, exists := addressMap[lang]; exists && val != nil {
+			result["address"] = val
+		} else if val, exists := addressMap["uz"]; exists && val != nil {
+			result["address"] = val
+		}
+	}
+
+	// Fallback to original columns if translation not found
+	if result["name"] == nil {
+		result["name"] = location.Name
+	}
+	if result["address"] == nil {
+		result["address"] = location.Address
+	}
+
+	return result
+}
+
+// ExtractLocationsTranslation returns multiple locations translated to specified language
+func ExtractLocationsTranslation(locations []models.Location, lang string) []map[string]interface{} {
+	result := make([]map[string]interface{}, len(locations))
+	for i, location := range locations {
+		result[i] = ExtractLocationTranslation(location, lang)
+	}
+	return result
+}

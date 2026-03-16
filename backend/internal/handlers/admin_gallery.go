@@ -6,6 +6,7 @@ import (
 	"github.com/usmonbek/dentist-backend/internal/models"
 	"github.com/usmonbek/dentist-backend/internal/repository"
 	"github.com/usmonbek/dentist-backend/internal/services"
+	"gorm.io/datatypes"
 )
 
 // AdminGalleryHandler handles admin gallery CRUD endpoints
@@ -105,6 +106,7 @@ func (h *AdminGalleryHandler) createGalleryImage(w http.ResponseWriter, r *http.
 		Tags:         req.Tags,
 		DisplayOrder: maxOrder + 1,
 		Active:       active,
+		Translations: datatypes.JSONMap(req.Translations),
 	}
 
 	if err := h.galleryRepo.Create(image); err != nil {
@@ -144,6 +146,9 @@ func (h *AdminGalleryHandler) updateGalleryImage(w http.ResponseWriter, r *http.
 	}
 	if req.Active != nil {
 		image.Active = *req.Active
+	}
+	if req.Translations != nil {
+		image.Translations = datatypes.JSONMap(req.Translations)
 	}
 
 	if err := h.galleryRepo.Update(image); err != nil {

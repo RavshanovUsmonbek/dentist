@@ -8,37 +8,17 @@ const Footer = () => {
   // Extract footer content
   const footerContent = content?.footer || {};
   const businessName = settings?.business_name || 'Smile Dental Care';
-  const footerDescription = footerContent.footer_description || 'Providing exceptional dental care with compassion and expertise. Your smile is our priority.';
-  const phone = settings?.business_phone || '(555) 123-4567';
-  const email = settings?.business_email || 'info@smiledentalcare.com';
-  const address = settings?.business_address || '123 Dental Street, Suite 100';
-  const city = settings?.business_city || 'Your City, ST 12345';
-  const facebookUrl = settings?.social_facebook || '#';
-  const twitterUrl = settings?.social_twitter || '#';
-  const instagramUrl = settings?.social_instagram || '#';
-  const hoursWeekday = settings?.hours_weekday || 'Monday - Friday: 8:00 AM - 6:00 PM';
-  const hoursSaturday = settings?.hours_saturday || 'Saturday: 9:00 AM - 3:00 PM';
-  const hoursSunday = settings?.hours_sunday || 'Sunday: Closed';
-
-  // Dynamic labels
-  const hoursTitle = footerContent.hours_title || 'Hours';
+  const footerDescription = footerContent.description || 'Providing exceptional dental care with compassion and expertise. Your smile is our priority.';
+  const phone = settings?.business_phone;
+  const phoneSecondary = settings?.business_phone_secondary;
+  const email = settings?.business_email;
+  const facebookUrl = settings?.social_facebook;
+  const twitterUrl = settings?.social_twitter;
+  const instagramUrl = settings?.social_instagram;
 
   // Check if multi-location is enabled
   const multiLocationEnabled = settings?.features_multi_location === 'true' || settings?.features_multi_location === true;
   const hasLocations = locations && locations.length > 0;
-
-  // Parse hours to separate label and time
-  const parseHours = (hoursString) => {
-    const parts = hoursString.split(':');
-    if (parts.length === 2) {
-      return { label: parts[0].trim(), time: parts[1].trim() };
-    }
-    return { label: hoursString, time: '' };
-  };
-
-  const weekday = parseHours(hoursWeekday);
-  const saturday = parseHours(hoursSaturday);
-  const sunday = parseHours(hoursSunday);
 
   return (
     <footer className="bg-primary-900 text-white">
@@ -75,12 +55,18 @@ const Footer = () => {
 
               {/* Global Contact (from settings) */}
               <div className="mb-6 pb-4 border-b border-primary-700">
-                {phone && phone.split(',').map((num, idx) => (
-                  <div key={idx} className="flex items-center space-x-2 mb-2">
+                {phone && (
+                  <div className="flex items-center space-x-2 mb-2">
                     <FaPhone className="text-accent-400" />
-                    <span className="text-sm">{num.trim()}</span>
+                    <span className="text-sm">{phone}</span>
                   </div>
-                ))}
+                )}
+                {phoneSecondary && (
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FaPhone className="text-accent-400" />
+                    <span className="text-sm">{phoneSecondary}</span>
+                  </div>
+                )}
                 {email && (
                   <div className="flex items-center space-x-2">
                     <FaEnvelope className="text-accent-400" />
@@ -126,44 +112,35 @@ const Footer = () => {
               </div>
             </div>
           ) : (
-            // Single location display (default)
-            <>
-              <div>
-                <h3 className="text-xl font-bold mb-4">Contact Info</h3>
-                <ul className="space-y-3">
+            // Single location display (default) - only show if data exists
+            <div>
+              <h3 className="text-xl font-bold mb-4">Contact Info</h3>
+              <ul className="space-y-3">
+                {phone && (
                   <li className="flex items-center space-x-3">
                     <FaPhone className="text-accent-400" />
                     <span>{phone}</span>
                   </li>
+                )}
+                {phoneSecondary && (
+                  <li className="flex items-center space-x-3">
+                    <FaPhone className="text-accent-400" />
+                    <span>{phoneSecondary}</span>
+                  </li>
+                )}
+                {email && (
                   <li className="flex items-center space-x-3">
                     <FaEnvelope className="text-accent-400" />
                     <span>{email}</span>
                   </li>
-                  <li className="flex items-center space-x-3">
-                    <FaMapMarkerAlt className="text-accent-400" />
-                    <span>{address}<br />{city}</span>
+                )}
+                {!phone && !phoneSecondary && !email && (
+                  <li className="text-gray-400 text-sm">
+                    Contact information not configured. Please use the admin panel to add contact details.
                   </li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-bold mb-4">{hoursTitle}</h3>
-                <ul className="space-y-2 text-gray-300">
-                  <li className="flex justify-between">
-                    <span>{weekday.label}:</span>
-                    <span>{weekday.time}</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>{saturday.label}:</span>
-                    <span>{saturday.time}</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>{sunday.label}:</span>
-                    <span>{sunday.time}</span>
-                  </li>
-                </ul>
-              </div>
-            </>
+                )}
+              </ul>
+            </div>
           )}
         </div>
 

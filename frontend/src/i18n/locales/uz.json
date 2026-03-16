@@ -1,0 +1,133 @@
+{
+  "nav": {
+    "home": "Bosh sahifa",
+    "about": "Biz haqimizda",
+    "services": "Xizmatlar",
+    "gallery": "Galereya",
+    "testimonials": "Fikrlar",
+    "locations": "Manzillar",
+    "contact": "Bog'lanish"
+  },
+  "common": {
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "edit": "Tahrirlash",
+    "delete": "O'chirish",
+    "create": "Yaratish",
+    "submit": "Yuborish",
+    "active": "Faol",
+    "inactive": "Faol emas",
+    "actions": "Amallar"
+  },
+  "contact": {
+    "title": "Bog'lanish",
+    "name": "Ismingiz",
+    "email": "Email",
+    "phone": "Telefon",
+    "message": "Xabar",
+    "send": "Yuborish",
+    "success": "Xabaringiz yuborildi! Tez orada javob beramiz.",
+    "error": "Xabarni yuborishda xatolik. Qaytadan urinib ko'ring."
+  },
+  "footer": {
+    "hours": "Ish vaqti",
+    "followUs": "Bizni kuzatib boring"
+  },
+  "admin": {
+    "login": {
+      "title": "Admin panelga kirish",
+      "username": "Login",
+      "password": "Parol",
+      "signin": "Kirish",
+      "signingin": "Kirilmoqda..."
+    },
+    "sidebar": {
+      "dashboard": "Boshqaruv paneli",
+      "services": "Xizmatlar",
+      "testimonials": "Fikrlar",
+      "gallery": "Galereya",
+      "locations": "Manzillar",
+      "contacts": "Murojatlar",
+      "settings": "Sozlamalar",
+      "content": "Kontent",
+      "logout": "Chiqish"
+    },
+    "services": {
+      "title": "Xizmatlar",
+      "addService": "Xizmat qo'shish",
+      "editService": "Xizmatni tahrirlash",
+      "serviceTitle": "Xizmat nomi",
+      "description": "Tavsif",
+      "icon": "Ikonka",
+      "displayOrder": "Tartib raqami",
+      "noServices": "Xizmatlar mavjud emas. Birinchi xizmatni qo'shing!"
+    },
+    "testimonials": {
+      "title": "Fikrlar",
+      "addTestimonial": "Fikr qo'shish",
+      "editTestimonial": "Fikrni tahrirlash",
+      "name": "Ism",
+      "initials": "Bosh harflar",
+      "rating": "Reyting",
+      "text": "Matn",
+      "noTestimonials": "Fikrlar mavjud emas. Birinchi fikrni qo'shing!"
+    },
+    "locations": {
+      "title": "Manzillar",
+      "addLocation": "Manzil qo'shish",
+      "editLocation": "Manzilni tahrirlash",
+      "locationName": "Manzil nomi",
+      "address": "Manzil",
+      "businessHours": "Ish vaqti",
+      "noLocations": "Manzillar mavjud emas. Birinchi manzilni qo'shing!"
+    },
+    "gallery": {
+      "title": "Galereya",
+      "uploadImage": "Rasm yuklash",
+      "editImage": "Rasmni tahrirlash",
+      "altText": "Tavsif matni",
+      "category": "Kategoriya",
+      "tags": "Teglar",
+      "noImages": "Rasmlar mavjud emas. Birinchi rasmni yuklang!"
+    },
+    "contacts": {
+      "title": "Murojatlar",
+      "unread": "O'qilmagan",
+      "read": "O'qilgan",
+      "markAsRead": "O'qilgan deb belgilash",
+      "markAsUnread": "O'qilmagan deb belgilash",
+      "noContacts": "Murojatlar mavjud emas"
+    },
+    "settings": {
+      "title": "Sozlamalar",
+      "businessInfo": "Biznes ma'lumotlari",
+      "businessName": "Biznes nomi",
+      "phone": "Telefon",
+      "email": "Email",
+      "address": "Manzil",
+      "city": "Shahar",
+      "socialLinks": "Ijtimoiy tarmoqlar",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "twitter": "Twitter",
+      "saveSettings": "Sozlamalarni saqlash"
+    },
+    "content": {
+      "title": "Sayt kontenti",
+      "hero": "Bosh sahifa",
+      "about": "Biz haqimizda",
+      "contact": "Bog'lanish",
+      "footer": "Pastki qism",
+      "saveContent": "Kontentni saqlash"
+    },
+    "multiLang": {
+      "uzbek": "O'zbekcha",
+      "russian": "Ruscha",
+      "english": "Inglizcha",
+      "uzbekRequired": "O'zbek tilidagi tarjima majburiy. Boshqa tillar ixtiyoriy.",
+      "copyFrom": "Nusxalash..."
+    }
+  }
+}

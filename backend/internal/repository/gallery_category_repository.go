@@ -88,3 +88,52 @@ func (r *GalleryCategoryRepository) GetMaxOrder() (int, error) {
 	err := r.db.Model(&models.GalleryCategory{}).Select("COALESCE(MAX(display_order), 0)").Scan(&maxOrder).Error
 	return maxOrder, err
 }
+
+// ExtractGalleryCategoryTranslation returns gallery category fields in specified language
+func ExtractGalleryCategoryTranslation(category models.GalleryCategory, lang string) map[string]interface{} {
+	result := map[string]interface{}{
+		"id":            category.ID,
+		"slug":          category.Slug,
+		"display_order": category.DisplayOrder,
+		"enabled":       category.Enabled,
+		"created_at":    category.CreatedAt,
+		"updated_at":    category.UpdatedAt,
+	}
+
+	// Extract label
+	if labelMap, ok := category.Translations["label"].(map[string]interface{}); ok {
+		if val, exists := labelMap[lang]; exists && val != nil {
+			result["label"] = val
+		} else if val, exists := labelMap["uz"]; exists && val != nil {
+			result["label"] = val
+		}
+	}
+
+	// Extract description
+	if descMap, ok := category.Translations["description"].(map[string]interface{}); ok {
+		if val, exists := descMap[lang]; exists && val != nil {
+			result["description"] = val
+		} else if val, exists := descMap["uz"]; exists && val != nil {
+			result["description"] = val
+		}
+	}
+
+	// Fallback to original columns if translation not found
+	if result["label"] == nil {
+		result["label"] = category.Label
+	}
+	if result["description"] == nil {
+		result["description"] = category.Description
+	}
+
+	return result
+}
+
+// ExtractGalleryCategoriesTranslation returns multiple gallery categories translated to specified language
+func ExtractGalleryCategoriesTranslation(categories []models.GalleryCategory, lang string) []map[string]interface{} {
+	result := make([]map[string]interface{}, len(categories))
+	for i, category := range categories {
+		result[i] = ExtractGalleryCategoryTranslation(category, lang)
+	}
+	return result
+}

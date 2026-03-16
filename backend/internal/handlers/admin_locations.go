@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/usmonbek/dentist-backend/internal/models"
 	"github.com/usmonbek/dentist-backend/internal/repository"
 	"github.com/usmonbek/dentist-backend/internal/services"
+	"gorm.io/datatypes"
 )
 
 // AdminLocationsHandler handles admin location CRUD endpoints
@@ -93,22 +93,15 @@ func (h *AdminLocationsHandler) createLocation(w http.ResponseWriter, r *http.Re
 		active = *req.Active
 	}
 
-	// Convert DaysOfWeek array to JSON string
-	daysJSON, err := json.Marshal(req.DaysOfWeek)
-	if err != nil {
-		sendBadRequest(w, "Invalid days_of_week format")
-		return
-	}
-
 	location := &models.Location{
 		Name:          req.Name,
 		Address:       req.Address,
-		DaysOfWeek:    string(daysJSON),
-		HoursWeekday:  req.HoursWeekday,
-		HoursSaturday: req.HoursSaturday,
-		HoursSunday:   req.HoursSunday,
+		BusinessHours: req.BusinessHours,
+		Latitude:      req.Latitude,
+		Longitude:     req.Longitude,
 		DisplayOrder:  maxOrder + 1,
 		Active:        active,
+		Translations:  datatypes.JSONMap(req.Translations),
 	}
 
 	if err := h.locationRepo.Create(location); err != nil {
@@ -137,25 +130,20 @@ func (h *AdminLocationsHandler) updateLocation(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	// Convert DaysOfWeek array to JSON string
-	daysJSON, err := json.Marshal(req.DaysOfWeek)
-	if err != nil {
-		sendBadRequest(w, "Invalid days_of_week format")
-		return
-	}
-
 	location.Name = req.Name
 	location.Address = req.Address
-	location.DaysOfWeek = string(daysJSON)
-	location.HoursWeekday = req.HoursWeekday
-	location.HoursSaturday = req.HoursSaturday
-	location.HoursSunday = req.HoursSunday
+	location.BusinessHours = req.BusinessHours
+	location.Latitude = req.Latitude
+	location.Longitude = req.Longitude
 
 	if req.DisplayOrder > 0 {
 		location.DisplayOrder = req.DisplayOrder
 	}
 	if req.Active != nil {
 		location.Active = *req.Active
+	}
+	if req.Translations != nil {
+		location.Translations = datatypes.JSONMap(req.Translations)
 	}
 
 	if err := h.locationRepo.Update(location); err != nil {

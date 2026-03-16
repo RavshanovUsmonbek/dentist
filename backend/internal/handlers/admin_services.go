@@ -6,6 +6,7 @@ import (
 	"github.com/usmonbek/dentist-backend/internal/models"
 	"github.com/usmonbek/dentist-backend/internal/repository"
 	"github.com/usmonbek/dentist-backend/internal/services"
+	"gorm.io/datatypes"
 )
 
 // AdminServicesHandler handles admin services CRUD endpoints
@@ -98,6 +99,7 @@ func (h *AdminServicesHandler) createService(w http.ResponseWriter, r *http.Requ
 		Icon:         req.Icon,
 		DisplayOrder: maxOrder + 1,
 		Active:       active,
+		Translations: datatypes.JSONMap(req.Translations),
 	}
 
 	if err := h.serviceRepo.Create(service); err != nil {
@@ -134,6 +136,9 @@ func (h *AdminServicesHandler) updateService(w http.ResponseWriter, r *http.Requ
 	}
 	if req.Active != nil {
 		service.Active = *req.Active
+	}
+	if req.Translations != nil {
+		service.Translations = datatypes.JSONMap(req.Translations)
 	}
 
 	if err := h.serviceRepo.Update(service); err != nil {

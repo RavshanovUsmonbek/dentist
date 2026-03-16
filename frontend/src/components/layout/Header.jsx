@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { FaBars, FaTimes, FaTooth } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { useSite } from '../../context/SiteContext';
+import LanguageSwitcher from '../LanguageSwitcher';
 
 const Header = () => {
+  const { t } = useTranslation();
   const { settings } = useSite();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -19,12 +22,13 @@ const Header = () => {
   const businessName = settings?.business_name || 'Smile Dental Care';
 
   const navItems = [
-    { name: 'Home', href: '#hero' },
-    { name: 'About', href: '#about' },
-    { name: 'Services', href: '#services' },
-    { name: 'Gallery', href: '#gallery' },
-    { name: 'Testimonials', href: '#testimonials' },
-    { name: 'Contact', href: '#contact' },
+    { name: t('nav.home'), href: '#hero' },
+    { name: t('nav.about'), href: '#about' },
+    { name: t('nav.services'), href: '#services' },
+    { name: t('nav.gallery'), href: '#gallery' },
+    { name: t('nav.testimonials'), href: '#testimonials' },
+    { name: t('nav.locations'), href: '#locations' },
+    { name: t('nav.contact'), href: '#contact' },
   ];
 
   const scrollToSection = (e, href) => {
@@ -51,20 +55,23 @@ const Header = () => {
             </span>
           </div>
 
-          <nav className="hidden md:flex space-x-8">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                onClick={(e) => scrollToSection(e, item.href)}
-                className={`font-medium hover:text-accent-500 transition-colors duration-200 ${
-                  scrolled ? 'text-gray-700' : 'text-white'
-                }`}
-              >
-                {item.name}
-              </a>
-            ))}
-          </nav>
+          <div className="hidden md:flex items-center space-x-6">
+            <nav className="flex space-x-8">
+              {navItems.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => scrollToSection(e, item.href)}
+                  className={`font-medium hover:text-accent-500 transition-colors duration-200 ${
+                    scrolled ? 'text-gray-700' : 'text-white'
+                  }`}
+                >
+                  {item.name}
+                </a>
+              ))}
+            </nav>
+            <LanguageSwitcher />
+          </div>
 
           <button
             className="md:hidden"
@@ -92,6 +99,9 @@ const Header = () => {
                   {item.name}
                 </a>
               ))}
+              <div className="px-4 py-3">
+                <LanguageSwitcher />
+              </div>
             </nav>
           </div>
         )}

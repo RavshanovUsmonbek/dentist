@@ -3,6 +3,8 @@ import { FaPlus, FaEdit, FaTrash, FaStar } from 'react-icons/fa';
 import { adminApi } from '../services/adminApi';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
+import MultiLangInput from '../components/MultiLangInput';
+import { prepareTranslationsForAPI, extractTranslationsFromAPI } from '../utils/translationHelpers';
 
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
@@ -11,10 +13,10 @@ const Testimonials = () => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
+    name: { uz: '', ru: '', en: '' },
     initials: '',
     rating: 5,
-    text: '',
+    text: { uz: '', ru: '', en: '' },
     active: true
   });
 

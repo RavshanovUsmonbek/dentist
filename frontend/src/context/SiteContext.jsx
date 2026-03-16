@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useLanguage } from './LanguageContext';
 
 const SiteContext = createContext(null);
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
 export const SiteProvider = ({ children }) => {
+  const { language } = useLanguage();
   const [settings, setSettings] = useState({});
   const [content, setContent] = useState({});
   const [services, setServices] = useState([]);
@@ -21,7 +23,7 @@ export const SiteProvider = ({ children }) => {
       try {
         setLoading(true);
 
-        // Fetch all public data in parallel
+        // Fetch all public data in parallel with language parameter
         const [
           settingsRes,
           heroRes,
@@ -35,17 +37,17 @@ export const SiteProvider = ({ children }) => {
           galleryCategoriesRes,
           locationsRes
         ] = await Promise.all([
-          axios.get(`${API_URL}/settings`).catch(() => ({ data: { success: false, data: {} } })),
-          axios.get(`${API_URL}/content/hero`).catch(() => ({ data: { success: false, data: {} } })),
-          axios.get(`${API_URL}/content/about`).catch(() => ({ data: { success: false, data: {} } })),
-          axios.get(`${API_URL}/content/contact`).catch(() => ({ data: { success: false, data: {} } })),
-          axios.get(`${API_URL}/content/footer`).catch(() => ({ data: { success: false, data: {} } })),
-          axios.get(`${API_URL}/content/gallery`).catch(() => ({ data: { success: false, data: {} } })),
-          axios.get(`${API_URL}/services`).catch(() => ({ data: { success: false, data: [] } })),
-          axios.get(`${API_URL}/testimonials`).catch(() => ({ data: { success: false, data: [] } })),
-          axios.get(`${API_URL}/gallery`).catch(() => ({ data: { success: false, data: [] } })),
-          axios.get(`${API_URL}/gallery-categories`).catch(() => ({ data: { success: false, data: [] } })),
-          axios.get(`${API_URL}/locations`).catch(() => ({ data: { success: false, data: [] } }))
+          axios.get(`${API_URL}/settings?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/hero?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/about?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/contact?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/footer?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/gallery?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/services?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
+          axios.get(`${API_URL}/testimonials?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
+          axios.get(`${API_URL}/gallery?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
+          axios.get(`${API_URL}/gallery-categories?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
+          axios.get(`${API_URL}/locations?lang=${language}`).catch(() => ({ data: { success: false, data: [] } }))
         ]);
 
         // Combine settings
@@ -80,22 +82,14 @@ export const SiteProvider = ({ children }) => {
 
     // Initial fetch
     fetchSiteData();
-
-    // Set up automatic refresh every 30 seconds
-    const intervalId = setInterval(() => {
-      fetchSiteData();
-    }, 30000);
-
-    // Cleanup interval on unmount
-    return () => clearInterval(intervalId);
-  }, []);
+  }, [language]); // Refetch when language changes
 
   // Function to manually refresh site data
   const refreshSiteData = async () => {
     try {
       setLoading(true);
 
-      // Fetch all public data in parallel
+      // Fetch all public data in parallel with language parameter
       const [
         settingsRes,
         heroRes,
@@ -109,17 +103,17 @@ export const SiteProvider = ({ children }) => {
         galleryCategoriesRes,
         locationsRes
       ] = await Promise.all([
-        axios.get(`${API_URL}/settings`).catch(() => ({ data: { success: false, data: {} } })),
-        axios.get(`${API_URL}/content/hero`).catch(() => ({ data: { success: false, data: {} } })),
-        axios.get(`${API_URL}/content/about`).catch(() => ({ data: { success: false, data: {} } })),
-        axios.get(`${API_URL}/content/contact`).catch(() => ({ data: { success: false, data: {} } })),
-        axios.get(`${API_URL}/content/footer`).catch(() => ({ data: { success: false, data: {} } })),
-        axios.get(`${API_URL}/content/gallery`).catch(() => ({ data: { success: false, data: {} } })),
-        axios.get(`${API_URL}/services`).catch(() => ({ data: { success: false, data: [] } })),
-        axios.get(`${API_URL}/testimonials`).catch(() => ({ data: { success: false, data: [] } })),
-        axios.get(`${API_URL}/gallery`).catch(() => ({ data: { success: false, data: [] } })),
-        axios.get(`${API_URL}/gallery-categories`).catch(() => ({ data: { success: false, data: [] } })),
-        axios.get(`${API_URL}/locations`).catch(() => ({ data: { success: false, data: [] } }))
+        axios.get(`${API_URL}/settings?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/hero?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/about?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/contact?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/footer?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/gallery?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/services?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
+        axios.get(`${API_URL}/testimonials?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
+        axios.get(`${API_URL}/gallery?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
+        axios.get(`${API_URL}/gallery-categories?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
+        axios.get(`${API_URL}/locations?lang=${language}`).catch(() => ({ data: { success: false, data: [] } }))
       ]);
 
       // Combine settings

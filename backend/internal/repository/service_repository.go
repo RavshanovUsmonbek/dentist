@@ -66,3 +66,52 @@ func (r *ServiceRepository) GetMaxOrder() (int, error) {
 	err := r.db.Model(&models.Service{}).Select("COALESCE(MAX(display_order), 0)").Scan(&maxOrder).Error
 	return maxOrder, err
 }
+
+// ExtractServiceTranslation returns service fields in specified language
+func ExtractServiceTranslation(service models.Service, lang string) map[string]interface{} {
+	result := map[string]interface{}{
+		"id":            service.ID,
+		"icon":          service.Icon,
+		"display_order": service.DisplayOrder,
+		"active":        service.Active,
+		"created_at":    service.CreatedAt,
+		"updated_at":    service.UpdatedAt,
+	}
+
+	// Extract title
+	if titleMap, ok := service.Translations["title"].(map[string]interface{}); ok {
+		if val, exists := titleMap[lang]; exists && val != nil {
+			result["title"] = val
+		} else if val, exists := titleMap["uz"]; exists && val != nil {
+			result["title"] = val
+		}
+	}
+
+	// Extract description
+	if descMap, ok := service.Translations["description"].(map[string]interface{}); ok {
+		if val, exists := descMap[lang]; exists && val != nil {
+			result["description"] = val
+		} else if val, exists := descMap["uz"]; exists && val != nil {
+			result["description"] = val
+		}
+	}
+
+	// Fallback to original columns if translation not found
+	if result["title"] == nil {
+		result["title"] = service.Title
+	}
+	if result["description"] == nil {
+		result["description"] = service.Description
+	}
+
+	return result
+}
+
+// ExtractServicesTranslation returns multiple services translated to specified language
+func ExtractServicesTranslation(services []models.Service, lang string) []map[string]interface{} {
+	result := make([]map[string]interface{}, len(services))
+	for i, service := range services {
+		result[i] = ExtractServiceTranslation(service, lang)
+	}
+	return result
+}

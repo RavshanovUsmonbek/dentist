@@ -32,7 +32,7 @@ const Contacts = () => {
     if (!contact.read) {
       try {
         await adminApi.updateContact(contact.id, { read: true });
-        setContacts(contacts.map(c => c.id === contact.id ? { ...c, read: true } : c));
+        setContacts(prevContacts => prevContacts.map(c => c.id === contact.id ? { ...c, read: true } : c));
       } catch (error) {
         console.error('Failed to mark as read:', error);
       }
@@ -41,8 +41,9 @@ const Contacts = () => {
 
   const handleToggleRead = async (contact) => {
     try {
-      await adminApi.updateContact(contact.id, { read: !contact.read });
-      setContacts(contacts.map(c => c.id === contact.id ? { ...c, read: !c.read } : c));
+      const newReadStatus = !contact.read;
+      await adminApi.updateContact(contact.id, { read: newReadStatus });
+      setContacts(prevContacts => prevContacts.map(c => c.id === contact.id ? { ...c, read: newReadStatus } : c));
     } catch (error) {
       console.error('Failed to toggle read status:', error);
     }
@@ -51,7 +52,7 @@ const Contacts = () => {
   const handleDelete = async () => {
     try {
       await adminApi.deleteContact(selectedContact.id);
-      setContacts(contacts.filter(c => c.id !== selectedContact.id));
+      setContacts(prevContacts => prevContacts.filter(c => c.id !== selectedContact.id));
     } catch (error) {
       console.error('Failed to delete contact:', error);
     }

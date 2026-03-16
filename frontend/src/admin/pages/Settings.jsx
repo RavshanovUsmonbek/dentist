@@ -10,9 +10,9 @@ const Settings = () => {
 
   const settingsConfig = [
     { key: 'business_name', label: 'Business Name', type: 'text' },
-    { key: 'business_phone', label: 'Phone Numbers', type: 'text', placeholder: '+998 93 123 4567, +998 90 987 6543', helpText: 'Comma-separated for multiple numbers' },
+    { key: 'business_phone', label: 'Primary Phone', type: 'text', placeholder: '+998 93 123 4567' },
+    { key: 'business_phone_secondary', label: 'Secondary Phone', type: 'text', placeholder: '+998 90 987 6543' },
     { key: 'business_email', label: 'Email Address', type: 'email' },
-    { key: 'emergency_phone', label: 'Emergency Phone', type: 'text' },
     { key: 'social_facebook', label: 'Facebook URL', type: 'url' },
     { key: 'social_twitter', label: 'Twitter URL', type: 'url' },
     { key: 'social_instagram', label: 'Instagram URL', type: 'url' },
@@ -104,25 +104,23 @@ const Settings = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Numbers</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Primary Phone</label>
                 <input
                   type="text"
                   value={settings.business_phone || ''}
                   onChange={(e) => handleChange('business_phone', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  placeholder="+998 93 123 4567, +998 90 987 6543"
+                  placeholder="+998 93 123 4567"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Separate multiple phone numbers with commas
-                </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Phone</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Secondary Phone</label>
                 <input
                   type="text"
-                  value={settings.emergency_phone || ''}
-                  onChange={(e) => handleChange('emergency_phone', e.target.value)}
+                  value={settings.business_phone_secondary || ''}
+                  onChange={(e) => handleChange('business_phone_secondary', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  placeholder="+998 90 987 6543"
                 />
               </div>
             </div>

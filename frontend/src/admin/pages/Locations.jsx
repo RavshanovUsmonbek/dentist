@@ -1,18 +1,11 @@
 import { useState, useEffect } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaMapMarkerAlt, FaCopy } from 'react-icons/fa';
 import { adminApi } from '../services/adminApi';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
+import LocationMapPicker from '../components/LocationMapPicker';
 
-const DAYS_OF_WEEK = [
-  { value: 'monday', label: 'Monday' },
-  { value: 'tuesday', label: 'Tuesday' },
-  { value: 'wednesday', label: 'Wednesday' },
-  { value: 'thursday', label: 'Thursday' },
-  { value: 'friday', label: 'Friday' },
-  { value: 'saturday', label: 'Saturday' },
-  { value: 'sunday', label: 'Sunday' }
-];
+const BUSINESS_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 const Locations = () => {
   const [locations, setLocations] = useState([]);
@@ -23,10 +16,9 @@ const Locations = () => {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
-    days_of_week: [],
-    hours_weekday: '',
-    hours_saturday: '',
-    hours_sunday: '',
+    business_hours: {},
+    latitude: null,
+    longitude: null,
     active: true
   });
 
@@ -47,6 +39,7 @@ const Locations = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Submitting location with formData:', formData);
     try {
       if (selectedLocation) {
         await adminApi.updateLocation(selectedLocation.id, formData);
@@ -63,18 +56,12 @@ const Locations = () => {
 
   const handleEdit = (location) => {
     setSelectedLocation(location);
-    // Parse days_of_week JSON string to array
-    const daysArray = typeof location.days_of_week === 'string'
-      ? JSON.parse(location.days_of_week)
-      : location.days_of_week;
-
     setFormData({
       name: location.name,
       address: location.address,
-      days_of_week: daysArray,
-      hours_weekday: location.hours_weekday || '',
-      hours_saturday: location.hours_saturday || '',
-      hours_sunday: location.hours_sunday || '',
+      business_hours: location.business_hours || {},
+      latitude: location.latitude || null,
+      longitude: location.longitude || null,
       active: location.active
     });
     setIsModalOpen(true);
@@ -94,32 +81,60 @@ const Locations = () => {
     setFormData({
       name: '',
       address: '',
-      days_of_week: [],
-      hours_weekday: '',
-      hours_saturday: '',
-      hours_sunday: '',
+      business_hours: {},
+      latitude: null,
+      longitude: null,
       active: true
     });
   };
 
-  const toggleDay = (day) => {
-    const isSelected = formData.days_of_week.includes(day);
-    setFormData({
-      ...formData,
-      days_of_week: isSelected
-        ? formData.days_of_week.filter(d => d !== day)
-        : [...formData.days_of_week, day]
-    });
-  };
+  const handleHoursChange = (day, field, value) => {
+    const currentHours = formData.business_hours || {};
+    const dayHours = currentHours[day] || { start: '', end: '' };
 
-  const getDaysDisplay = (daysJSON) => {
-    try {
-      const days = typeof daysJSON === 'string' ? JSON.parse(daysJSON) : daysJSON;
-      return days.map(d => d.charAt(0).toUpperCase() + d.slice(1, 3)).join(', ');
-    } catch {
-      return 'N/A';
+    // If both fields become empty, remove the day entry
+    if (!value && !dayHours[field === 'start' ? 'end' : 'start']) {
+      const { [day]: removed, ...rest } = currentHours;
+      setFormData({ ...formData, business_hours: rest });
+    } else {
+      setFormData({
+        ...formData,
+        business_hours: {
+          ...currentHours,
+          [day]: { ...dayHours, [field]: value }
+        }
+      });
     }
   };
+
+  const handleCopyHours = (toDay, fromDay) => {
+    if (!fromDay) return;
+
+    const currentHours = formData.business_hours || {};
+    const sourceHours = currentHours[fromDay];
+
+    if (sourceHours && sourceHours.start && sourceHours.end) {
+      setFormData({
+        ...formData,
+        business_hours: {
+          ...currentHours,
+          [toDay]: { start: sourceHours.start, end: sourceHours.end }
+        }
+      });
+    }
+  };
+
+  // Get days that have hours set (for the copy dropdown)
+  const getDaysWithHours = (excludeDay) => {
+    const currentHours = formData.business_hours || {};
+    return BUSINESS_DAYS.filter(day =>
+      day !== excludeDay &&
+      currentHours[day] &&
+      currentHours[day].start &&
+      currentHours[day].end
+    );
+  };
+
 
   if (loading) {
     return (
@@ -158,15 +173,21 @@ const Locations = () => {
                     <p className="font-medium text-gray-700 mb-1">Address</p>
                     <p>{location.address}</p>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-700 mb-1">Days Available</p>
-                    <p className="text-cyan-600 font-medium">{getDaysDisplay(location.days_of_week)}</p>
-                  </div>
                   <div className="md:col-span-2">
-                    <p className="font-medium text-gray-700 mb-1">Hours</p>
-                    {location.hours_weekday && <p>Weekdays: {location.hours_weekday}</p>}
-                    {location.hours_saturday && <p>Saturday: {location.hours_saturday}</p>}
-                    {location.hours_sunday && <p>Sunday: {location.hours_sunday}</p>}
+                    <p className="font-medium text-gray-700 mb-1">Business Hours</p>
+                    {location.business_hours && Object.keys(location.business_hours).length > 0 ? (
+                      <div className="space-y-1">
+                        {Object.entries(location.business_hours).map(([day, hours]) => (
+                          hours && hours.start && hours.end && (
+                            <p key={day} className="text-sm">
+                              <span className="capitalize">{day}:</span> {hours.start} - {hours.end}
+                            </p>
+                          )
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 italic text-sm">Hours not set</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -227,59 +248,85 @@ const Locations = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Days of Week *</label>
-            <div className="grid grid-cols-4 md:grid-cols-7 gap-2">
-              {DAYS_OF_WEEK.map(day => (
-                <button
-                  key={day.value}
-                  type="button"
-                  onClick={() => toggleDay(day.value)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    formData.days_of_week.includes(day.value)
-                      ? 'bg-cyan-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {day.label.slice(0, 3)}
-                </button>
-              ))}
-            </div>
-            {formData.days_of_week.length === 0 && (
-              <p className="text-xs text-red-500 mt-1">Please select at least one day</p>
-            )}
+            <label className="block text-sm font-medium text-gray-700 mb-2">Select Location on Map</label>
+            <LocationMapPicker
+              latitude={formData.latitude}
+              longitude={formData.longitude}
+              onLocationSelect={(lat, lng) => {
+                console.log('onLocationSelect called with:', lat, lng);
+                setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
+              }}
+              onAddressGenerated={(address) => {
+                console.log('onAddressGenerated called with:', address);
+                setFormData(prev => ({ ...prev, address: address }));
+              }}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Click "Use My Location" to auto-fill address, or click on the map to select the exact location manually.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Weekday Hours</label>
-              <input
-                type="text"
-                value={formData.hours_weekday}
-                onChange={(e) => setFormData({ ...formData, hours_weekday: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                placeholder="8:00 AM - 6:00 PM"
-              />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">Business Hours</label>
+            <div className="space-y-3">
+              {BUSINESS_DAYS.map(day => {
+                const daysWithHours = getDaysWithHours(day);
+                return (
+                  <div key={day} className="grid grid-cols-12 gap-2 items-center">
+                    {/* Day label */}
+                    <div className="col-span-2">
+                      <span className="text-sm font-medium capitalize text-gray-700">{day}</span>
+                    </div>
+
+                    {/* Start time */}
+                    <div className="col-span-3">
+                      <input
+                        type="time"
+                        value={formData.business_hours?.[day]?.start || ''}
+                        onChange={(e) => handleHoursChange(day, 'start', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                      />
+                    </div>
+
+                    {/* Separator */}
+                    <div className="col-span-1 text-center">
+                      <span className="text-gray-500 font-medium">-</span>
+                    </div>
+
+                    {/* End time */}
+                    <div className="col-span-3">
+                      <input
+                        type="time"
+                        value={formData.business_hours?.[day]?.end || ''}
+                        onChange={(e) => handleHoursChange(day, 'end', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                      />
+                    </div>
+
+                    {/* Copy from dropdown */}
+                    <div className="col-span-3">
+                      {daysWithHours.length > 0 && (
+                        <select
+                          onChange={(e) => handleCopyHours(day, e.target.value)}
+                          className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs text-gray-600"
+                          value=""
+                        >
+                          <option value="">Copy from...</option>
+                          {daysWithHours.map(sourceDay => (
+                            <option key={sourceDay} value={sourceDay}>
+                              {sourceDay.charAt(0).toUpperCase() + sourceDay.slice(1)}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Saturday Hours</label>
-              <input
-                type="text"
-                value={formData.hours_saturday}
-                onChange={(e) => setFormData({ ...formData, hours_saturday: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                placeholder="9:00 AM - 3:00 PM or Closed"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Sunday Hours</label>
-              <input
-                type="text"
-                value={formData.hours_sunday}
-                onChange={(e) => setFormData({ ...formData, hours_sunday: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                placeholder="Closed"
-              />
-            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Leave blank for days the location is closed. Times are in 24-hour format. Use "Copy from" to duplicate hours from other days.
+            </p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -297,7 +344,7 @@ const Locations = () => {
             <button type="button" onClick={() => { setIsModalOpen(false); resetForm(); }} className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
               Cancel
             </button>
-            <button type="submit" disabled={formData.days_of_week.length === 0} className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors disabled:opacity-50">
+            <button type="submit" className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors">
               {selectedLocation ? 'Update' : 'Create'}
             </button>
           </div>

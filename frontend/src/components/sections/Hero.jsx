@@ -15,10 +15,10 @@ const Hero = () => {
 
   // Default content with fallbacks
   const heroContent = content?.hero || {};
-  const title = heroContent.hero_title || 'Your Smile, Our Priority';
-  const subtitle = heroContent.hero_subtitle || 'Experience exceptional dental care with state-of-the-art technology and a compassionate team dedicated to your oral health.';
-  const primaryButtonText = heroContent.hero_button_primary || 'Schedule Appointment';
-  const secondaryButtonText = heroContent.hero_button_secondary || 'Our Services';
+  const title = heroContent.title || 'Your Smile, Our Priority';
+  const subtitle = heroContent.subtitle || 'Experience exceptional dental care with state-of-the-art technology and a compassionate team dedicated to your oral health.';
+  const primaryButtonText = heroContent.cta_primary_text || 'Schedule Appointment';
+  const secondaryButtonText = heroContent.cta_secondary_text || 'Our Services';
 
   if (loading) {
     return (

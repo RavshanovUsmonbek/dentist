@@ -3,6 +3,8 @@ import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { adminApi } from '../services/adminApi';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
+import MultiLangInput from '../components/MultiLangInput';
+import { prepareTranslationsForAPI, extractTranslationsFromAPI } from '../utils/translationHelpers';
 
 const Services = () => {
   const [services, setServices] = useState([]);
@@ -11,8 +13,8 @@ const Services = () => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
+    title: { uz: '', ru: '', en: '' },
+    description: { uz: '', ru: '', en: '' },
     icon: 'FaTooth',
     active: true
   });
@@ -37,10 +39,13 @@ const Services = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Prepare data for API with translations
+      const apiData = prepareTranslationsForAPI(formData, ['title', 'description']);
+
       if (selectedService) {
-        await adminApi.updateService(selectedService.id, formData);
+        await adminApi.updateService(selectedService.id, apiData);
       } else {
-        await adminApi.createService(formData);
+        await adminApi.createService(apiData);
       }
       setIsModalOpen(false);
       resetForm();
@@ -52,9 +57,13 @@ const Services = () => {
 
   const handleEdit = (service) => {
     setSelectedService(service);
+
+    // Extract translations from API response
+    const translatedData = extractTranslationsFromAPI(service, ['title', 'description']);
+
     setFormData({
-      title: service.title,
-      description: service.description,
+      title: translatedData.title,
+      description: translatedData.description,
       icon: service.icon,
       active: service.active
     });
@@ -72,7 +81,12 @@ const Services = () => {
 
   const resetForm = () => {
     setSelectedService(null);
-    setFormData({ title: '', description: '', icon: 'FaTooth', active: true });
+    setFormData({
+      title: { uz: '', ru: '', en: '' },
+      description: { uz: '', ru: '', en: '' },
+      icon: 'FaTooth',
+      active: true
+    });
   };
 
   if (loading) {
@@ -151,26 +165,19 @@ const Services = () => {
         size="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              rows={4}
-              required
-            />
-          </div>
+          <MultiLangInput
+            value={formData.title}
+            onChange={(value) => setFormData({ ...formData, title: value })}
+            label="Service Title"
+            required
+          />
+          <MultiLangInput
+            value={formData.description}
+            onChange={(value) => setFormData({ ...formData, description: value })}
+            label="Service Description"
+            type="textarea"
+            required
+          />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Icon</label>
             <select

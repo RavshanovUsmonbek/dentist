@@ -1,12 +1,26 @@
 import { useState, useEffect } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaUpload, FaImage } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaUpload, FaImage, FaTimes, FaGripVertical, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { adminApi } from '../services/adminApi';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
 
+// Helper function to generate slug from label
+const generateSlug = (label) => {
+  return label
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .trim()
+    .replace(/\s+/g, '_') // Replace spaces with underscores
+    .replace(/-+/g, '_') // Replace hyphens with underscores
+    .replace(/_+/g, '_'); // Replace multiple underscores with single
+};
+
 const Gallery = () => {
+  // Tab state
+  const [activeTab, setActiveTab] = useState('images'); // 'images' or 'categories'
+
+  // Image states
   const [images, setImages] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -19,6 +33,17 @@ const Gallery = () => {
     category: 'general',
     tags: '',
     active: true
+  });
+
+  // Category states
+  const [categories, setCategories] = useState([]);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isCategoryDeleteOpen, setIsCategoryDeleteOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categoryFormData, setCategoryFormData] = useState({
+    label: '',
+    description: '',
+    enabled: true
   });
 
   useEffect(() => {
@@ -105,6 +130,69 @@ const Gallery = () => {
     setFormData({ filename: '', alt_text: '', category: 'general', tags: '', active: true });
   };
 
+  const resetCategoryForm = () => {
+    setSelectedCategory(null);
+    setCategoryFormData({ label: '', description: '', enabled: true });
+  };
+
+  // Category management handlers
+  const handleCategorySubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const dataToSend = {
+        ...categoryFormData,
+        slug: generateSlug(categoryFormData.label)
+      };
+
+      if (selectedCategory) {
+        await adminApi.updateGalleryCategory(selectedCategory.id, dataToSend);
+      } else {
+        await adminApi.createGalleryCategory(dataToSend);
+      }
+      setIsCategoryModalOpen(false);
+      resetCategoryForm();
+      loadCategories();
+    } catch (error) {
+      console.error('Failed to save category:', error);
+      alert(error.response?.data?.error || 'Failed to save category');
+    }
+  };
+
+  const handleCategoryEdit = (category) => {
+    setSelectedCategory(category);
+    setCategoryFormData({
+      label: category.label,
+      description: category.description || '',
+      enabled: category.enabled
+    });
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleCategoryDelete = async () => {
+    try {
+      await adminApi.deleteGalleryCategory(selectedCategory.id);
+      loadCategories();
+    } catch (error) {
+      console.error('Failed to delete category:', error);
+      alert(error.response?.data?.error || 'Failed to delete category');
+    }
+  };
+
+  const handleToggleCategoryEnabled = async (category) => {
+    try {
+      await adminApi.updateGalleryCategory(category.id, {
+        slug: category.slug,
+        label: category.label,
+        description: category.description || '',
+        enabled: !category.enabled,
+        display_order: category.display_order
+      });
+      loadCategories();
+    } catch (error) {
+      console.error('Failed to toggle category:', error);
+    }
+  };
+
   const getImageUrl = (filename) => {
     if (filename.startsWith('http')) {
       return filename;
@@ -134,40 +222,78 @@ const Gallery = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Gallery</h1>
-        <button
-          onClick={() => { resetForm(); setIsModalOpen(true); }}
-          className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors"
-        >
-          <FaPlus /> Add Image
-        </button>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Gallery Management</h1>
+        {activeTab === 'images' ? (
+          <button
+            onClick={() => { resetForm(); setIsModalOpen(true); }}
+            className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors"
+          >
+            <FaPlus /> Add Image
+          </button>
+        ) : (
+          <button
+            onClick={() => { resetCategoryForm(); setIsCategoryModalOpen(true); }}
+            className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors"
+          >
+            <FaPlus /> Add Category
+          </button>
+        )}
       </div>
 
-      {/* Category Filter */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Category</label>
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-        >
-          <option value="all">All Categories</option>
-          {categories.map(cat => (
-            <option key={cat.slug} value={cat.slug}>{cat.label}</option>
-          ))}
-        </select>
-        <span className="ml-3 text-sm text-gray-600">
-          Showing {filteredImages.length} of {images.length} images
-        </span>
+      {/* Tab Navigation */}
+      <div className="mb-6 border-b border-gray-200">
+        <nav className="flex gap-6">
+          <button
+            onClick={() => setActiveTab('images')}
+            className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'images'
+                ? 'border-cyan-600 text-cyan-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Images ({images.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('categories')}
+            className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'categories'
+                ? 'border-cyan-600 text-cyan-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Categories ({categories.length})
+          </button>
+        </nav>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredImages.map((image) => {
-          const categoryLabel = categories.find(c => c.slug === (image.category || 'general'))?.label || image.category || 'General';
-          return (
-            <div key={image.id} className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="aspect-square bg-gray-100 relative">
+      {/* Images Tab */}
+      {activeTab === 'images' && (
+        <>
+          {/* Category Filter */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Category</label>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            >
+              <option value="all">All Categories</option>
+              {categories.map(cat => (
+                <option key={cat.slug} value={cat.slug}>{cat.label}</option>
+              ))}
+            </select>
+            <span className="ml-3 text-sm text-gray-600">
+              Showing {filteredImages.length} of {images.length} images
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredImages.map((image) => {
+              const categoryLabel = categories.find(c => c.slug === (image.category || 'general'))?.label || image.category || 'General';
+              return (
+                <div key={image.id} className="bg-white rounded-xl shadow-md overflow-hidden">
+                  <div className="aspect-square bg-gray-100 relative">
                 <img
                   src={getImageUrl(image.filename)}
                   alt={image.alt_text}
@@ -198,23 +324,116 @@ const Gallery = () => {
                     <FaTrash />
                   </button>
                 </div>
+                  </div>
+                </div>
+              );
+            })}
+            {filteredImages.length === 0 && images.length > 0 && (
+              <div className="col-span-full bg-white rounded-xl shadow-md p-8 text-center">
+                <FaImage className="text-4xl text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">No images in this category.</p>
               </div>
-            </div>
-          );
-        })}
-        {filteredImages.length === 0 && images.length > 0 && (
-          <div className="col-span-full bg-white rounded-xl shadow-md p-8 text-center">
-            <FaImage className="text-4xl text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No images in this category.</p>
+            )}
+            {images.length === 0 && (
+              <div className="col-span-full bg-white rounded-xl shadow-md p-8 text-center">
+                <FaImage className="text-4xl text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">No images yet. Add your first gallery image!</p>
+              </div>
+            )}
           </div>
-        )}
-        {images.length === 0 && (
-          <div className="col-span-full bg-white rounded-xl shadow-md p-8 text-center">
-            <FaImage className="text-4xl text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No images yet. Add your first gallery image!</p>
-          </div>
-        )}
-      </div>
+        </>
+      )}
+
+      {/* Categories Tab */}
+      {activeTab === 'categories' && (
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Order
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Category Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Description
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {categories.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                    No gallery categories yet. Add your first category!
+                  </td>
+                </tr>
+              ) : (
+                categories.map((category) => (
+                  <tr key={category.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <FaGripVertical className="text-gray-400 cursor-move" />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div>
+                        <p className="font-medium text-gray-900">{category.label}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          <code className="bg-gray-50 px-1 py-0.5 rounded">{category.slug}</code>
+                        </p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-sm text-gray-600 line-clamp-2">{category.description || 'No description'}</p>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => handleToggleCategoryEnabled(category)}
+                        className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
+                          category.enabled
+                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                        }`}
+                      >
+                        {category.enabled ? (
+                          <>
+                            <FaEye /> Enabled
+                          </>
+                        ) : (
+                          <>
+                            <FaEyeSlash /> Disabled
+                          </>
+                        )}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => handleCategoryEdit(category)}
+                          className="text-blue-600 hover:text-blue-800 p-2"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => { setSelectedCategory(category); setIsCategoryDeleteOpen(true); }}
+                          className="text-red-600 hover:text-red-800 p-2"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <Modal
         isOpen={isModalOpen}
@@ -301,11 +520,9 @@ const Gallery = () => {
                 ))
               )}
             </select>
-            {categories.length === 0 && (
-              <p className="text-xs text-amber-600 mt-1">
-                No categories found. Please add categories in Gallery Categories page.
-              </p>
-            )}
+            <p className="text-xs text-gray-500 mt-1">
+              Manage categories in the Categories tab
+            </p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
@@ -340,6 +557,81 @@ const Gallery = () => {
         onConfirm={handleDelete}
         title="Delete Image"
         message="Are you sure you want to delete this image? This action cannot be undone."
+        confirmText="Delete"
+      />
+
+      {/* Category Modal */}
+      <Modal
+        isOpen={isCategoryModalOpen}
+        onClose={() => { setIsCategoryModalOpen(false); resetCategoryForm(); }}
+        title={selectedCategory ? 'Edit Category' : 'Add Category'}
+      >
+        <form onSubmit={handleCategorySubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Category Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={categoryFormData.label}
+              onChange={(e) => setCategoryFormData({ ...categoryFormData, label: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              placeholder="e.g., Before & After, Certificates"
+              required
+            />
+            {categoryFormData.label && (
+              <p className="text-xs text-gray-500 mt-1">
+                Slug: <code className="bg-gray-100 px-1 py-0.5 rounded">{generateSlug(categoryFormData.label)}</code>
+              </p>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <textarea
+              value={categoryFormData.description}
+              onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              rows="3"
+              placeholder="Brief description of this category"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="cat-enabled"
+              checked={categoryFormData.enabled}
+              onChange={(e) => setCategoryFormData({ ...categoryFormData, enabled: e.target.checked })}
+              className="w-4 h-4 text-cyan-600 rounded focus:ring-cyan-500"
+            />
+            <label htmlFor="cat-enabled" className="text-sm text-gray-700">
+              Enabled (show on public site)
+            </label>
+          </div>
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={() => { setIsCategoryModalOpen(false); resetCategoryForm(); }}
+              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors"
+            >
+              {selectedCategory ? 'Update' : 'Create'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Category Delete Confirmation */}
+      <ConfirmDialog
+        isOpen={isCategoryDeleteOpen}
+        onClose={() => setIsCategoryDeleteOpen(false)}
+        onConfirm={handleCategoryDelete}
+        title="Delete Category"
+        message={`Are you sure you want to delete "${selectedCategory?.label}"? This action cannot be undone. Gallery images using this category will remain but may need reassignment.`}
         confirmText="Delete"
       />
     </div>

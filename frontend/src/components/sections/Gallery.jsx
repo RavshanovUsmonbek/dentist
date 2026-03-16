@@ -81,11 +81,10 @@ const Gallery = () => {
     ? displayGallery.filter(img => (img.category || 'general') === activeCategory)
     : displayGallery;
 
-  // Get dynamic content for current category
-  const galleryContent = content?.gallery || {};
+  // Get current category object and use its label and description
   const currentCategoryObj = categoriesToShow.find(cat => cat.slug === activeCategory);
-  const currentTitle = galleryContent[`title_${activeCategory}`] || currentCategoryObj?.label || 'Gallery';
-  const currentSubtitle = galleryContent[`subtitle_${activeCategory}`] || currentCategoryObj?.description || 'Browse our professional gallery.';
+  const currentTitle = currentCategoryObj?.label || 'Gallery';
+  const currentSubtitle = currentCategoryObj?.description || 'Browse our professional gallery.';
 
   if (loading) {
     return (
@@ -129,18 +128,18 @@ const Gallery = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex flex-wrap justify-center gap-6">
           {filteredImages.length > 0 ? (
             filteredImages.map((image) => (
               <div
                 key={image.id}
-                className="relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+                className="relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
               >
                 <GalleryImage image={image} />
               </div>
             ))
           ) : (
-            <div className="col-span-full text-center py-12">
+            <div className="w-full text-center py-12">
               <FaImage className="text-6xl text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500">No images in this category yet.</p>
             </div>

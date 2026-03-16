@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/usmonbek/dentist-backend/internal/models"
 
 	"gorm.io/gorm"
@@ -34,6 +36,31 @@ func (r *SettingsRepository) GetSettingsMap() (models.SettingsMap, error) {
 
 	result := make(models.SettingsMap)
 	for _, s := range settings {
+		result[s.Key] = s.Value
+	}
+	return result, nil
+}
+
+// GetSettingsMapByLang returns settings translated to specified language
+func (r *SettingsRepository) GetSettingsMapByLang(lang string) (models.SettingsMap, error) {
+	settings, err := r.GetAllSettings()
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(models.SettingsMap)
+	for _, s := range settings {
+		// Try to extract translation for requested language
+		if val, exists := s.Translations[lang]; exists && val != nil && fmt.Sprintf("%v", val) != "" {
+			result[s.Key] = fmt.Sprintf("%v", val)
+			continue
+		}
+		// Fallback to Uzbek
+		if val, exists := s.Translations["uz"]; exists && val != nil && fmt.Sprintf("%v", val) != "" {
+			result[s.Key] = fmt.Sprintf("%v", val)
+			continue
+		}
+		// Fallback to value column
 		result[s.Key] = s.Value
 	}
 	return result, nil
@@ -91,6 +118,31 @@ func (r *SettingsRepository) GetContentMap(section string) (models.ContentMap, e
 
 	result := make(models.ContentMap)
 	for _, c := range content {
+		result[c.Key] = c.Value
+	}
+	return result, nil
+}
+
+// GetContentMapByLang returns content for a section translated to specified language
+func (r *SettingsRepository) GetContentMapByLang(section, lang string) (models.ContentMap, error) {
+	content, err := r.GetContentBySection(section)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(models.ContentMap)
+	for _, c := range content {
+		// Try to extract translation for requested language
+		if val, exists := c.Translations[lang]; exists && val != nil && fmt.Sprintf("%v", val) != "" {
+			result[c.Key] = fmt.Sprintf("%v", val)
+			continue
+		}
+		// Fallback to Uzbek
+		if val, exists := c.Translations["uz"]; exists && val != nil && fmt.Sprintf("%v", val) != "" {
+			result[c.Key] = fmt.Sprintf("%v", val)
+			continue
+		}
+		// Fallback to value column
 		result[c.Key] = c.Value
 	}
 	return result, nil

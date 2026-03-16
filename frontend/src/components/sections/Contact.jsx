@@ -53,20 +53,9 @@ const Contact = () => {
 
   // Extract contact information from settings and content
   const contactContent = content?.contact || {};
-  const phone = settings?.business_phone || '(555) 123-4567';
-  const email = settings?.business_email || 'info@smiledentalcare.com';
-  const address = settings?.business_address || '123 Dental Street, Suite 100';
-  const city = settings?.business_city || 'Your City, ST 12345';
-  const hoursWeekday = settings?.hours_weekday || 'Monday - Friday: 8:00 AM - 6:00 PM';
-  const hoursSaturday = settings?.hours_saturday || 'Saturday: 9:00 AM - 3:00 PM';
-  const hoursSunday = settings?.hours_sunday || 'Sunday: Closed';
-  const emergencyPhone = contactContent.contact_emergency_phone || '(555) 999-8888';
-  const emergencyMessage = contactContent.contact_emergency_message || 'If you have a dental emergency outside of our regular hours, please call our emergency line at';
-
-  // Dynamic labels
-  const hoursTitle = contactContent.hours_title || 'Business Hours';
-  const emergencyTitle = contactContent.emergency_title || 'Emergency Contact';
-  const emergencyText = contactContent.emergency_text || 'For urgent matters, please call us directly.';
+  const phone = settings?.business_phone;
+  const phoneSecondary = settings?.business_phone_secondary;
+  const email = settings?.business_email;
 
   // Check if multi-location is enabled
   const multiLocationEnabled = settings?.features_multi_location === 'true' || settings?.features_multi_location === true;
@@ -173,13 +162,19 @@ const Contact = () => {
                 <div className="border-b border-gray-200 pb-6">
                   <h4 className="text-lg font-semibold text-gray-800 mb-4">Contact Information</h4>
                   <div className="space-y-3">
-                    {/* Phone numbers (comma-separated) */}
-                    {phone && phone.split(',').map((num, idx) => (
-                      <div key={idx} className="flex items-start space-x-3">
+                    {/* Phone numbers */}
+                    {phone && (
+                      <div className="flex items-start space-x-3">
                         <FaPhone className="text-primary-600 mt-1" />
-                        <p className="text-gray-600">{num.trim()}</p>
+                        <p className="text-gray-600">{phone}</p>
                       </div>
-                    ))}
+                    )}
+                    {phoneSecondary && (
+                      <div className="flex items-start space-x-3">
+                        <FaPhone className="text-primary-600 mt-1" />
+                        <p className="text-gray-600">{phoneSecondary}</p>
+                      </div>
+                    )}
 
                     {/* Email */}
                     {email && (
@@ -228,69 +223,46 @@ const Contact = () => {
                 })}
               </div>
             ) : (
-              // Single location display (default)
+              // Single location display (default) - only show available data
               <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                      <FaPhone className="text-primary-600 text-xl" />
+                {(phone || phoneSecondary) && (
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 mt-1">
+                      <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
+                        <FaPhone className="text-primary-600 text-xl" />
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-1">Phone</h4>
+                      {phone && <p className="text-gray-600">{phone}</p>}
+                      {phoneSecondary && <p className="text-gray-600">{phoneSecondary}</p>}
+                      <p className="text-sm text-gray-500">Call us during business hours</p>
                     </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-1">Phone</h4>
-                    <p className="text-gray-600">{phone}</p>
-                    <p className="text-sm text-gray-500">Call us during business hours</p>
-                  </div>
-                </div>
+                )}
 
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                      <FaEnvelope className="text-primary-600 text-xl" />
+                {email && (
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 mt-1">
+                      <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
+                        <FaEnvelope className="text-primary-600 text-xl" />
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-1">Email</h4>
+                      <p className="text-gray-600">{email}</p>
+                      <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
                     </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-1">Email</h4>
-                    <p className="text-gray-600">{email}</p>
-                    <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
-                  </div>
-                </div>
+                )}
 
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                      <FaMapMarkerAlt className="text-primary-600 text-xl" />
-                    </div>
+                {!phone && !phoneSecondary && !email && (
+                  <div className="p-6 bg-gray-50 rounded-lg text-center">
+                    <p className="text-gray-600">
+                      Contact information not configured. Please use the admin panel to add contact details or locations.
+                    </p>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-1">Address</h4>
-                    <p className="text-gray-600">{address}</p>
-                    <p className="text-gray-600">{city}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
-                      <FaClock className="text-primary-600 text-xl" />
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-2">{hoursTitle}</h4>
-                    <div className="space-y-1 text-gray-600">
-                      <p>{hoursWeekday}</p>
-                      <p>{hoursSaturday}</p>
-                      <p>{hoursSunday}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-8 p-6 bg-primary-50 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 mb-2">{emergencyTitle}</h4>
-                  <p className="text-gray-600 text-sm">
-                    {emergencyText}
-                  </p>
-                </div>
+                )}
               </div>
             )}
           </div>

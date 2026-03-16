@@ -10,6 +10,7 @@ import (
 	"github.com/usmonbek/dentist-backend/internal/models"
 	"github.com/usmonbek/dentist-backend/internal/repository"
 	"github.com/usmonbek/dentist-backend/internal/services"
+	"gorm.io/datatypes"
 )
 
 // generateSlug creates a URL-friendly slug from a label
@@ -147,6 +148,7 @@ func (h *AdminGalleryCategoriesHandler) createGalleryCategory(w http.ResponseWri
 		Description:  req.Description,
 		DisplayOrder: req.DisplayOrder,
 		Enabled:      req.Enabled,
+		Translations: datatypes.JSONMap(req.Translations),
 	}
 
 	if err := h.repo.Create(category); err != nil {
@@ -201,6 +203,9 @@ func (h *AdminGalleryCategoriesHandler) updateGalleryCategory(w http.ResponseWri
 	category.Description = req.Description
 	category.DisplayOrder = req.DisplayOrder
 	category.Enabled = req.Enabled
+	if req.Translations != nil {
+		category.Translations = datatypes.JSONMap(req.Translations)
+	}
 
 	if err := h.repo.Update(category); err != nil {
 		sendInternalError(w, "Failed to update category")

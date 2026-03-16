@@ -66,3 +66,53 @@ func (r *TestimonialRepository) GetMaxOrder() (int, error) {
 	err := r.db.Model(&models.Testimonial{}).Select("COALESCE(MAX(display_order), 0)").Scan(&maxOrder).Error
 	return maxOrder, err
 }
+
+// ExtractTestimonialTranslation returns testimonial fields in specified language
+func ExtractTestimonialTranslation(testimonial models.Testimonial, lang string) map[string]interface{} {
+	result := map[string]interface{}{
+		"id":            testimonial.ID,
+		"initials":      testimonial.Initials,
+		"rating":        testimonial.Rating,
+		"display_order": testimonial.DisplayOrder,
+		"active":        testimonial.Active,
+		"created_at":    testimonial.CreatedAt,
+		"updated_at":    testimonial.UpdatedAt,
+	}
+
+	// Extract name
+	if nameMap, ok := testimonial.Translations["name"].(map[string]interface{}); ok {
+		if val, exists := nameMap[lang]; exists && val != nil {
+			result["name"] = val
+		} else if val, exists := nameMap["uz"]; exists && val != nil {
+			result["name"] = val
+		}
+	}
+
+	// Extract text
+	if textMap, ok := testimonial.Translations["text"].(map[string]interface{}); ok {
+		if val, exists := textMap[lang]; exists && val != nil {
+			result["text"] = val
+		} else if val, exists := textMap["uz"]; exists && val != nil {
+			result["text"] = val
+		}
+	}
+
+	// Fallback to original columns if translation not found
+	if result["name"] == nil {
+		result["name"] = testimonial.Name
+	}
+	if result["text"] == nil {
+		result["text"] = testimonial.Text
+	}
+
+	return result
+}
+
+// ExtractTestimonialsTranslation returns multiple testimonials translated to specified language
+func ExtractTestimonialsTranslation(testimonials []models.Testimonial, lang string) []map[string]interface{} {
+	result := make([]map[string]interface{}, len(testimonials))
+	for i, testimonial := range testimonials {
+		result[i] = ExtractTestimonialTranslation(testimonial, lang)
+	}
+	return result
+}

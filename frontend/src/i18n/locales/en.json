@@ -1,0 +1,133 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "gallery": "Gallery",
+    "testimonials": "Testimonials",
+    "locations": "Locations",
+    "contact": "Contact"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "submit": "Submit",
+    "active": "Active",
+    "inactive": "Inactive",
+    "actions": "Actions"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "name": "Your Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "send": "Send Message",
+    "success": "Thank you for contacting us! We'll get back to you soon.",
+    "error": "Failed to send message. Please try again."
+  },
+  "footer": {
+    "hours": "Business Hours",
+    "followUs": "Follow Us"
+  },
+  "admin": {
+    "login": {
+      "title": "Admin Login",
+      "username": "Username",
+      "password": "Password",
+      "signin": "Sign In",
+      "signingin": "Signing in..."
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "services": "Services",
+      "testimonials": "Testimonials",
+      "gallery": "Gallery",
+      "locations": "Locations",
+      "contacts": "Contacts",
+      "settings": "Settings",
+      "content": "Content",
+      "logout": "Logout"
+    },
+    "services": {
+      "title": "Services",
+      "addService": "Add Service",
+      "editService": "Edit Service",
+      "serviceTitle": "Service Title",
+      "description": "Description",
+      "icon": "Icon",
+      "displayOrder": "Display Order",
+      "noServices": "No services yet. Add your first service!"
+    },
+    "testimonials": {
+      "title": "Testimonials",
+      "addTestimonial": "Add Testimonial",
+      "editTestimonial": "Edit Testimonial",
+      "name": "Name",
+      "initials": "Initials",
+      "rating": "Rating",
+      "text": "Text",
+      "noTestimonials": "No testimonials yet. Add your first testimonial!"
+    },
+    "locations": {
+      "title": "Locations",
+      "addLocation": "Add Location",
+      "editLocation": "Edit Location",
+      "locationName": "Location Name",
+      "address": "Address",
+      "businessHours": "Business Hours",
+      "noLocations": "No locations yet. Add your first location!"
+    },
+    "gallery": {
+      "title": "Gallery",
+      "uploadImage": "Upload Image",
+      "editImage": "Edit Image",
+      "altText": "Alt Text",
+      "category": "Category",
+      "tags": "Tags",
+      "noImages": "No images yet. Upload your first image!"
+    },
+    "contacts": {
+      "title": "Contacts",
+      "unread": "Unread",
+      "read": "Read",
+      "markAsRead": "Mark as Read",
+      "markAsUnread": "Mark as Unread",
+      "noContacts": "No contacts yet"
+    },
+    "settings": {
+      "title": "Settings",
+      "businessInfo": "Business Information",
+      "businessName": "Business Name",
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address",
+      "city": "City",
+      "socialLinks": "Social Links",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "twitter": "Twitter",
+      "saveSettings": "Save Settings"
+    },
+    "content": {
+      "title": "Site Content",
+      "hero": "Hero Section",
+      "about": "About Section",
+      "contact": "Contact Section",
+      "footer": "Footer Section",
+      "saveContent": "Save Content"
+    },
+    "multiLang": {
+      "uzbek": "Uzbek",
+      "russian": "Russian",
+      "english": "English",
+      "uzbekRequired": "Uzbek translation is required. Other languages are optional.",
+      "copyFrom": "Copy from..."
+    }
+  }
+}

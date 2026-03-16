@@ -1,0 +1,133 @@
+{
+  "nav": {
+    "home": "Главная",
+    "about": "О нас",
+    "services": "Услуги",
+    "gallery": "Галерея",
+    "testimonials": "Отзывы",
+    "locations": "Локации",
+    "contact": "Контакты"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "create": "Создать",
+    "submit": "Отправить",
+    "active": "Активен",
+    "inactive": "Неактивен",
+    "actions": "Действия"
+  },
+  "contact": {
+    "title": "Связаться с нами",
+    "name": "Ваше имя",
+    "email": "Email",
+    "phone": "Телефон",
+    "message": "Сообщение",
+    "send": "Отправить",
+    "success": "Спасибо за ваше сообщение! Мы скоро свяжемся с вами.",
+    "error": "Не удалось отправить сообщение. Пожалуйста, попробуйте снова."
+  },
+  "footer": {
+    "hours": "Часы работы",
+    "followUs": "Следите за нами"
+  },
+  "admin": {
+    "login": {
+      "title": "Вход в админ панель",
+      "username": "Логин",
+      "password": "Пароль",
+      "signin": "Войти",
+      "signingin": "Вход..."
+    },
+    "sidebar": {
+      "dashboard": "Панель управления",
+      "services": "Услуги",
+      "testimonials": "Отзывы",
+      "gallery": "Галерея",
+      "locations": "Локации",
+      "contacts": "Обращения",
+      "settings": "Настройки",
+      "content": "Контент",
+      "logout": "Выйти"
+    },
+    "services": {
+      "title": "Услуги",
+      "addService": "Добавить услугу",
+      "editService": "Редактировать услугу",
+      "serviceTitle": "Название услуги",
+      "description": "Описание",
+      "icon": "Иконка",
+      "displayOrder": "Порядок отображения",
+      "noServices": "Услуг пока нет. Добавьте первую услугу!"
+    },
+    "testimonials": {
+      "title": "Отзывы",
+      "addTestimonial": "Добавить отзыв",
+      "editTestimonial": "Редактировать отзыв",
+      "name": "Имя",
+      "initials": "Инициалы",
+      "rating": "Рейтинг",
+      "text": "Текст",
+      "noTestimonials": "Отзывов пока нет. Добавьте первый отзыв!"
+    },
+    "locations": {
+      "title": "Локации",
+      "addLocation": "Добавить локацию",
+      "editLocation": "Редактировать локацию",
+      "locationName": "Название локации",
+      "address": "Адрес",
+      "businessHours": "Часы работы",
+      "noLocations": "Локаций пока нет. Добавьте первую локацию!"
+    },
+    "gallery": {
+      "title": "Галерея",
+      "uploadImage": "Загрузить изображение",
+      "editImage": "Редактировать изображение",
+      "altText": "Текст описания",
+      "category": "Категория",
+      "tags": "Теги",
+      "noImages": "Изображений пока нет. Загрузите первое изображение!"
+    },
+    "contacts": {
+      "title": "Обращения",
+      "unread": "Непрочитанные",
+      "read": "Прочитанные",
+      "markAsRead": "Отметить как прочитанное",
+      "markAsUnread": "Отметить как непрочитанное",
+      "noContacts": "Обращений пока нет"
+    },
+    "settings": {
+      "title": "Настройки",
+      "businessInfo": "Информация о бизнесе",
+      "businessName": "Название бизнеса",
+      "phone": "Телефон",
+      "email": "Email",
+      "address": "Адрес",
+      "city": "Город",
+      "socialLinks": "Социальные сети",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "twitter": "Twitter",
+      "saveSettings": "Сохранить настройки"
+    },
+    "content": {
+      "title": "Контент сайта",
+      "hero": "Главная страница",
+      "about": "О нас",
+      "contact": "Контакты",
+      "footer": "Подвал",
+      "saveContent": "Сохранить контент"
+    },
+    "multiLang": {
+      "uzbek": "Узбекский",
+      "russian": "Русский",
+      "english": "Английский",
+      "uzbekRequired": "Узбекский перевод обязателен. Другие языки опциональны.",
+      "copyFrom": "Копировать из..."
+    }
+  }
+}

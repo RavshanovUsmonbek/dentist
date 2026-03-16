@@ -43,12 +43,20 @@ func (h *PublicHandler) HandleServices(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lang := r.URL.Query().Get("lang")
+	if lang == "" {
+		lang = "uz" // Default to Uzbek
+	}
+
 	services, err := h.serviceRepo.FindActive()
 	if err != nil {
 		sendInternalError(w, "Failed to fetch services")
 		return
 	}
-	sendSuccess(w, services)
+
+	// Translate services to requested language
+	translated := repository.ExtractServicesTranslation(services, lang)
+	sendSuccess(w, translated)
 }
 
 // HandleTestimonials handles GET /api/testimonials (public)
@@ -58,24 +66,36 @@ func (h *PublicHandler) HandleTestimonials(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	lang := r.URL.Query().Get("lang")
+	if lang == "" {
+		lang = "uz" // Default to Uzbek
+	}
+
 	testimonials, err := h.testimonialRepo.FindActive()
 	if err != nil {
 		sendInternalError(w, "Failed to fetch testimonials")
 		return
 	}
-	sendSuccess(w, testimonials)
+
+	// Translate testimonials to requested language
+	translated := repository.ExtractTestimonialsTranslation(testimonials, lang)
+	sendSuccess(w, translated)
 }
 
 // HandleGallery handles GET /api/gallery (public)
-// Supports optional ?category=X query parameter to filter by category
+// Supports optional ?category=X and ?lang=X query parameters
 func (h *PublicHandler) HandleGallery(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		sendMethodNotAllowed(w)
 		return
 	}
 
-	// Check for category query parameter
+	// Check for query parameters
 	category := r.URL.Query().Get("category")
+	lang := r.URL.Query().Get("lang")
+	if lang == "" {
+		lang = "uz" // Default to Uzbek
+	}
 
 	var images []models.GalleryImage
 	var err error
@@ -92,17 +112,26 @@ func (h *PublicHandler) HandleGallery(w http.ResponseWriter, r *http.Request) {
 		sendInternalError(w, "Failed to fetch gallery images")
 		return
 	}
-	sendSuccess(w, images)
+
+	// Translate gallery images to requested language
+	translated := repository.ExtractGalleryImagesTranslation(images, lang)
+	sendSuccess(w, translated)
 }
 
 // HandleSettings handles GET /api/settings (public)
+// Supports optional ?lang=X query parameter
 func (h *PublicHandler) HandleSettings(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		sendMethodNotAllowed(w)
 		return
 	}
 
-	settings, err := h.settingsRepo.GetSettingsMap()
+	lang := r.URL.Query().Get("lang")
+	if lang == "" {
+		lang = "uz" // Default to Uzbek
+	}
+
+	settings, err := h.settingsRepo.GetSettingsMapByLang(lang)
 	if err != nil {
 		sendInternalError(w, "Failed to fetch settings")
 		return
@@ -111,6 +140,7 @@ func (h *PublicHandler) HandleSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleContent handles GET /api/content/:section (public)
+// Supports optional ?lang=X query parameter
 func (h *PublicHandler) HandleContent(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		sendMethodNotAllowed(w)
@@ -123,7 +153,12 @@ func (h *PublicHandler) HandleContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content, err := h.settingsRepo.GetContentMap(section)
+	lang := r.URL.Query().Get("lang")
+	if lang == "" {
+		lang = "uz" // Default to Uzbek
+	}
+
+	content, err := h.settingsRepo.GetContentMapByLang(section, lang)
 	if err != nil {
 		sendInternalError(w, "Failed to fetch content")
 		return
@@ -132,10 +167,16 @@ func (h *PublicHandler) HandleContent(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleLocations handles GET /api/locations (public)
+// Supports optional ?lang=X query parameter
 func (h *PublicHandler) HandleLocations(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		sendMethodNotAllowed(w)
 		return
+	}
+
+	lang := r.URL.Query().Get("lang")
+	if lang == "" {
+		lang = "uz" // Default to Uzbek
 	}
 
 	locations, err := h.locationRepo.FindActive()
@@ -143,15 +184,24 @@ func (h *PublicHandler) HandleLocations(w http.ResponseWriter, r *http.Request) 
 		sendInternalError(w, "Failed to fetch locations")
 		return
 	}
-	sendSuccess(w, locations)
+
+	// Translate locations to requested language
+	translated := repository.ExtractLocationsTranslation(locations, lang)
+	sendSuccess(w, translated)
 }
 
 // HandleGalleryCategories handles GET /api/gallery-categories (public)
 // Only returns enabled categories that have at least one active image
+// Supports optional ?lang=X query parameter
 func (h *PublicHandler) HandleGalleryCategories(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		sendMethodNotAllowed(w)
 		return
+	}
+
+	lang := r.URL.Query().Get("lang")
+	if lang == "" {
+		lang = "uz" // Default to Uzbek
 	}
 
 	categories, err := h.galleryCategoryRepo.FindEnabledWithImages()
@@ -159,5 +209,8 @@ func (h *PublicHandler) HandleGalleryCategories(w http.ResponseWriter, r *http.R
 		sendInternalError(w, "Failed to fetch gallery categories")
 		return
 	}
-	sendSuccess(w, categories)
+
+	// Translate gallery categories to requested language
+	translated := repository.ExtractGalleryCategoriesTranslation(categories, lang)
+	sendSuccess(w, translated)
 }

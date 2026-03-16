@@ -18,6 +18,9 @@ type JSONResponse struct {
 // sendJSON sends a JSON response with the given status code
 func sendJSON(w http.ResponseWriter, data interface{}, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(data)
 }

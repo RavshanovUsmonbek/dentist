@@ -73,3 +73,42 @@ func (r *GalleryRepository) GetMaxOrder() (int, error) {
 	err := r.db.Model(&models.GalleryImage{}).Select("COALESCE(MAX(display_order), 0)").Scan(&maxOrder).Error
 	return maxOrder, err
 }
+
+// ExtractGalleryImageTranslation returns gallery image fields in specified language
+func ExtractGalleryImageTranslation(image models.GalleryImage, lang string) map[string]interface{} {
+	result := map[string]interface{}{
+		"id":            image.ID,
+		"filename":      image.Filename,
+		"category":      image.Category,
+		"tags":          image.Tags,
+		"display_order": image.DisplayOrder,
+		"active":        image.Active,
+		"created_at":    image.CreatedAt,
+		"updated_at":    image.UpdatedAt,
+	}
+
+	// Extract alt_text
+	if altTextMap, ok := image.Translations["alt_text"].(map[string]interface{}); ok {
+		if val, exists := altTextMap[lang]; exists && val != nil {
+			result["alt_text"] = val
+		} else if val, exists := altTextMap["uz"]; exists && val != nil {
+			result["alt_text"] = val
+		}
+	}
+
+	// Fallback to original column if translation not found
+	if result["alt_text"] == nil {
+		result["alt_text"] = image.AltText
+	}
+
+	return result
+}
+
+// ExtractGalleryImagesTranslation returns multiple gallery images translated to specified language
+func ExtractGalleryImagesTranslation(images []models.GalleryImage, lang string) []map[string]interface{} {
+	result := make([]map[string]interface{}, len(images))
+	for i, image := range images {
+		result[i] = ExtractGalleryImageTranslation(image, lang)
+	}
+	return result
+}

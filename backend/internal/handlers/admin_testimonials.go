@@ -6,6 +6,7 @@ import (
 	"github.com/usmonbek/dentist-backend/internal/models"
 	"github.com/usmonbek/dentist-backend/internal/repository"
 	"github.com/usmonbek/dentist-backend/internal/services"
+	"gorm.io/datatypes"
 )
 
 // AdminTestimonialsHandler handles admin testimonials CRUD endpoints
@@ -99,6 +100,7 @@ func (h *AdminTestimonialsHandler) createTestimonial(w http.ResponseWriter, r *h
 		Text:         req.Text,
 		DisplayOrder: maxOrder + 1,
 		Active:       active,
+		Translations: datatypes.JSONMap(req.Translations),
 	}
 
 	if err := h.testimonialRepo.Create(testimonial); err != nil {
@@ -136,6 +138,9 @@ func (h *AdminTestimonialsHandler) updateTestimonial(w http.ResponseWriter, r *h
 	}
 	if req.Active != nil {
 		testimonial.Active = *req.Active
+	}
+	if req.Translations != nil {
+		testimonial.Translations = datatypes.JSONMap(req.Translations)
 	}
 
 	if err := h.testimonialRepo.Update(testimonial); err != nil {

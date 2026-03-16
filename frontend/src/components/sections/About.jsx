@@ -10,8 +10,7 @@ const About = () => {
 
   const doctorName = aboutContent.doctor_name || 'Dr. Sarah Smith, DDS';
   const doctorPhoto = aboutContent.doctor_photo || '';
-  const welcomeText = aboutContent.welcome_text || "Welcome to Smile Dental Care! I'm Dr. Sarah Smith, and I've been passionate about dentistry for over 15 years. My commitment is to provide you with the highest quality dental care in a comfortable, welcoming environment.";
-  const philosophyText = aboutContent.philosophy_text || "I believe that every patient deserves personalized attention and a treatment plan tailored to their unique needs. Whether you're here for a routine cleaning or a complete smile makeover, you can trust that you're in capable, caring hands.";
+  const aboutText = aboutContent.about_text || "<p>Welcome to Smile Dental Care! I'm Dr. Sarah Smith, and I've been passionate about dentistry for over 15 years. My commitment is to provide you with the highest quality dental care in a comfortable, welcoming environment.</p><p>I believe that every patient deserves personalized attention and a treatment plan tailored to their unique needs. Whether you're here for a routine cleaning or a complete smile makeover, you can trust that you're in capable, caring hands.</p>";
 
   // Parse JSON arrays with fallbacks
   let education = [];
@@ -77,12 +76,10 @@ const About = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h3 className="text-3xl font-bold text-gray-800">{doctorName}</h3>
-            <p className="text-gray-600 leading-relaxed">
-              {welcomeText}
-            </p>
-            <p className="text-gray-600 leading-relaxed">
-              {philosophyText}
-            </p>
+            <div
+              className="text-gray-600 leading-relaxed prose prose-p:mb-4"
+              dangerouslySetInnerHTML={{ __html: aboutText }}
+            />
 
             <div className="space-y-4 pt-4">
               <div className="flex items-start space-x-4">
@@ -92,7 +89,13 @@ const About = () => {
                 <div>
                   <h4 className="font-semibold text-gray-800">Education</h4>
                   {education.map((item, index) => (
-                    <p key={index} className="text-gray-600">{item}</p>
+                    <div key={index} className="mb-2">
+                      {item.split('\n').map((line, lineIndex) => (
+                        <p key={lineIndex} className="text-gray-600">
+                          {line}
+                        </p>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -104,7 +107,13 @@ const About = () => {
                 <div>
                   <h4 className="font-semibold text-gray-800">Experience</h4>
                   {experience.map((item, index) => (
-                    <p key={index} className="text-gray-600">{item}</p>
+                    <div key={index} className="mb-2">
+                      {item.split('\n').map((line, lineIndex) => (
+                        <p key={lineIndex} className="text-gray-600">
+                          {line}
+                        </p>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -116,7 +125,13 @@ const About = () => {
                 <div>
                   <h4 className="font-semibold text-gray-800">Memberships & Awards</h4>
                   {awards.map((item, index) => (
-                    <p key={index} className="text-gray-600">{item}</p>
+                    <div key={index} className="mb-2">
+                      {item.split('\n').map((line, lineIndex) => (
+                        <p key={lineIndex} className="text-gray-600">
+                          {line}
+                        </p>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </div>

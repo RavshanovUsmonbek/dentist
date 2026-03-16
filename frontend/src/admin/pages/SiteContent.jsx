@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FaSave, FaUpload } from 'react-icons/fa';
 import { adminApi } from '../services/adminApi';
+import RichTextEditor from '../components/RichTextEditor';
+import DynamicArrayInput from '../components/DynamicArrayInput';
 
 const SiteContent = () => {
   const [content, setContent] = useState({});
@@ -15,7 +17,6 @@ const SiteContent = () => {
     { id: 'hero', label: 'Hero Section' },
     { id: 'about', label: 'About Section' },
     { id: 'services', label: 'Services Section' },
-    { id: 'gallery', label: 'Gallery Content' },
     { id: 'testimonials', label: 'Testimonials Section' },
     { id: 'contact', label: 'Contact Section' },
     { id: 'footer', label: 'Footer' },
@@ -31,25 +32,14 @@ const SiteContent = () => {
     about: [
       { key: 'doctor_name', label: 'Doctor Name', type: 'text' },
       { key: 'doctor_photo', label: 'Doctor Photo', type: 'image' },
-      { key: 'welcome_text', label: 'Welcome Paragraph', type: 'textarea' },
-      { key: 'philosophy_text', label: 'Philosophy Paragraph', type: 'textarea' },
-      { key: 'education', label: 'Education (JSON array)', type: 'textarea' },
-      { key: 'experience', label: 'Experience (JSON array)', type: 'textarea' },
-      { key: 'awards', label: 'Awards (JSON array)', type: 'textarea' },
+      { key: 'about_text', label: 'About Text', type: 'richtext' },
+      { key: 'education', label: 'Education', type: 'array', placeholder: 'Line 1: Degree/Certification name\nLine 2: Institution name' },
+      { key: 'experience', label: 'Experience', type: 'array', placeholder: 'Line 1: Years/Duration\nLine 2: Specialty/Focus area' },
+      { key: 'awards', label: 'Awards', type: 'array', placeholder: 'Line 1: Award/Membership name\nLine 2: Issuing organization' },
     ],
     services: [
       { key: 'title', label: 'Section Title', type: 'text' },
       { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
-    ],
-    gallery: [
-      { key: 'title_general', label: 'General Gallery Title', type: 'text' },
-      { key: 'subtitle_general', label: 'General Gallery Subtitle', type: 'textarea' },
-      { key: 'title_case_studies', label: 'Case Studies Title', type: 'text' },
-      { key: 'subtitle_case_studies', label: 'Case Studies Subtitle', type: 'textarea' },
-      { key: 'title_diplomas', label: 'Diplomas & Certifications Title', type: 'text' },
-      { key: 'subtitle_diplomas', label: 'Diplomas & Certifications Subtitle', type: 'textarea' },
-      { key: 'title_conferences', label: 'Conferences & Events Title', type: 'text' },
-      { key: 'subtitle_conferences', label: 'Conferences & Events Subtitle', type: 'textarea' },
     ],
     testimonials: [
       { key: 'title', label: 'Section Title', type: 'text' },
@@ -60,9 +50,7 @@ const SiteContent = () => {
       { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
       { key: 'form_title', label: 'Form Title', type: 'text' },
       { key: 'success_message', label: 'Success Message', type: 'textarea' },
-      { key: 'emergency_text', label: 'Emergency Text', type: 'textarea' },
       { key: 'hours_title', label: 'Hours Title', type: 'text' },
-      { key: 'emergency_title', label: 'Emergency Title', type: 'text' },
     ],
     footer: [
       { key: 'description', label: 'Footer Description', type: 'textarea' },
@@ -182,7 +170,7 @@ const SiteContent = () => {
       {/* Content Form */}
       <div className="bg-white rounded-xl shadow-md p-6">
         <div className="space-y-6">
-          {contentFields[activeTab]?.map(({ key, label, type }) => (
+          {contentFields[activeTab]?.map(({ key, label, type, placeholder }) => (
             <div key={key}>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {label}
@@ -227,12 +215,25 @@ const SiteContent = () => {
                     <p className="text-sm text-cyan-600">Uploading...</p>
                   )}
                 </div>
+              ) : type === 'richtext' ? (
+                <RichTextEditor
+                  value={content[activeTab]?.[key] || ''}
+                  onChange={(value) => handleChange(activeTab, key, value)}
+                  placeholder={`Enter ${label.toLowerCase()}...`}
+                />
+              ) : type === 'array' ? (
+                <DynamicArrayInput
+                  value={content[activeTab]?.[key] || '[]'}
+                  onChange={(value) => handleChange(activeTab, key, value)}
+                  label={label}
+                  placeholder={placeholder || `Enter ${label.toLowerCase()} item...`}
+                />
               ) : type === 'textarea' ? (
                 <textarea
                   value={content[activeTab]?.[key] || ''}
                   onChange={(e) => handleChange(activeTab, key, e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  rows={key.includes('education') || key.includes('experience') || key.includes('awards') ? 3 : 4}
+                  rows={4}
                 />
               ) : (
                 <input
@@ -242,11 +243,6 @@ const SiteContent = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 />
               )}
-              {key.includes('education') || key.includes('experience') || key.includes('awards') ? (
-                <p className="text-xs text-gray-500 mt-1">
-                  Format: ["Item 1", "Item 2", "Item 3"]
-                </p>
-              ) : null}
             </div>
           ))}
         </div>
