@@ -7,7 +7,7 @@ import ConfirmDialog from '../components/ConfirmDialog';
 
 const REQUIRED_KEYS = ['services', 'testimonials', 'gallery_categories', 'gallery_images', 'locations', 'site_settings', 'site_content'];
 
-const validateImport = (parsed) => {
+export const validateImport = (parsed) => {
   if (!parsed.version || parsed.version !== '1') return 'Invalid version — expected "1"';
   for (const key of REQUIRED_KEYS) {
     if (!Array.isArray(parsed[key])) return `Missing required key: ${key}`;

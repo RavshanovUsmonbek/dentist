@@ -9,6 +9,11 @@ import (
 )
 
 func HandleHealth(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	response := models.HealthResponse{
 		Status:    "healthy",
 		Timestamp: time.Now(),

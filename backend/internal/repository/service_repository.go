@@ -80,18 +80,18 @@ func ExtractServiceTranslation(service models.Service, lang string) map[string]i
 
 	// Extract title
 	if titleMap, ok := service.Translations["title"].(map[string]interface{}); ok {
-		if val, exists := titleMap[lang]; exists && val != nil {
+		if val, exists := titleMap[lang]; exists && val != nil && val != "" {
 			result["title"] = val
-		} else if val, exists := titleMap["uz"]; exists && val != nil {
+		} else if val, exists := titleMap["uz"]; exists && val != nil && val != "" {
 			result["title"] = val
 		}
 	}
 
 	// Extract description
 	if descMap, ok := service.Translations["description"].(map[string]interface{}); ok {
-		if val, exists := descMap[lang]; exists && val != nil {
+		if val, exists := descMap[lang]; exists && val != nil && val != "" {
 			result["description"] = val
-		} else if val, exists := descMap["uz"]; exists && val != nil {
+		} else if val, exists := descMap["uz"]; exists && val != nil && val != "" {
 			result["description"] = val
 		}
 	}

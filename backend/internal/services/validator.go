@@ -50,5 +50,5 @@ func formatValidationErrors(errors validator.ValidationErrors) error {
 		messages = append(messages, message)
 	}
 
-	return fmt.Errorf(strings.Join(messages, "; "))
+	return fmt.Errorf("%s", strings.Join(messages, "; "))
 }
