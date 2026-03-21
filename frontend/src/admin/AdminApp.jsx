@@ -10,6 +10,7 @@ import Locations from './pages/Locations';
 import Contacts from './pages/Contacts';
 import Settings from './pages/Settings';
 import SiteContent from './pages/SiteContent';
+import Snapshots from './pages/Snapshots';
 
 const AdminApp = () => {
   return (
@@ -25,6 +26,7 @@ const AdminApp = () => {
           <Route path="contacts" element={<Contacts />} />
           <Route path="settings" element={<Settings />} />
           <Route path="content" element={<SiteContent />} />
+          <Route path="snapshots" element={<Snapshots />} />
         </Route>
       </Routes>
     </AuthProvider>

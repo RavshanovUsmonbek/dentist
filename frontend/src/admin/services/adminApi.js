@@ -212,6 +212,54 @@ export const adminApi = {
     return response.data;
   },
 
+  // Snapshots
+  getSnapshots: async () => {
+    const response = await adminAxios.get('/admin/snapshots');
+    return response.data;
+  },
+
+  createSnapshot: async (data) => {
+    const response = await adminAxios.post('/admin/snapshots', data);
+    return response.data;
+  },
+
+  getSnapshot: async (id) => {
+    const response = await adminAxios.get(`/admin/snapshots/${id}`);
+    return response.data;
+  },
+
+  deleteSnapshot: async (id) => {
+    const response = await adminAxios.delete(`/admin/snapshots/${id}`);
+    return response.data;
+  },
+
+  restoreSnapshot: async (id) => {
+    const response = await adminAxios.post(`/admin/snapshots/${id}/restore`);
+    return response.data;
+  },
+
+  importSnapshot: async (payload, restore = false) => {
+    const response = await adminAxios.post(
+      `/admin/snapshots/import${restore ? '?restore=true' : ''}`,
+      payload
+    );
+    return response.data;
+  },
+
+  exportSnapshot: async (id, name) => {
+    const response = await adminAxios.get(`/admin/snapshots/${id}/export`, {
+      responseType: 'blob',
+    });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = url;
+    a.setAttribute('download', `snapshot-${name || id}.json`);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  },
+
   // File upload
   uploadFile: async (file) => {
     const formData = new FormData();

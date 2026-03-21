@@ -104,6 +104,13 @@ func main() {
 	adminContactsHandler := handlers.NewAdminContactsHandler(contactRepo)
 	adminSettingsHandler := handlers.NewAdminSettingsHandler(settingsRepo)
 
+	snapshotRepo := repository.NewSnapshotRepository(db)
+	adminSnapshotsHandler := handlers.NewAdminSnapshotsHandler(
+		snapshotRepo, serviceRepo, testimonialRepo,
+		galleryRepo, galleryCategoryRepo, locationRepo,
+		settingsRepo, validator,
+	)
+
 	// Setup router
 	mux := http.NewServeMux()
 
@@ -189,6 +196,11 @@ func main() {
 		mux.Handle("/api/admin/content/", middleware.Auth(authService)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			adminSettingsHandler.HandleContent(w, r)
 		})))
+
+		// Snapshots — /import must be registered before the wildcard /:id
+		mux.HandleFunc("/api/admin/snapshots", middleware.AuthFunc(authService, adminSnapshotsHandler.HandleSnapshots))
+		mux.HandleFunc("/api/admin/snapshots/import", middleware.AuthFunc(authService, adminSnapshotsHandler.HandleSnapshotImport))
+		mux.Handle("/api/admin/snapshots/", middleware.Auth(authService)(http.HandlerFunc(adminSnapshotsHandler.HandleSnapshotByID)))
 
 		// File upload
 		mux.HandleFunc("/api/admin/upload", middleware.AuthFunc(authService, uploadHandler.HandleUpload))

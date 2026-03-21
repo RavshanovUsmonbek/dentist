@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { FaSave, FaUpload } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { adminApi } from '../services/adminApi';
 import MultiLangInput from '../components/MultiLangInput';
 import MultiLangRichText from '../components/MultiLangRichText';
 import MultiLangArrayInput from '../components/MultiLangArrayInput';
 
 const SiteContent = () => {
+  const { t } = useTranslation();
   const [content, setContent] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -15,48 +17,48 @@ const SiteContent = () => {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
   const sections = [
-    { id: 'hero', label: 'Hero Section' },
-    { id: 'about', label: 'About Section' },
-    { id: 'services', label: 'Services Section' },
-    { id: 'testimonials', label: 'Testimonials Section' },
-    { id: 'contact', label: 'Contact Section' },
-    { id: 'footer', label: 'Footer' },
+    { id: 'hero', label: t('admin.content.hero') },
+    { id: 'about', label: t('admin.content.about') },
+    { id: 'services', label: t('admin.content.services') },
+    { id: 'testimonials', label: t('admin.content.testimonials') },
+    { id: 'contact', label: t('admin.content.contact') },
+    { id: 'footer', label: t('admin.content.footer') },
   ];
 
   const contentFields = {
     hero: [
-      { key: 'title', label: 'Title', type: 'text' },
-      { key: 'subtitle', label: 'Subtitle', type: 'textarea' },
-      { key: 'cta_primary_text', label: 'Primary Button Text', type: 'text' },
-      { key: 'cta_secondary_text', label: 'Secondary Button Text', type: 'text' },
+      { key: 'title', label: t('admin.content.fields.title'), type: 'text' },
+      { key: 'subtitle', label: t('admin.content.fields.subtitle'), type: 'textarea' },
+      { key: 'cta_primary_text', label: t('admin.content.fields.ctaPrimaryText'), type: 'text' },
+      { key: 'cta_secondary_text', label: t('admin.content.fields.ctaSecondaryText'), type: 'text' },
     ],
     about: [
-      { key: 'doctor_name', label: 'Doctor Name', type: 'text' },
-      { key: 'doctor_photo', label: 'Doctor Photo', type: 'image' },
-      { key: 'about_text', label: 'About Text', type: 'richtext' },
-      { key: 'education', label: 'Education', type: 'array' },
-      { key: 'experience', label: 'Experience', type: 'array' },
-      { key: 'awards', label: 'Awards', type: 'array' },
+      { key: 'doctor_name', label: t('admin.content.fields.doctorName'), type: 'text' },
+      { key: 'doctor_photo', label: t('admin.content.fields.doctorPhoto'), type: 'image' },
+      { key: 'about_text', label: t('admin.content.fields.aboutText'), type: 'richtext' },
+      { key: 'education', label: t('admin.content.fields.education'), type: 'array' },
+      { key: 'experience', label: t('admin.content.fields.experience'), type: 'array' },
+      { key: 'awards', label: t('admin.content.fields.awards'), type: 'array' },
     ],
     services: [
-      { key: 'title', label: 'Section Title', type: 'text' },
-      { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
+      { key: 'title', label: t('admin.content.fields.sectionTitle'), type: 'text' },
+      { key: 'subtitle', label: t('admin.content.fields.sectionSubtitle'), type: 'textarea' },
     ],
     testimonials: [
-      { key: 'title', label: 'Section Title', type: 'text' },
-      { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
+      { key: 'title', label: t('admin.content.fields.sectionTitle'), type: 'text' },
+      { key: 'subtitle', label: t('admin.content.fields.sectionSubtitle'), type: 'textarea' },
     ],
     contact: [
-      { key: 'title', label: 'Section Title', type: 'text' },
-      { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
-      { key: 'form_title', label: 'Form Title', type: 'text' },
-      { key: 'success_message', label: 'Success Message', type: 'textarea' },
-      { key: 'hours_title', label: 'Hours Title', type: 'text' },
+      { key: 'title', label: t('admin.content.fields.sectionTitle'), type: 'text' },
+      { key: 'subtitle', label: t('admin.content.fields.sectionSubtitle'), type: 'textarea' },
+      { key: 'form_title', label: t('admin.content.fields.formTitle'), type: 'text' },
+      { key: 'success_message', label: t('admin.content.fields.successMessage'), type: 'textarea' },
+      { key: 'hours_title', label: t('admin.content.fields.hoursTitle'), type: 'text' },
     ],
     footer: [
-      { key: 'description', label: 'Footer Description', type: 'textarea' },
-      { key: 'copyright_text', label: 'Copyright Text', type: 'text' },
-      { key: 'hours_title', label: 'Hours Title', type: 'text' },
+      { key: 'description', label: t('admin.content.fields.footerDescription'), type: 'textarea' },
+      { key: 'copyright_text', label: t('admin.content.fields.copyrightText'), type: 'text' },
+      { key: 'hours_title', label: t('admin.content.fields.hoursTitle'), type: 'text' },
     ],
   };
 
@@ -93,11 +95,11 @@ const SiteContent = () => {
 
     try {
       await adminApi.updateContent(section, content[section] || {});
-      setMessage(`${section.charAt(0).toUpperCase() + section.slice(1)} content saved successfully!`);
+      setMessage(`${sections.find(s => s.id === section)?.label} ${t('admin.content.saveSuccess')}`);
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('Failed to save content:', error);
-      setMessage('Failed to save content. Please try again.');
+      setMessage(t('admin.content.saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -117,7 +119,7 @@ const SiteContent = () => {
     if (!file) return;
 
     setUploading(true);
-    setMessage('Uploading image...');
+    setMessage(t('admin.content.uploadingImage'));
 
     try {
       const uploadResponse = await adminApi.uploadFile(file);
@@ -125,14 +127,14 @@ const SiteContent = () => {
 
       if (imageUrl) {
         handleChange(section, key, imageUrl);
-        setMessage('Image uploaded successfully! Don\'t forget to save.');
+        setMessage(t('admin.content.imageUploadSuccess'));
         setTimeout(() => setMessage(''), 3000);
       } else {
-        setMessage('Failed to upload image. No URL returned.');
+        setMessage(t('admin.content.imageUploadNoUrl'));
       }
     } catch (error) {
       console.error('Failed to upload image:', error);
-      setMessage('Failed to upload image. Please try again.');
+      setMessage(t('admin.content.imageUploadFailed'));
     } finally {
       setUploading(false);
     }
@@ -148,7 +150,7 @@ const SiteContent = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Site Content</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">{t('admin.content.title')}</h1>
 
       {message && (
         <div className={`mb-6 p-4 rounded-lg ${message.includes('success') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -184,19 +186,23 @@ const SiteContent = () => {
                     {label}
                   </label>
                   <div className="space-y-3">
-                    {content[activeTab]?.[key] && (
-                      <div className="relative inline-block">
-                        <img
-                          src={`${API_URL.replace('/api', '')}${content[activeTab][key]}`}
-                          alt={label}
-                          className="w-48 h-48 object-cover rounded-lg border-2 border-gray-300"
-                        />
-                      </div>
-                    )}
+                    {(() => {
+                      const raw = content[activeTab]?.[key];
+                      const url = typeof raw === 'object' ? (raw?.uz || raw?.ru || raw?.en || '') : (raw || '');
+                      return url ? (
+                        <div className="relative inline-block">
+                          <img
+                            src={url.startsWith('http') ? url : `${API_URL.replace('/api', '')}${url}`}
+                            alt={label}
+                            className="w-48 h-48 object-cover rounded-lg border-2 border-gray-300"
+                          />
+                        </div>
+                      ) : null;
+                    })()}
                     <div className="flex items-center gap-3">
                       <label className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors cursor-pointer">
                         <FaUpload />
-                        <span>{content[activeTab]?.[key] ? 'Change Image' : 'Upload Image'}</span>
+                        <span>{content[activeTab]?.[key] ? t('admin.content.changeImage') : t('admin.content.uploadImage')}</span>
                         <input
                           type="file"
                           accept="image/*"
@@ -208,15 +214,19 @@ const SiteContent = () => {
                           disabled={uploading}
                         />
                       </label>
-                      {content[activeTab]?.[key] && (
-                        <button
-                          type="button"
-                          onClick={() => handleChange(activeTab, key, '')}
-                          className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                        >
-                          Remove
-                        </button>
-                      )}
+                      {(() => {
+                        const raw = content[activeTab]?.[key];
+                        const url = typeof raw === 'object' ? (raw?.uz || raw?.ru || raw?.en || '') : (raw || '');
+                        return url ? (
+                          <button
+                            type="button"
+                            onClick={() => handleChange(activeTab, key, '')}
+                            className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                          >
+                            {t('admin.content.remove')}
+                          </button>
+                        ) : null;
+                      })()}
                     </div>
                     {uploading && (
                       <p className="text-sm text-cyan-600">Uploading...</p>
@@ -256,11 +266,11 @@ const SiteContent = () => {
             {saving ? (
               <>
                 <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                Saving...
+                {t('admin.content.saving')}
               </>
             ) : (
               <>
-                <FaSave /> Save {sections.find(s => s.id === activeTab)?.label}
+                <FaSave /> {t('admin.content.save')} {sections.find(s => s.id === activeTab)?.label}
               </>
             )}
           </button>
