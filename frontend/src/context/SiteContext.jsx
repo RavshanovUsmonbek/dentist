@@ -30,7 +30,8 @@ export const SiteProvider = ({ children }) => {
           aboutRes,
           contactRes,
           footerRes,
-          galleryRes,
+          galleryContentRes,
+          servicesContentRes,
           servicesRes,
           testimonialsRes,
           galleryImagesRes,
@@ -43,6 +44,7 @@ export const SiteProvider = ({ children }) => {
           axios.get(`${API_URL}/content/contact?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
           axios.get(`${API_URL}/content/footer?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
           axios.get(`${API_URL}/content/gallery?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+          axios.get(`${API_URL}/content/services?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
           axios.get(`${API_URL}/services?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
           axios.get(`${API_URL}/testimonials?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
           axios.get(`${API_URL}/gallery?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
@@ -60,7 +62,8 @@ export const SiteProvider = ({ children }) => {
           about: aboutRes.data.success ? aboutRes.data.data : {},
           contact: contactRes.data.success ? contactRes.data.data : {},
           footer: footerRes.data.success ? footerRes.data.data : {},
-          gallery: galleryRes.data.success ? galleryRes.data.data : {}
+          gallery: galleryContentRes.data.success ? galleryContentRes.data.data : {},
+          services: servicesContentRes.data.success ? servicesContentRes.data.data : {}
         };
         setContent(allContent);
 
@@ -96,7 +99,8 @@ export const SiteProvider = ({ children }) => {
         aboutRes,
         contactRes,
         footerRes,
-        galleryRes,
+        galleryContentRes,
+        servicesContentRes,
         servicesRes,
         testimonialsRes,
         galleryImagesRes,
@@ -109,6 +113,7 @@ export const SiteProvider = ({ children }) => {
         axios.get(`${API_URL}/content/contact?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
         axios.get(`${API_URL}/content/footer?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
         axios.get(`${API_URL}/content/gallery?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
+        axios.get(`${API_URL}/content/services?lang=${language}`).catch(() => ({ data: { success: false, data: {} } })),
         axios.get(`${API_URL}/services?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
         axios.get(`${API_URL}/testimonials?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
         axios.get(`${API_URL}/gallery?lang=${language}`).catch(() => ({ data: { success: false, data: [] } })),
@@ -126,7 +131,8 @@ export const SiteProvider = ({ children }) => {
         about: aboutRes.data.success ? aboutRes.data.data : {},
         contact: contactRes.data.success ? contactRes.data.data : {},
         footer: footerRes.data.success ? footerRes.data.data : {},
-        gallery: galleryRes.data.success ? galleryRes.data.data : {}
+        gallery: galleryContentRes.data.success ? galleryContentRes.data.data : {},
+        services: servicesContentRes.data.success ? servicesContentRes.data.data : {}
       };
       setContent(allContent);
 

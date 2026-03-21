@@ -1,7 +1,9 @@
 import { FaMapMarkerAlt, FaExternalLinkAlt, FaClock } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { useSite } from '../../context/SiteContext';
 
 const Locations = () => {
+  const { t } = useTranslation();
   const { locations, loading } = useSite();
 
   const handleOpenInMaps = (latitude, longitude) => {
@@ -22,10 +24,10 @@ const Locations = () => {
     <section id="locations" className="section-padding bg-gray-50">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-primary-700 mb-4">Our Locations</h2>
+          <h2 className="text-4xl font-bold text-primary-700 mb-4">{t('sections.locations.title')}</h2>
           <div className="w-24 h-1 bg-accent-500 mx-auto mb-4"></div>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Visit us at any of our convenient locations. We're here to serve you!
+            {t('sections.locations.subtitle')}
           </p>
         </div>
 
@@ -50,7 +52,7 @@ const Locations = () => {
               <div className="mb-6 flex items-start gap-2">
                 <FaClock className="text-accent-500 flex-shrink-0 mt-1" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Hours</p>
+                  <p className="text-sm font-medium text-gray-700 mb-2">{t('sections.locations.hours')}</p>
                   <div className="text-sm text-gray-600 space-y-1">
                     {location.business_hours && Object.keys(location.business_hours).length > 0 ? (
                       Object.entries(location.business_hours).map(([day, hours]) => (
@@ -62,7 +64,7 @@ const Locations = () => {
                         )
                       ))
                     ) : (
-                      <p className="text-gray-500 italic">Hours not specified</p>
+                      <p className="text-gray-500 italic">{t('admin.locations.hoursNotSet')}</p>
                     )}
                   </div>
                 </div>
@@ -75,7 +77,7 @@ const Locations = () => {
                   className="w-full flex items-center justify-center gap-2 bg-primary-600 text-white px-4 py-3 rounded-lg hover:bg-primary-700 transition-colors duration-200 mt-auto"
                 >
                   <FaMapMarkerAlt />
-                  <span>Open in Maps</span>
+                  <span>{t('sections.locations.openInMaps')}</span>
                   <FaExternalLinkAlt className="text-sm" />
                 </button>
               )}

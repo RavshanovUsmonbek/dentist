@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { FaSave } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { adminApi } from '../services/adminApi';
 
 const Settings = () => {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -44,11 +46,11 @@ const Settings = () => {
 
     try {
       await adminApi.updateSettings(settings);
-      setMessage('Settings saved successfully!');
+      setMessage(t('admin.settings.saveSuccess'));
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('Failed to save settings:', error);
-      setMessage('Failed to save settings. Please try again.');
+      setMessage(t('admin.settings.saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -68,7 +70,7 @@ const Settings = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Site Settings</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">{t('admin.settings.siteSettings')}</h1>
 
       {message && (
         <div className={`mb-6 p-4 rounded-lg ${message.includes('success') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -80,13 +82,13 @@ const Settings = () => {
         <div className="grid gap-8">
           {/* Contact Information */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">Contact Information</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-6">{t('admin.settings.contactInfo')}</h2>
             <p className="text-sm text-gray-600 mb-4">
-              Global contact details (phone and email). Addresses are managed in the <strong>Locations</strong> section.
+              {t('admin.settings.contactInfoDesc')}
             </p>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.settings.businessName')}</label>
                 <input
                   type="text"
                   value={settings.business_name || ''}
@@ -95,7 +97,7 @@ const Settings = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.settings.emailAddress')}</label>
                 <input
                   type="email"
                   value={settings.business_email || ''}
@@ -104,7 +106,7 @@ const Settings = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Primary Phone</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.settings.primaryPhone')}</label>
                 <input
                   type="text"
                   value={settings.business_phone || ''}
@@ -114,7 +116,7 @@ const Settings = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Secondary Phone</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.settings.secondaryPhone')}</label>
                 <input
                   type="text"
                   value={settings.business_phone_secondary || ''}
@@ -128,10 +130,10 @@ const Settings = () => {
 
           {/* Social Media */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">Social Media Links</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-6">{t('admin.settings.socialLinks')}</h2>
             <div className="grid md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Facebook</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.settings.facebook')}</label>
                 <input
                   type="url"
                   value={settings.social_facebook || ''}
@@ -141,7 +143,7 @@ const Settings = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Twitter</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.settings.twitter')}</label>
                 <input
                   type="url"
                   value={settings.social_twitter || ''}
@@ -151,7 +153,7 @@ const Settings = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.settings.instagram')}</label>
                 <input
                   type="url"
                   value={settings.social_instagram || ''}
@@ -173,11 +175,11 @@ const Settings = () => {
             {saving ? (
               <>
                 <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                Saving...
+                {t('admin.settings.saving')}
               </>
             ) : (
               <>
-                <FaSave /> Save Settings
+                <FaSave /> {t('admin.settings.saveSettings')}
               </>
             )}
           </button>

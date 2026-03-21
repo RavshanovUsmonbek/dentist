@@ -1,10 +1,12 @@
 package repository
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/usmonbek/dentist-backend/internal/models"
 
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -16,6 +18,25 @@ type SettingsRepository struct {
 // NewSettingsRepository creates a new SettingsRepository
 func NewSettingsRepository(db *gorm.DB) *SettingsRepository {
 	return &SettingsRepository{db: db}
+}
+
+// jsonValToString converts a JSONB translation value to a string.
+// For plain strings it returns the string directly.
+// For arrays/objects it returns JSON-encoded string so callers get valid JSON.
+func jsonValToString(val interface{}) string {
+	if val == nil {
+		return ""
+	}
+	switch v := val.(type) {
+	case string:
+		return v
+	default:
+		b, err := json.Marshal(v)
+		if err != nil {
+			return fmt.Sprintf("%v", v)
+		}
+		return string(b)
+	}
 }
 
 // === Site Settings ===
@@ -51,13 +72,13 @@ func (r *SettingsRepository) GetSettingsMapByLang(lang string) (models.SettingsM
 	result := make(models.SettingsMap)
 	for _, s := range settings {
 		// Try to extract translation for requested language
-		if val, exists := s.Translations[lang]; exists && val != nil && fmt.Sprintf("%v", val) != "" {
-			result[s.Key] = fmt.Sprintf("%v", val)
+		if val, exists := s.Translations[lang]; exists && val != nil && jsonValToString(val) != "" {
+			result[s.Key] = jsonValToString(val)
 			continue
 		}
 		// Fallback to Uzbek
-		if val, exists := s.Translations["uz"]; exists && val != nil && fmt.Sprintf("%v", val) != "" {
-			result[s.Key] = fmt.Sprintf("%v", val)
+		if val, exists := s.Translations["uz"]; exists && val != nil && jsonValToString(val) != "" {
+			result[s.Key] = jsonValToString(val)
 			continue
 		}
 		// Fallback to value column
@@ -85,7 +106,13 @@ func (r *SettingsRepository) UpdateSetting(key string, value string) error {
 func (r *SettingsRepository) UpdateSettings(settings map[string]string) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		for key, value := range settings {
-			if err := tx.Model(&models.SiteSetting{}).Where("key = ?", key).Update("value", value).Error; err != nil {
+			// Update value column and also update the 'uz' translation so that
+			// GetSettingsMapByLang returns the new value (translations take priority over value).
+			err := tx.Exec(
+				`UPDATE site_settings SET value = ?, translations = translations || jsonb_build_object('uz', ?::text) WHERE key = ?`,
+				value, value, key,
+			).Error
+			if err != nil {
 				return err
 			}
 		}
@@ -133,13 +160,13 @@ func (r *SettingsRepository) GetContentMapByLang(section, lang string) (models.C
 	result := make(models.ContentMap)
 	for _, c := range content {
 		// Try to extract translation for requested language
-		if val, exists := c.Translations[lang]; exists && val != nil && fmt.Sprintf("%v", val) != "" {
-			result[c.Key] = fmt.Sprintf("%v", val)
+		if val, exists := c.Translations[lang]; exists && val != nil && jsonValToString(val) != "" {
+			result[c.Key] = jsonValToString(val)
 			continue
 		}
 		// Fallback to Uzbek
-		if val, exists := c.Translations["uz"]; exists && val != nil && fmt.Sprintf("%v", val) != "" {
-			result[c.Key] = fmt.Sprintf("%v", val)
+		if val, exists := c.Translations["uz"]; exists && val != nil && jsonValToString(val) != "" {
+			result[c.Key] = jsonValToString(val)
 			continue
 		}
 		// Fallback to value column
@@ -167,7 +194,58 @@ func (r *SettingsRepository) UpdateContent(section, key, value string) error {
 func (r *SettingsRepository) UpdateContentSection(section string, content map[string]string) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		for key, value := range content {
-			if err := tx.Model(&models.SiteContent{}).Where("section = ? AND key = ?", section, key).Update("value", value).Error; err != nil {
+			// Update value column and also update the 'uz' translation so that
+			// GetContentMapByLang returns the new value (translations take priority over value).
+			err := tx.Exec(
+				`UPDATE site_content SET value = ?, translations = translations || jsonb_build_object('uz', ?::text) WHERE section = ? AND key = ?`,
+				value, value, section, key,
+			).Error
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+// UpdateContentSectionTranslations updates multiple content items with per-language translations
+func (r *SettingsRepository) UpdateContentSectionTranslations(section string, content map[string]map[string]string) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		for key, langValues := range content {
+			// Use uz value as the base value column
+			baseValue := langValues["uz"]
+			translations := make(datatypes.JSONMap)
+			for lang, val := range langValues {
+				translations[lang] = val
+			}
+			if err := tx.Model(&models.SiteContent{}).
+				Where("section = ? AND key = ?", section, key).
+				Updates(map[string]interface{}{
+					"value":        baseValue,
+					"translations": translations,
+				}).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+// UpdateSettingsTranslations updates multiple settings with per-language translations
+func (r *SettingsRepository) UpdateSettingsTranslations(settings map[string]map[string]string) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		for key, langValues := range settings {
+			baseValue := langValues["uz"]
+			translations := make(datatypes.JSONMap)
+			for lang, val := range langValues {
+				translations[lang] = val
+			}
+			if err := tx.Model(&models.SiteSetting{}).
+				Where("key = ?", key).
+				Updates(map[string]interface{}{
+					"value":        baseValue,
+					"translations": translations,
+				}).Error; err != nil {
 				return err
 			}
 		}

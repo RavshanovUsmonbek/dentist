@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/usmonbek/dentist-backend/internal/models"
 	"github.com/usmonbek/dentist-backend/internal/repository"
 	"github.com/usmonbek/dentist-backend/internal/services"
-	"gorm.io/datatypes"
 )
 
 // AdminTestimonialsHandler handles admin testimonials CRUD endpoints
@@ -100,7 +100,6 @@ func (h *AdminTestimonialsHandler) createTestimonial(w http.ResponseWriter, r *h
 		Text:         req.Text,
 		DisplayOrder: maxOrder + 1,
 		Active:       active,
-		Translations: datatypes.JSONMap(req.Translations),
 	}
 
 	if err := h.testimonialRepo.Create(testimonial); err != nil {
@@ -139,9 +138,6 @@ func (h *AdminTestimonialsHandler) updateTestimonial(w http.ResponseWriter, r *h
 	if req.Active != nil {
 		testimonial.Active = *req.Active
 	}
-	if req.Translations != nil {
-		testimonial.Translations = datatypes.JSONMap(req.Translations)
-	}
 
 	if err := h.testimonialRepo.Update(testimonial); err != nil {
 		sendInternalError(w, "Failed to update testimonial")
@@ -149,6 +145,79 @@ func (h *AdminTestimonialsHandler) updateTestimonial(w http.ResponseWriter, r *h
 	}
 
 	sendSuccess(w, testimonial)
+}
+
+// HandlePending handles GET /api/admin/testimonials/pending
+func (h *AdminTestimonialsHandler) HandlePending(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		sendMethodNotAllowed(w)
+		return
+	}
+	testimonials, err := h.testimonialRepo.FindPending()
+	if err != nil {
+		sendInternalError(w, "Failed to fetch pending testimonials")
+		return
+	}
+	sendSuccess(w, testimonials)
+}
+
+// parseIDBeforeAction extracts ID from paths like /api/admin/testimonials/9/approve
+func parseIDBeforeAction(path string) (uint, error) {
+	parts := splitPath(path)
+	// path: [..., "testimonials", "9", "approve"] — ID is second-to-last
+	if len(parts) < 2 {
+		return 0, strconv.ErrSyntax
+	}
+	idStr := parts[len(parts)-2]
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return uint(id), nil
+}
+
+// HandleApprove handles PATCH /api/admin/testimonials/:id/approve
+func (h *AdminTestimonialsHandler) HandleApprove(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPatch {
+		sendMethodNotAllowed(w)
+		return
+	}
+	id, err := parseIDBeforeAction(r.URL.Path)
+	if err != nil {
+		sendBadRequest(w, "Invalid testimonial ID")
+		return
+	}
+	if _, err := h.testimonialRepo.FindByID(id); err != nil {
+		sendNotFound(w, "Testimonial not found")
+		return
+	}
+	if err := h.testimonialRepo.UpdateStatus(id, "approved", true); err != nil {
+		sendInternalError(w, "Failed to approve testimonial")
+		return
+	}
+	sendSuccessMessage(w, "Testimonial approved")
+}
+
+// HandleReject handles PATCH /api/admin/testimonials/:id/reject
+func (h *AdminTestimonialsHandler) HandleReject(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPatch {
+		sendMethodNotAllowed(w)
+		return
+	}
+	id, err := parseIDBeforeAction(r.URL.Path)
+	if err != nil {
+		sendBadRequest(w, "Invalid testimonial ID")
+		return
+	}
+	if _, err := h.testimonialRepo.FindByID(id); err != nil {
+		sendNotFound(w, "Testimonial not found")
+		return
+	}
+	if err := h.testimonialRepo.UpdateStatus(id, "rejected", false); err != nil {
+		sendInternalError(w, "Failed to reject testimonial")
+		return
+	}
+	sendSuccessMessage(w, "Testimonial rejected")
 }
 
 func (h *AdminTestimonialsHandler) deleteTestimonial(w http.ResponseWriter, r *http.Request, id uint) {

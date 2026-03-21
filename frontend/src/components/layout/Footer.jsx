@@ -1,7 +1,9 @@
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { useSite } from '../../context/SiteContext';
 
 const Footer = () => {
+  const { t } = useTranslation();
   const { settings, content, locations } = useSite();
   const currentYear = new Date().getFullYear();
 
@@ -51,7 +53,7 @@ const Footer = () => {
           {multiLocationEnabled && hasLocations ? (
             // Multi-location display
             <div className="md:col-span-2">
-              <h3 className="text-xl font-bold mb-4">Contact & Locations</h3>
+              <h3 className="text-xl font-bold mb-4">{t('footer.contactLocations')}</h3>
 
               {/* Global Contact (from settings) */}
               <div className="mb-6 pb-4 border-b border-primary-700">
@@ -114,7 +116,7 @@ const Footer = () => {
           ) : (
             // Single location display (default) - only show if data exists
             <div>
-              <h3 className="text-xl font-bold mb-4">Contact Info</h3>
+              <h3 className="text-xl font-bold mb-4">{t('footer.contactInfo')}</h3>
               <ul className="space-y-3">
                 {phone && (
                   <li className="flex items-center space-x-3">
@@ -145,7 +147,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 pt-8 border-t border-primary-800 text-center text-gray-400">
-          <p>&copy; {currentYear} {businessName}. All rights reserved.</p>
+          <p>&copy; {currentYear} {businessName}. {t('footer.allRightsReserved')}</p>
         </div>
       </div>
     </footer>

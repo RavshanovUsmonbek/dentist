@@ -81,6 +81,21 @@ export const adminApi = {
     return response.data;
   },
 
+  getPendingTestimonials: async () => {
+    const response = await adminAxios.get('/admin/testimonials/pending');
+    return response.data;
+  },
+
+  approveTestimonial: async (id) => {
+    const response = await adminAxios.patch(`/admin/testimonials/${id}/approve`);
+    return response.data;
+  },
+
+  rejectTestimonial: async (id) => {
+    const response = await adminAxios.patch(`/admin/testimonials/${id}/reject`);
+    return response.data;
+  },
+
   // Gallery CRUD
   getGallery: async () => {
     const response = await adminAxios.get('/admin/gallery');

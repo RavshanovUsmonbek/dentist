@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaTooth, FaComments, FaImages, FaEnvelope, FaEnvelopeOpen } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { adminApi } from '../services/adminApi';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     services: 0,
     testimonials: 0,
@@ -43,10 +45,10 @@ const Dashboard = () => {
   };
 
   const statCards = [
-    { label: 'Services', value: stats.services, icon: FaTooth, color: 'bg-blue-500', link: '/admin/services' },
-    { label: 'Testimonials', value: stats.testimonials, icon: FaComments, color: 'bg-green-500', link: '/admin/testimonials' },
-    { label: 'Gallery Images', value: stats.gallery, icon: FaImages, color: 'bg-purple-500', link: '/admin/gallery' },
-    { label: 'Unread Contacts', value: stats.contacts.unread, icon: FaEnvelope, color: 'bg-red-500', link: '/admin/contacts' },
+    { label: t('admin.dashboard.statServices'), value: stats.services, icon: FaTooth, color: 'bg-blue-500', link: '/admin/services' },
+    { label: t('admin.dashboard.statTestimonials'), value: stats.testimonials, icon: FaComments, color: 'bg-green-500', link: '/admin/testimonials' },
+    { label: t('admin.dashboard.statGallery'), value: stats.gallery, icon: FaImages, color: 'bg-purple-500', link: '/admin/gallery' },
+    { label: t('admin.dashboard.statUnread'), value: stats.contacts.unread, icon: FaEnvelope, color: 'bg-red-500', link: '/admin/contacts' },
   ];
 
   if (loading) {
@@ -59,7 +61,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Dashboard</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">{t('admin.dashboard.title')}</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -85,14 +87,14 @@ const Dashboard = () => {
       {/* Recent Contacts */}
       <div className="bg-white rounded-xl shadow-md p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-800">Recent Contact Submissions</h2>
+          <h2 className="text-xl font-bold text-gray-800">{t('admin.dashboard.recentContacts')}</h2>
           <Link to="/admin/contacts" className="text-cyan-600 hover:text-cyan-700 text-sm">
-            View all
+            {t('admin.dashboard.viewAll')}
           </Link>
         </div>
 
         {recentContacts.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">No contact submissions yet</p>
+          <p className="text-gray-500 text-center py-8">{t('admin.dashboard.noContacts')}</p>
         ) : (
           <div className="space-y-4">
             {recentContacts.map((contact) => (

@@ -1,7 +1,9 @@
 import { FaUserMd, FaAward, FaGraduationCap } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { useSite } from '../../context/SiteContext';
 
 const About = () => {
+  const { t } = useTranslation();
   const { content, loading } = useSite();
 
   // Default content with fallbacks
@@ -69,7 +71,7 @@ const About = () => {
     <section id="about" className="section-padding bg-white">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-primary-700 mb-4">About Our Practice</h2>
+          <h2 className="text-4xl font-bold text-primary-700 mb-4">{t('sections.about.title')}</h2>
           <div className="w-24 h-1 bg-accent-500 mx-auto"></div>
         </div>
 
@@ -87,7 +89,7 @@ const About = () => {
                   <FaGraduationCap className="text-3xl text-primary-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-800">Education</h4>
+                  <h4 className="font-semibold text-gray-800">{t('sections.about.education')}</h4>
                   {education.map((item, index) => (
                     <div key={index} className="mb-2">
                       {item.split('\n').map((line, lineIndex) => (
@@ -105,7 +107,7 @@ const About = () => {
                   <FaUserMd className="text-3xl text-primary-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-800">Experience</h4>
+                  <h4 className="font-semibold text-gray-800">{t('sections.about.experience')}</h4>
                   {experience.map((item, index) => (
                     <div key={index} className="mb-2">
                       {item.split('\n').map((line, lineIndex) => (
@@ -123,7 +125,7 @@ const About = () => {
                   <FaAward className="text-3xl text-primary-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-800">Memberships & Awards</h4>
+                  <h4 className="font-semibold text-gray-800">{t('sections.about.awards')}</h4>
                   {awards.map((item, index) => (
                     <div key={index} className="mb-2">
                       {item.split('\n').map((line, lineIndex) => (

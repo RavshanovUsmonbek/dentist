@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaMapMarkerAlt, FaCopy } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { adminApi } from '../services/adminApi';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -8,6 +9,7 @@ import LocationMapPicker from '../components/LocationMapPicker';
 const BUSINESS_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 const Locations = () => {
+  const { t } = useTranslation();
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -147,12 +149,12 @@ const Locations = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Locations</h1>
+        <h1 className="text-3xl font-bold text-gray-800">{t('admin.locations.title')}</h1>
         <button
           onClick={() => { resetForm(); setIsModalOpen(true); }}
           className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors"
         >
-          <FaPlus /> Add Location
+          <FaPlus /> {t('admin.locations.addLocation')}
         </button>
       </div>
 
@@ -165,16 +167,16 @@ const Locations = () => {
                   <FaMapMarkerAlt className="text-cyan-600 text-xl" />
                   <h3 className="text-xl font-semibold text-gray-800">{location.name}</h3>
                   <span className={`px-3 py-1 text-xs rounded-full ${location.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                    {location.active ? 'Active' : 'Inactive'}
+                    {location.active ? t('common.active') : t('common.inactive')}
                   </span>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
                   <div>
-                    <p className="font-medium text-gray-700 mb-1">Address</p>
+                    <p className="font-medium text-gray-700 mb-1">{t('admin.locations.address')}</p>
                     <p>{location.address}</p>
                   </div>
                   <div className="md:col-span-2">
-                    <p className="font-medium text-gray-700 mb-1">Business Hours</p>
+                    <p className="font-medium text-gray-700 mb-1">{t('admin.locations.businessHours')}</p>
                     {location.business_hours && Object.keys(location.business_hours).length > 0 ? (
                       <div className="space-y-1">
                         {Object.entries(location.business_hours).map(([day, hours]) => (
@@ -186,7 +188,7 @@ const Locations = () => {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-gray-500 italic text-sm">Hours not set</p>
+                      <p className="text-gray-500 italic text-sm">{t('admin.locations.hoursNotSet')}</p>
                     )}
                   </div>
                 </div>
@@ -205,7 +207,7 @@ const Locations = () => {
         {locations.length === 0 && (
           <div className="bg-white rounded-xl shadow-md p-8 text-center">
             <FaMapMarkerAlt className="text-4xl text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No locations yet. Add your first location!</p>
+            <p className="text-gray-500">{t('admin.locations.noLocations')}</p>
           </div>
         )}
       </div>
@@ -213,12 +215,12 @@ const Locations = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); resetForm(); }}
-        title={selectedLocation ? 'Edit Location' : 'Add Location'}
+        title={selectedLocation ? t('admin.locations.editLocation') : t('admin.locations.addLocation')}
         size="xl"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Location Name *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.locations.locationName')} *</label>
             <input
               type="text"
               value={formData.name}
@@ -231,7 +233,7 @@ const Locations = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Address *
+              {t('admin.locations.address')} *
             </label>
             <textarea
               name="address"
@@ -248,7 +250,7 @@ const Locations = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Select Location on Map</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.locations.selectOnMap')}</label>
             <LocationMapPicker
               latitude={formData.latitude}
               longitude={formData.longitude}
@@ -267,7 +269,7 @@ const Locations = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Business Hours</label>
+            <label className="block text-sm font-medium text-gray-700 mb-3">{t('admin.locations.businessHours')}</label>
             <div className="space-y-3">
               {BUSINESS_DAYS.map(day => {
                 const daysWithHours = getDaysWithHours(day);
@@ -275,7 +277,7 @@ const Locations = () => {
                   <div key={day} className="grid grid-cols-12 gap-2 items-center">
                     {/* Day label */}
                     <div className="col-span-2">
-                      <span className="text-sm font-medium capitalize text-gray-700">{day}</span>
+                      <span className="text-sm font-medium capitalize text-gray-700">{t(`admin.locations.${day}`)}</span>
                     </div>
 
                     {/* Start time */}
@@ -311,10 +313,10 @@ const Locations = () => {
                           className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs text-gray-600"
                           value=""
                         >
-                          <option value="">Copy from...</option>
+                          <option value="">{t('admin.locations.copyFrom')}</option>
                           {daysWithHours.map(sourceDay => (
                             <option key={sourceDay} value={sourceDay}>
-                              {sourceDay.charAt(0).toUpperCase() + sourceDay.slice(1)}
+                              {t(`admin.locations.${sourceDay}`)}
                             </option>
                           ))}
                         </select>
@@ -337,15 +339,15 @@ const Locations = () => {
               onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
               className="w-4 h-4 text-cyan-600 rounded focus:ring-cyan-500"
             />
-            <label htmlFor="active" className="text-sm text-gray-700">Active</label>
+            <label htmlFor="active" className="text-sm text-gray-700">{t('common.active')}</label>
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
             <button type="button" onClick={() => { setIsModalOpen(false); resetForm(); }} className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
-              Cancel
+              {t('common.cancel')}
             </button>
             <button type="submit" className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors">
-              {selectedLocation ? 'Update' : 'Create'}
+              {selectedLocation ? t('common.edit') : t('common.create')}
             </button>
           </div>
         </form>

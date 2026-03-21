@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/usmonbek/dentist-backend/internal/repository"
@@ -40,15 +41,41 @@ func (h *AdminSettingsHandler) getSettings(w http.ResponseWriter, r *http.Reques
 }
 
 func (h *AdminSettingsHandler) updateSettings(w http.ResponseWriter, r *http.Request) {
-	var updates map[string]string
-	if err := decodeJSON(r, &updates); err != nil {
+	var raw map[string]json.RawMessage
+	if err := decodeJSON(r, &raw); err != nil {
 		sendBadRequest(w, "Invalid request body")
 		return
 	}
 
-	if err := h.settingsRepo.UpdateSettings(updates); err != nil {
-		sendInternalError(w, "Failed to update settings")
-		return
+	stringUpdates := make(map[string]string)
+	translationUpdates := make(map[string]map[string]string)
+
+	for key, val := range raw {
+		// Try to unmarshal as map (multi-lang object)
+		var langMap map[string]string
+		if err := json.Unmarshal(val, &langMap); err == nil {
+			translationUpdates[key] = langMap
+		} else {
+			// Plain string value
+			var strVal string
+			if err := json.Unmarshal(val, &strVal); err == nil {
+				stringUpdates[key] = strVal
+			}
+		}
+	}
+
+	if len(stringUpdates) > 0 {
+		if err := h.settingsRepo.UpdateSettings(stringUpdates); err != nil {
+			sendInternalError(w, "Failed to update settings")
+			return
+		}
+	}
+
+	if len(translationUpdates) > 0 {
+		if err := h.settingsRepo.UpdateSettingsTranslations(translationUpdates); err != nil {
+			sendInternalError(w, "Failed to update settings translations")
+			return
+		}
 	}
 
 	sendSuccessMessage(w, "Settings updated successfully")
@@ -83,15 +110,41 @@ func (h *AdminSettingsHandler) getContent(w http.ResponseWriter, r *http.Request
 }
 
 func (h *AdminSettingsHandler) updateContent(w http.ResponseWriter, r *http.Request, section string) {
-	var updates map[string]string
-	if err := decodeJSON(r, &updates); err != nil {
+	var raw map[string]json.RawMessage
+	if err := decodeJSON(r, &raw); err != nil {
 		sendBadRequest(w, "Invalid request body")
 		return
 	}
 
-	if err := h.settingsRepo.UpdateContentSection(section, updates); err != nil {
-		sendInternalError(w, "Failed to update content")
-		return
+	stringUpdates := make(map[string]string)
+	translationUpdates := make(map[string]map[string]string)
+
+	for key, val := range raw {
+		// Try to unmarshal as map (multi-lang object)
+		var langMap map[string]string
+		if err := json.Unmarshal(val, &langMap); err == nil {
+			translationUpdates[key] = langMap
+		} else {
+			// Plain string value
+			var strVal string
+			if err := json.Unmarshal(val, &strVal); err == nil {
+				stringUpdates[key] = strVal
+			}
+		}
+	}
+
+	if len(stringUpdates) > 0 {
+		if err := h.settingsRepo.UpdateContentSection(section, stringUpdates); err != nil {
+			sendInternalError(w, "Failed to update content")
+			return
+		}
+	}
+
+	if len(translationUpdates) > 0 {
+		if err := h.settingsRepo.UpdateContentSectionTranslations(section, translationUpdates); err != nil {
+			sendInternalError(w, "Failed to update content translations")
+			return
+		}
 	}
 
 	sendSuccessMessage(w, "Content updated successfully")

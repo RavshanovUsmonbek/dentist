@@ -1,18 +1,33 @@
+import { useState } from 'react';
 import { FaStar, FaQuoteLeft } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 import Card from '../ui/Card';
 import { useSite } from '../../context/SiteContext';
 import { testimonials as fallbackTestimonials } from '../../data/testimonials';
 
-const Testimonials = () => {
-  const { testimonials, content, loading } = useSite();
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
-  // Use API data if available, otherwise fallback to static data
+const Testimonials = () => {
+  const { t } = useTranslation();
+  const { testimonials, loading } = useSite();
+
+  const [form, setForm] = useState({ name: '', rating: 5, text: '' });
+  const [submitState, setSubmitState] = useState('idle'); // idle | submitting | success | error
+
   const displayTestimonials = testimonials && testimonials.length > 0 ? testimonials : fallbackTestimonials;
 
-  // Get dynamic content
-  const testimonialsContent = content?.testimonials || {};
-  const title = testimonialsContent.title || 'Client Testimonials';
-  const subtitle = testimonialsContent.subtitle || 'Hear what our clients have to say about their experience';
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitState('submitting');
+    try {
+      await axios.post(`${API_URL}/testimonials`, form);
+      setSubmitState('success');
+      setForm({ name: '', rating: 5, text: '' });
+    } catch {
+      setSubmitState('error');
+    }
+  };
 
   if (loading) {
     return (
@@ -30,10 +45,10 @@ const Testimonials = () => {
     <section id="testimonials" className="section-padding bg-gray-50">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-primary-700 mb-4">{title}</h2>
+          <h2 className="text-4xl font-bold text-primary-700 mb-4">{t('sections.testimonials.title')}</h2>
           <div className="w-24 h-1 bg-accent-500 mx-auto mb-4"></div>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            {subtitle}
+            {t('sections.testimonials.subtitle')}
           </p>
         </div>
 
@@ -64,6 +79,81 @@ const Testimonials = () => {
               </div>
             </Card>
           ))}
+        </div>
+
+        {/* Leave a Review form */}
+        <div className="mt-16 max-w-xl mx-auto">
+          <h3 className="text-2xl font-bold text-primary-700 mb-6 text-center">{t('sections.testimonials.leaveReview')}</h3>
+
+          {submitState === 'success' ? (
+            <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center text-green-700">
+              {t('sections.testimonials.submitSuccess')}
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('sections.testimonials.yourName')}
+                </label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  required
+                  minLength={2}
+                  maxLength={100}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('sections.testimonials.yourRating')}
+                </label>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setForm({ ...form, rating: star })}
+                      className="p-1"
+                    >
+                      <FaStar className={`text-2xl ${star <= form.rating ? 'text-yellow-400' : 'text-gray-300'}`} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('sections.testimonials.yourReview')}
+                </label>
+                <textarea
+                  value={form.text}
+                  onChange={(e) => setForm({ ...form, text: e.target.value })}
+                  required
+                  minLength={10}
+                  maxLength={2000}
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                />
+              </div>
+
+              {submitState === 'error' && (
+                <p className="text-red-600 text-sm">{t('sections.testimonials.submitError')}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitState === 'submitting'}
+                className="w-full bg-primary-600 text-white py-2.5 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 font-medium"
+              >
+                {submitState === 'submitting'
+                  ? t('sections.testimonials.submitting')
+                  : t('sections.testimonials.submitReview')}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </section>

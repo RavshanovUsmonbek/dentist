@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { useSite } from '../../context/SiteContext';
 import Input from '../ui/Input';
 import Textarea from '../ui/Textarea';
@@ -7,6 +8,7 @@ import Button from '../ui/Button';
 import { submitContactForm } from '../../services/api';
 
 const Contact = () => {
+  const { t } = useTranslation();
   const { settings, content, locations, loading } = useSite();
 
   const [formData, setFormData] = useState({
@@ -77,21 +79,20 @@ const Contact = () => {
     <section id="contact" className="section-padding bg-white">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-primary-700 mb-4">Contact Us</h2>
+          <h2 className="text-4xl font-bold text-primary-700 mb-4">{t('contact.title')}</h2>
           <div className="w-24 h-1 bg-accent-500 mx-auto mb-4"></div>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Have questions or want to schedule an appointment? We'd love to hear from you.
-            Fill out the form below or give us a call.
+            {t('contact.subtitle')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-6">Send us a Message</h3>
+            <h3 className="text-2xl font-bold text-gray-800 mb-6">{t('contact.formTitle')}</h3>
 
             {formStatus.success && (
               <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-                Thank you for contacting us! We'll get back to you soon.
+                {t('contact.success')}
               </div>
             )}
 
@@ -103,16 +104,16 @@ const Contact = () => {
 
             <form onSubmit={handleSubmit}>
               <Input
-                label="Name"
+                label={t('contact.name')}
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Your full name"
+                placeholder={t('contact.name')}
                 required
               />
 
               <Input
-                label="Email"
+                label={t('contact.email')}
                 type="email"
                 name="email"
                 value={formData.email}
@@ -122,20 +123,20 @@ const Contact = () => {
               />
 
               <Input
-                label="Phone"
+                label={t('contact.phone')}
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="(555) 123-4567"
+                placeholder="+998 93 123 4567"
               />
 
               <Textarea
-                label="Message"
+                label={t('contact.message')}
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="Tell us how we can help you..."
+                placeholder={t('contact.message')}
                 rows={5}
                 required
               />
@@ -147,20 +148,20 @@ const Contact = () => {
                 loading={formStatus.loading}
                 className="w-full"
               >
-                Send Message
+                {t('contact.send')}
               </Button>
             </form>
           </div>
 
           <div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-6">Contact Information</h3>
+            <h3 className="text-2xl font-bold text-gray-800 mb-6">{t('contact.infoTitle')}</h3>
 
             {multiLocationEnabled && hasLocations ? (
               // Multi-location display
               <div className="space-y-8">
                 {/* Global Contact Info (from settings) */}
                 <div className="border-b border-gray-200 pb-6">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-4">Contact Information</h4>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-4">{t('contact.infoTitle')}</h4>
                   <div className="space-y-3">
                     {/* Phone numbers */}
                     {phone && (
@@ -233,10 +234,10 @@ const Contact = () => {
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-800 mb-1">Phone</h4>
+                      <h4 className="font-semibold text-gray-800 mb-1">{t('contact.phone')}</h4>
                       {phone && <p className="text-gray-600">{phone}</p>}
                       {phoneSecondary && <p className="text-gray-600">{phoneSecondary}</p>}
-                      <p className="text-sm text-gray-500">Call us during business hours</p>
+                      <p className="text-sm text-gray-500">{t('contact.callHours')}</p>
                     </div>
                   </div>
                 )}
@@ -249,9 +250,9 @@ const Contact = () => {
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-800 mb-1">Email</h4>
+                      <h4 className="font-semibold text-gray-800 mb-1">{t('contact.email')}</h4>
                       <p className="text-gray-600">{email}</p>
-                      <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
+                      <p className="text-sm text-gray-500">{t('contact.emailResponse')}</p>
                     </div>
                   </div>
                 )}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaUpload, FaImage, FaTimes, FaGripVertical, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { adminApi } from '../services/adminApi';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -16,6 +17,7 @@ const generateSlug = (label) => {
 };
 
 const Gallery = () => {
+  const { t } = useTranslation();
   // Tab state
   const [activeTab, setActiveTab] = useState('images'); // 'images' or 'categories'
 
@@ -223,20 +225,20 @@ const Gallery = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Gallery Management</h1>
+        <h1 className="text-3xl font-bold text-gray-800">{t('admin.gallery.galleryManagement')}</h1>
         {activeTab === 'images' ? (
           <button
             onClick={() => { resetForm(); setIsModalOpen(true); }}
             className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors"
           >
-            <FaPlus /> Add Image
+            <FaPlus /> {t('admin.gallery.addImage')}
           </button>
         ) : (
           <button
             onClick={() => { resetCategoryForm(); setIsCategoryModalOpen(true); }}
             className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors"
           >
-            <FaPlus /> Add Category
+            <FaPlus /> {t('admin.gallery.addCategory')}
           </button>
         )}
       </div>
@@ -252,7 +254,7 @@ const Gallery = () => {
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Images ({images.length})
+            {t('admin.gallery.imagesTab')} ({images.length})
           </button>
           <button
             onClick={() => setActiveTab('categories')}
@@ -262,7 +264,7 @@ const Gallery = () => {
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Categories ({categories.length})
+            {t('admin.gallery.categoriesTab')} ({categories.length})
           </button>
         </nav>
       </div>
@@ -272,19 +274,19 @@ const Gallery = () => {
         <>
           {/* Category Filter */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Category</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.gallery.filterByCategory')}</label>
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             >
-              <option value="all">All Categories</option>
+              <option value="all">{t('admin.gallery.allCategories')}</option>
               {categories.map(cat => (
                 <option key={cat.slug} value={cat.slug}>{cat.label}</option>
               ))}
             </select>
             <span className="ml-3 text-sm text-gray-600">
-              Showing {filteredImages.length} of {images.length} images
+              {t('admin.gallery.showing')} {filteredImages.length} {t('admin.gallery.of')} {images.length} {t('admin.gallery.images')}
             </span>
           </div>
 
@@ -308,7 +310,7 @@ const Gallery = () => {
                   {categoryLabel}
                 </div>
                 <div className={`absolute top-2 right-2 px-2 py-1 text-xs rounded-full ${image.active ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'}`}>
-                  {image.active ? 'Active' : 'Inactive'}
+                  {image.active ? t('common.active') : t('common.inactive')}
                 </div>
               </div>
               <div className="p-4">
@@ -331,13 +333,13 @@ const Gallery = () => {
             {filteredImages.length === 0 && images.length > 0 && (
               <div className="col-span-full bg-white rounded-xl shadow-md p-8 text-center">
                 <FaImage className="text-4xl text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">No images in this category.</p>
+                <p className="text-gray-500">{t('admin.gallery.noImagesInCategory')}</p>
               </div>
             )}
             {images.length === 0 && (
               <div className="col-span-full bg-white rounded-xl shadow-md p-8 text-center">
                 <FaImage className="text-4xl text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">No images yet. Add your first gallery image!</p>
+                <p className="text-gray-500">{t('admin.gallery.noImages')}</p>
               </div>
             )}
           </div>
@@ -351,19 +353,19 @@ const Gallery = () => {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Order
+                  {t('admin.gallery.order')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category Name
+                  {t('admin.gallery.categoryName')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Description
+                  {t('admin.gallery.categoryDescription')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  {t('admin.services.status')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  {t('common.actions')}
                 </th>
               </tr>
             </thead>
@@ -371,7 +373,7 @@ const Gallery = () => {
               {categories.length === 0 ? (
                 <tr>
                   <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
-                    No gallery categories yet. Add your first category!
+                    {t('admin.gallery.noCategories')}
                   </td>
                 </tr>
               ) : (
@@ -438,7 +440,7 @@ const Gallery = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); resetForm(); }}
-        title={selectedImage ? 'Edit Image' : 'Add Image'}
+        title={selectedImage ? t('admin.gallery.editImage') : t('admin.gallery.addImage')}
         size="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -478,7 +480,7 @@ const Gallery = () => {
                   ) : (
                     <>
                       <FaUpload className="text-3xl text-gray-400 mb-2" />
-                      <span className="text-gray-500">Click to upload an image</span>
+                      <span className="text-gray-500">{t('admin.gallery.uploadClick')}</span>
                     </>
                   )}
                 </label>
@@ -486,7 +488,7 @@ const Gallery = () => {
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Or enter image URL</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.gallery.enterUrl')}</label>
             <input
               type="text"
               value={formData.filename}
@@ -496,7 +498,7 @@ const Gallery = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Alt Text (Description)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.gallery.altTextDesc')}</label>
             <input
               type="text"
               value={formData.alt_text}
@@ -506,7 +508,7 @@ const Gallery = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.gallery.category')}</label>
             <select
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -521,11 +523,11 @@ const Gallery = () => {
               )}
             </select>
             <p className="text-xs text-gray-500 mt-1">
-              Manage categories in the Categories tab
+              {t('admin.gallery.manageCategoriesHint')}
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.gallery.tags')} ({t('admin.gallery.tagsHint')})</label>
             <input
               type="text"
               value={formData.tags}
@@ -542,11 +544,11 @@ const Gallery = () => {
               onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
               className="w-4 h-4 text-cyan-600 rounded focus:ring-cyan-500"
             />
-            <label htmlFor="active" className="text-sm text-gray-700">Active</label>
+            <label htmlFor="active" className="text-sm text-gray-700">{t('common.active')}</label>
           </div>
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-            <button type="button" onClick={() => { setIsModalOpen(false); resetForm(); }} className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
-            <button type="submit" className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors">{selectedImage ? 'Update' : 'Create'}</button>
+            <button type="button" onClick={() => { setIsModalOpen(false); resetForm(); }} className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">{t('common.cancel')}</button>
+            <button type="submit" className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors">{selectedImage ? t('common.edit') : t('common.create')}</button>
           </div>
         </form>
       </Modal>
@@ -564,12 +566,12 @@ const Gallery = () => {
       <Modal
         isOpen={isCategoryModalOpen}
         onClose={() => { setIsCategoryModalOpen(false); resetCategoryForm(); }}
-        title={selectedCategory ? 'Edit Category' : 'Add Category'}
+        title={selectedCategory ? t('admin.gallery.editCategory') : t('admin.gallery.addCategory')}
       >
         <form onSubmit={handleCategorySubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category Name <span className="text-red-500">*</span>
+              {t('admin.gallery.categoryName')} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -586,7 +588,7 @@ const Gallery = () => {
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.gallery.categoryDescription')}</label>
             <textarea
               value={categoryFormData.description}
               onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
@@ -604,7 +606,7 @@ const Gallery = () => {
               className="w-4 h-4 text-cyan-600 rounded focus:ring-cyan-500"
             />
             <label htmlFor="cat-enabled" className="text-sm text-gray-700">
-              Enabled (show on public site)
+              {t('admin.gallery.enabled')}
             </label>
           </div>
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
@@ -613,13 +615,13 @@ const Gallery = () => {
               onClick={() => { setIsCategoryModalOpen(false); resetCategoryForm(); }}
               className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors"
             >
-              {selectedCategory ? 'Update' : 'Create'}
+              {selectedCategory ? t('common.edit') : t('common.create')}
             </button>
           </div>
         </form>

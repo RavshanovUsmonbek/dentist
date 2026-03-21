@@ -23,11 +23,25 @@ func (r *TestimonialRepository) FindAll() ([]models.Testimonial, error) {
 	return testimonials, err
 }
 
-// FindActive returns only active testimonials ordered by display_order
+// FindActive returns up to 9 approved+active testimonials, most recent first
 func (r *TestimonialRepository) FindActive() ([]models.Testimonial, error) {
 	var testimonials []models.Testimonial
-	err := r.db.Where("active = ?", true).Order("display_order ASC").Find(&testimonials).Error
+	err := r.db.Where("active = ? AND status = ?", true, "approved").
+		Order("created_at DESC").Limit(9).Find(&testimonials).Error
 	return testimonials, err
+}
+
+// FindPending returns testimonials awaiting admin review
+func (r *TestimonialRepository) FindPending() ([]models.Testimonial, error) {
+	var testimonials []models.Testimonial
+	err := r.db.Where("status = ?", "pending").Order("created_at ASC").Find(&testimonials).Error
+	return testimonials, err
+}
+
+// UpdateStatus updates the status and active flag of a testimonial
+func (r *TestimonialRepository) UpdateStatus(id uint, status string, active bool) error {
+	return r.db.Model(&models.Testimonial{}).Where("id = ?", id).
+		Updates(map[string]any{"status": status, "active": active}).Error
 }
 
 // FindByID finds a testimonial by ID
@@ -43,6 +57,16 @@ func (r *TestimonialRepository) FindByID(id uint) (*models.Testimonial, error) {
 // Create creates a new testimonial
 func (r *TestimonialRepository) Create(testimonial *models.Testimonial) error {
 	return r.db.Create(testimonial).Error
+}
+
+// CreateSubmission inserts a public testimonial submission, explicitly setting active=false.
+// Cannot use Create() directly because GORM skips zero-value bool when a default is set.
+func (r *TestimonialRepository) CreateSubmission(testimonial *models.Testimonial) error {
+	return r.db.Exec(
+		`INSERT INTO testimonials (name, initials, rating, text, active, status, display_order)
+		 VALUES (?, ?, ?, ?, false, 'pending', 0)`,
+		testimonial.Name, testimonial.Initials, testimonial.Rating, testimonial.Text,
+	).Error
 }
 
 // Update updates a testimonial
@@ -65,54 +89,4 @@ func (r *TestimonialRepository) GetMaxOrder() (int, error) {
 	var maxOrder int
 	err := r.db.Model(&models.Testimonial{}).Select("COALESCE(MAX(display_order), 0)").Scan(&maxOrder).Error
 	return maxOrder, err
-}
-
-// ExtractTestimonialTranslation returns testimonial fields in specified language
-func ExtractTestimonialTranslation(testimonial models.Testimonial, lang string) map[string]interface{} {
-	result := map[string]interface{}{
-		"id":            testimonial.ID,
-		"initials":      testimonial.Initials,
-		"rating":        testimonial.Rating,
-		"display_order": testimonial.DisplayOrder,
-		"active":        testimonial.Active,
-		"created_at":    testimonial.CreatedAt,
-		"updated_at":    testimonial.UpdatedAt,
-	}
-
-	// Extract name
-	if nameMap, ok := testimonial.Translations["name"].(map[string]interface{}); ok {
-		if val, exists := nameMap[lang]; exists && val != nil {
-			result["name"] = val
-		} else if val, exists := nameMap["uz"]; exists && val != nil {
-			result["name"] = val
-		}
-	}
-
-	// Extract text
-	if textMap, ok := testimonial.Translations["text"].(map[string]interface{}); ok {
-		if val, exists := textMap[lang]; exists && val != nil {
-			result["text"] = val
-		} else if val, exists := textMap["uz"]; exists && val != nil {
-			result["text"] = val
-		}
-	}
-
-	// Fallback to original columns if translation not found
-	if result["name"] == nil {
-		result["name"] = testimonial.Name
-	}
-	if result["text"] == nil {
-		result["text"] = testimonial.Text
-	}
-
-	return result
-}
-
-// ExtractTestimonialsTranslation returns multiple testimonials translated to specified language
-func ExtractTestimonialsTranslation(testimonials []models.Testimonial, lang string) []map[string]interface{} {
-	result := make([]map[string]interface{}, len(testimonials))
-	for i, testimonial := range testimonials {
-		result[i] = ExtractTestimonialTranslation(testimonial, lang)
-	}
-	return result
 }

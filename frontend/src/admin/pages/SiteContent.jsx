@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { FaSave, FaUpload } from 'react-icons/fa';
 import { adminApi } from '../services/adminApi';
-import RichTextEditor from '../components/RichTextEditor';
-import DynamicArrayInput from '../components/DynamicArrayInput';
+import MultiLangInput from '../components/MultiLangInput';
+import MultiLangRichText from '../components/MultiLangRichText';
+import MultiLangArrayInput from '../components/MultiLangArrayInput';
 
 const SiteContent = () => {
   const [content, setContent] = useState({});
@@ -33,9 +34,9 @@ const SiteContent = () => {
       { key: 'doctor_name', label: 'Doctor Name', type: 'text' },
       { key: 'doctor_photo', label: 'Doctor Photo', type: 'image' },
       { key: 'about_text', label: 'About Text', type: 'richtext' },
-      { key: 'education', label: 'Education', type: 'array', placeholder: 'Line 1: Degree/Certification name\nLine 2: Institution name' },
-      { key: 'experience', label: 'Experience', type: 'array', placeholder: 'Line 1: Years/Duration\nLine 2: Specialty/Focus area' },
-      { key: 'awards', label: 'Awards', type: 'array', placeholder: 'Line 1: Award/Membership name\nLine 2: Issuing organization' },
+      { key: 'education', label: 'Education', type: 'array' },
+      { key: 'experience', label: 'Experience', type: 'array' },
+      { key: 'awards', label: 'Awards', type: 'array' },
     ],
     services: [
       { key: 'title', label: 'Section Title', type: 'text' },
@@ -71,7 +72,12 @@ const SiteContent = () => {
         if (!contentMap[item.section]) {
           contentMap[item.section] = {};
         }
-        contentMap[item.section][item.key] = item.value;
+        // Use translations if available, otherwise create {uz: value} from base value
+        if (item.translations && Object.keys(item.translations).length > 0) {
+          contentMap[item.section][item.key] = item.translations;
+        } else {
+          contentMap[item.section][item.key] = { uz: item.value || '' };
+        }
       });
       setContent(contentMap);
     } catch (error) {
@@ -170,77 +176,71 @@ const SiteContent = () => {
       {/* Content Form */}
       <div className="bg-white rounded-xl shadow-md p-6">
         <div className="space-y-6">
-          {contentFields[activeTab]?.map(({ key, label, type, placeholder }) => (
+          {contentFields[activeTab]?.map(({ key, label, type }) => (
             <div key={key}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {label}
-              </label>
               {type === 'image' ? (
-                <div className="space-y-3">
-                  {content[activeTab]?.[key] && (
-                    <div className="relative inline-block">
-                      <img
-                        src={`${API_URL.replace('/api', '')}${content[activeTab][key]}`}
-                        alt={label}
-                        className="w-48 h-48 object-cover rounded-lg border-2 border-gray-300"
-                      />
-                    </div>
-                  )}
-                  <div className="flex items-center gap-3">
-                    <label className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors cursor-pointer">
-                      <FaUpload />
-                      <span>{content[activeTab]?.[key] ? 'Change Image' : 'Upload Image'}</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleImageUpload(activeTab, key, file);
-                        }}
-                        className="hidden"
-                        disabled={uploading}
-                      />
-                    </label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {label}
+                  </label>
+                  <div className="space-y-3">
                     {content[activeTab]?.[key] && (
-                      <button
-                        type="button"
-                        onClick={() => handleChange(activeTab, key, '')}
-                        className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                      >
-                        Remove
-                      </button>
+                      <div className="relative inline-block">
+                        <img
+                          src={`${API_URL.replace('/api', '')}${content[activeTab][key]}`}
+                          alt={label}
+                          className="w-48 h-48 object-cover rounded-lg border-2 border-gray-300"
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3">
+                      <label className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors cursor-pointer">
+                        <FaUpload />
+                        <span>{content[activeTab]?.[key] ? 'Change Image' : 'Upload Image'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleImageUpload(activeTab, key, file);
+                          }}
+                          className="hidden"
+                          disabled={uploading}
+                        />
+                      </label>
+                      {content[activeTab]?.[key] && (
+                        <button
+                          type="button"
+                          onClick={() => handleChange(activeTab, key, '')}
+                          className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    {uploading && (
+                      <p className="text-sm text-cyan-600">Uploading...</p>
                     )}
                   </div>
-                  {uploading && (
-                    <p className="text-sm text-cyan-600">Uploading...</p>
-                  )}
                 </div>
               ) : type === 'richtext' ? (
-                <RichTextEditor
-                  value={content[activeTab]?.[key] || ''}
+                <MultiLangRichText
+                  label={label}
+                  value={content[activeTab]?.[key] || {}}
                   onChange={(value) => handleChange(activeTab, key, value)}
-                  placeholder={`Enter ${label.toLowerCase()}...`}
                 />
               ) : type === 'array' ? (
-                <DynamicArrayInput
-                  value={content[activeTab]?.[key] || '[]'}
-                  onChange={(value) => handleChange(activeTab, key, value)}
+                <MultiLangArrayInput
                   label={label}
-                  placeholder={placeholder || `Enter ${label.toLowerCase()} item...`}
-                />
-              ) : type === 'textarea' ? (
-                <textarea
-                  value={content[activeTab]?.[key] || ''}
-                  onChange={(e) => handleChange(activeTab, key, e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  rows={4}
+                  value={content[activeTab]?.[key] || {}}
+                  onChange={(value) => handleChange(activeTab, key, value)}
                 />
               ) : (
-                <input
-                  type="text"
-                  value={content[activeTab]?.[key] || ''}
-                  onChange={(e) => handleChange(activeTab, key, e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                <MultiLangInput
+                  label={label}
+                  type={type}
+                  value={content[activeTab]?.[key] || {}}
+                  onChange={(value) => handleChange(activeTab, key, value)}
                 />
               )}
             </div>

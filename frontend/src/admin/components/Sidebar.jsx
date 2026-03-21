@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   FaHome,
   FaCog,
@@ -11,19 +12,21 @@ import {
   FaMapMarkerAlt
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const Sidebar = () => {
   const { logout, user } = useAuth();
+  const { t } = useTranslation();
 
   const navItems = [
-    { to: '/admin', icon: FaHome, label: 'Dashboard', end: true },
-    { to: '/admin/services', icon: FaTooth, label: 'Services' },
-    { to: '/admin/testimonials', icon: FaComments, label: 'Testimonials' },
-    { to: '/admin/gallery', icon: FaImages, label: 'Gallery' },
-    { to: '/admin/locations', icon: FaMapMarkerAlt, label: 'Locations' },
-    { to: '/admin/contacts', icon: FaEnvelope, label: 'Contacts' },
-    { to: '/admin/settings', icon: FaCog, label: 'Settings' },
-    { to: '/admin/content', icon: FaFileAlt, label: 'Site Content' },
+    { to: '/admin', icon: FaHome, label: t('admin.sidebar.dashboard'), end: true },
+    { to: '/admin/services', icon: FaTooth, label: t('admin.sidebar.services') },
+    { to: '/admin/testimonials', icon: FaComments, label: t('admin.sidebar.testimonials') },
+    { to: '/admin/gallery', icon: FaImages, label: t('admin.sidebar.gallery') },
+    { to: '/admin/locations', icon: FaMapMarkerAlt, label: t('admin.sidebar.locations') },
+    { to: '/admin/contacts', icon: FaEnvelope, label: t('admin.sidebar.contacts') },
+    { to: '/admin/settings', icon: FaCog, label: t('admin.sidebar.settings') },
+    { to: '/admin/content', icon: FaFileAlt, label: t('admin.sidebar.content') },
   ];
 
   return (
@@ -35,6 +38,9 @@ const Sidebar = () => {
             Welcome, {user.full_name || user.username}
           </p>
         )}
+        <div className="mt-3">
+          <LanguageSwitcher />
+        </div>
       </div>
 
       <nav className="flex-1 p-4">
@@ -66,7 +72,7 @@ const Sidebar = () => {
           className="flex items-center gap-3 px-4 py-2 w-full text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors"
         >
           <FaSignOutAlt className="text-lg" />
-          <span>Logout</span>
+          <span>{t('admin.sidebar.logout')}</span>
         </button>
       </div>
     </aside>

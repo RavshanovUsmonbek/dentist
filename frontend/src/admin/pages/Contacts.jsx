@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { FaEnvelope, FaEnvelopeOpen, FaTrash, FaEye } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { adminApi } from '../services/adminApi';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
 
 const Contacts = () => {
+  const { t } = useTranslation();
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -73,9 +75,9 @@ const Contacts = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Contact Submissions</h1>
+        <h1 className="text-3xl font-bold text-gray-800">{t('admin.contacts.submissions')}</h1>
         <div className="text-sm text-gray-500">
-          {contacts.filter(c => !c.read).length} unread
+          {contacts.filter(c => !c.read).length} {t('admin.contacts.unread')}
         </div>
       </div>
 
@@ -83,12 +85,12 @@ const Contacts = () => {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.status')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.name')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.email')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.phone')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.date')}</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -122,7 +124,7 @@ const Contacts = () => {
           </tbody>
         </table>
         {contacts.length === 0 && (
-          <p className="text-gray-500 text-center py-8">No contact submissions yet</p>
+          <p className="text-gray-500 text-center py-8">{t('admin.contacts.noContacts')}</p>
         )}
       </div>
 
@@ -130,31 +132,31 @@ const Contacts = () => {
       <Modal
         isOpen={isViewOpen}
         onClose={() => setIsViewOpen(false)}
-        title="Contact Details"
+        title={t('admin.contacts.contactDetails')}
         size="lg"
       >
         {selectedContact && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-500">Name</label>
+                <label className="text-sm font-medium text-gray-500">{t('admin.contacts.name')}</label>
                 <p className="text-gray-800">{selectedContact.name}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500">Email</label>
+                <label className="text-sm font-medium text-gray-500">{t('admin.contacts.email')}</label>
                 <p className="text-gray-800">{selectedContact.email}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500">Phone</label>
-                <p className="text-gray-800">{selectedContact.phone || 'Not provided'}</p>
+                <label className="text-sm font-medium text-gray-500">{t('admin.contacts.phone')}</label>
+                <p className="text-gray-800">{selectedContact.phone || t('admin.contacts.notProvided')}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500">Date</label>
+                <label className="text-sm font-medium text-gray-500">{t('admin.contacts.date')}</label>
                 <p className="text-gray-800">{formatDate(selectedContact.created_at)}</p>
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-500">Message</label>
+              <label className="text-sm font-medium text-gray-500">{t('admin.contacts.message')}</label>
               <p className="text-gray-800 mt-1 p-4 bg-gray-50 rounded-lg whitespace-pre-wrap">
                 {selectedContact.message}
               </p>
@@ -164,7 +166,7 @@ const Contacts = () => {
                 href={`mailto:${selectedContact.email}?subject=Re: Your inquiry&body=Dear ${selectedContact.name},%0D%0A%0D%0AThank you for contacting us.%0D%0A%0D%0A`}
                 className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors"
               >
-                Reply via Email
+                {t('admin.contacts.replyViaEmail')}
               </a>
             </div>
           </div>

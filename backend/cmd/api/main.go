@@ -92,7 +92,7 @@ func main() {
 	// Initialize handlers
 	contactHandler := handlers.NewContactHandler(contactRepo, telegramService, validator)
 	uploadHandler := handlers.NewUploadHandler(cfg.UploadPath, cfg.UploadURLPrefix, 10<<20) // 10MB max
-	publicHandler := handlers.NewPublicHandler(serviceRepo, testimonialRepo, galleryRepo, galleryCategoryRepo, locationRepo, settingsRepo)
+	publicHandler := handlers.NewPublicHandler(serviceRepo, testimonialRepo, galleryRepo, galleryCategoryRepo, locationRepo, settingsRepo, validator)
 
 	// Admin handlers
 	adminAuthHandler := handlers.NewAdminAuthHandler(adminRepo, authService, validator)
@@ -113,7 +113,13 @@ func main() {
 	// Public endpoints
 	mux.HandleFunc("/api/contact", contactHandler.HandleContact)
 	mux.HandleFunc("/api/services", publicHandler.HandleServices)
-	mux.HandleFunc("/api/testimonials", publicHandler.HandleTestimonials)
+	mux.HandleFunc("/api/testimonials", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			publicHandler.HandleTestimonialSubmit(w, r)
+		} else {
+			publicHandler.HandleTestimonials(w, r)
+		}
+	})
 	mux.HandleFunc("/api/gallery", publicHandler.HandleGallery)
 	mux.HandleFunc("/api/gallery-categories", publicHandler.HandleGalleryCategories)
 	mux.HandleFunc("/api/locations", publicHandler.HandleLocations)
@@ -136,8 +142,16 @@ func main() {
 
 		// Admin testimonials
 		mux.HandleFunc("/api/admin/testimonials", middleware.AuthFunc(authService, adminTestimonialsHandler.HandleTestimonials))
+		mux.HandleFunc("/api/admin/testimonials/pending", middleware.AuthFunc(authService, adminTestimonialsHandler.HandlePending))
 		mux.Handle("/api/admin/testimonials/", middleware.Auth(authService)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			adminTestimonialsHandler.HandleTestimonial(w, r)
+			path := r.URL.Path
+			if strings.HasSuffix(path, "/approve") {
+				adminTestimonialsHandler.HandleApprove(w, r)
+			} else if strings.HasSuffix(path, "/reject") {
+				adminTestimonialsHandler.HandleReject(w, r)
+			} else {
+				adminTestimonialsHandler.HandleTestimonial(w, r)
+			}
 		})))
 
 		// Admin gallery
