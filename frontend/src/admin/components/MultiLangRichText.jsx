@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import RichTextEditor from './RichTextEditor';
 
 const LANGUAGES = [
@@ -8,7 +9,9 @@ const LANGUAGES = [
 ];
 
 const MultiLangRichText = ({ value = {}, onChange, label, required = false }) => {
-  const [activeTab, setActiveTab] = useState('uz');
+  const { i18n } = useTranslation();
+  const [activeTab, setActiveTab] = useState(i18n.language);
+  useEffect(() => { setActiveTab(i18n.language); }, [i18n.language]);
 
   const handleChange = (lang, newValue) => {
     onChange({

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { FaSave, FaUpload } from 'react-icons/fa';
+import { FaSave, FaUpload, FaTooth, FaAward, FaMicroscope, FaShieldAlt } from 'react-icons/fa';
+import Toast, { useToast } from '../components/Toast';
 import { useTranslation } from 'react-i18next';
 import { adminApi } from '../services/adminApi';
 import MultiLangInput from '../components/MultiLangInput';
@@ -11,7 +12,7 @@ const SiteContent = () => {
   const [content, setContent] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState('');
+  const { toast, showToast } = useToast();
   const [activeTab, setActiveTab] = useState('hero');
   const [uploading, setUploading] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
@@ -31,6 +32,7 @@ const SiteContent = () => {
       { key: 'subtitle', label: t('admin.content.fields.subtitle'), type: 'textarea' },
       { key: 'cta_primary_text', label: t('admin.content.fields.ctaPrimaryText'), type: 'text' },
       { key: 'cta_secondary_text', label: t('admin.content.fields.ctaSecondaryText'), type: 'text' },
+      { key: 'features', type: 'feature_cards', label: 'Feature Cards' },
     ],
     about: [
       { key: 'doctor_name', label: t('admin.content.fields.doctorName'), type: 'text' },
@@ -74,8 +76,10 @@ const SiteContent = () => {
         if (!contentMap[item.section]) {
           contentMap[item.section] = {};
         }
-        // Use translations if available, otherwise create {uz: value} from base value
-        if (item.translations && Object.keys(item.translations).length > 0) {
+        if (item.type === 'json') {
+          try { contentMap[item.section][item.key] = JSON.parse(item.value || '[]'); }
+          catch { contentMap[item.section][item.key] = []; }
+        } else if (item.translations && Object.keys(item.translations).length > 0) {
           contentMap[item.section][item.key] = item.translations;
         } else {
           contentMap[item.section][item.key] = { uz: item.value || '' };
@@ -91,15 +95,18 @@ const SiteContent = () => {
 
   const handleSave = async (section) => {
     setSaving(true);
-    setMessage('');
 
     try {
-      await adminApi.updateContent(section, content[section] || {});
-      setMessage(`${sections.find(s => s.id === section)?.label} ${t('admin.content.saveSuccess')}`);
-      setTimeout(() => setMessage(''), 3000);
+      const sectionData = { ...content[section] };
+      // Serialize any JSON-array fields back to strings for the backend
+      Object.keys(sectionData).forEach(k => {
+        if (Array.isArray(sectionData[k])) sectionData[k] = JSON.stringify(sectionData[k]);
+      });
+      await adminApi.updateContent(section, sectionData);
+      showToast(`${sections.find(s => s.id === section)?.label} ${t('admin.content.saveSuccess')}`);
     } catch (error) {
       console.error('Failed to save content:', error);
-      setMessage(t('admin.content.saveFailed'));
+      showToast(t('admin.content.saveFailed'), 'error');
     } finally {
       setSaving(false);
     }
@@ -119,7 +126,6 @@ const SiteContent = () => {
     if (!file) return;
 
     setUploading(true);
-    setMessage(t('admin.content.uploadingImage'));
 
     try {
       const uploadResponse = await adminApi.uploadFile(file);
@@ -127,14 +133,13 @@ const SiteContent = () => {
 
       if (imageUrl) {
         handleChange(section, key, imageUrl);
-        setMessage(t('admin.content.imageUploadSuccess'));
-        setTimeout(() => setMessage(''), 3000);
+        showToast(t('admin.content.imageUploadSuccess'));
       } else {
-        setMessage(t('admin.content.imageUploadNoUrl'));
+        showToast(t('admin.content.imageUploadNoUrl'), 'error');
       }
     } catch (error) {
       console.error('Failed to upload image:', error);
-      setMessage(t('admin.content.imageUploadFailed'));
+      showToast(t('admin.content.imageUploadFailed'), 'error');
     } finally {
       setUploading(false);
     }
@@ -143,20 +148,16 @@ const SiteContent = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-cyan-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-800 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
     <div>
+      <Toast message={toast.message} type={toast.type} />
       <h1 className="text-3xl font-bold text-gray-800 mb-8">{t('admin.content.title')}</h1>
 
-      {message && (
-        <div className={`mb-6 p-4 rounded-lg ${message.includes('success') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-          {message}
-        </div>
-      )}
 
       {/* Tabs */}
       <div className="flex border-b border-gray-200 mb-6">
@@ -166,7 +167,7 @@ const SiteContent = () => {
             onClick={() => setActiveTab(id)}
             className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
               activeTab === id
-                ? 'border-cyan-600 text-cyan-600'
+                ? 'border-primary-800 text-primary-800'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -200,7 +201,7 @@ const SiteContent = () => {
                       ) : null;
                     })()}
                     <div className="flex items-center gap-3">
-                      <label className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors cursor-pointer">
+                      <label className="flex items-center gap-2 bg-primary-800 text-white px-4 py-2 rounded-lg hover:bg-primary-900 transition-colors cursor-pointer">
                         <FaUpload />
                         <span>{content[activeTab]?.[key] ? t('admin.content.changeImage') : t('admin.content.uploadImage')}</span>
                         <input
@@ -229,7 +230,7 @@ const SiteContent = () => {
                       })()}
                     </div>
                     {uploading && (
-                      <p className="text-sm text-cyan-600">Uploading...</p>
+                      <p className="text-sm text-primary-800">Uploading...</p>
                     )}
                   </div>
                 </div>
@@ -245,6 +246,71 @@ const SiteContent = () => {
                   value={content[activeTab]?.[key] || {}}
                   onChange={(value) => handleChange(activeTab, key, value)}
                 />
+              ) : type === 'feature_cards' ? (
+                (() => {
+                  const ICONS = [FaTooth, FaAward, FaMicroscope, FaShieldAlt];
+                  const featuresArr = Array.isArray(content[activeTab]?.[key])
+                    ? content[activeTab][key]
+                    : [];
+                  const updateFeature = (i, field, val) => {
+                    const updated = featuresArr.map((f, j) => j === i ? { ...f, [field]: val } : f);
+                    handleChange(activeTab, key, updated);
+                  };
+                  const addFeature = () => handleChange(activeTab, key, [
+                    ...featuresArr,
+                    { title: { uz: '', ru: '', en: '' }, desc: { uz: '', ru: '', en: '' } }
+                  ]);
+                  const removeFeature = (i) => handleChange(activeTab, key, featuresArr.filter((_, j) => j !== i));
+                  return (
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-3">Feature Cards</p>
+                      <div className="space-y-4">
+                        {featuresArr.map((feature, i) => {
+                          const Icon = ICONS[i % ICONS.length];
+                          const currentTitle = feature.title?.uz || feature.title?.en || feature.title?.ru || `Card ${i + 1}`;
+                          return (
+                            <div key={i} className="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
+                                    <Icon className="text-primary-700 text-sm" />
+                                  </div>
+                                  <span className="text-sm font-semibold text-gray-700">{currentTitle}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => removeFeature(i)}
+                                  className="text-xs text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded-lg transition-colors"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                              <MultiLangInput
+                                label="Title"
+                                type="text"
+                                value={feature.title || {}}
+                                onChange={(val) => updateFeature(i, 'title', val)}
+                              />
+                              <MultiLangInput
+                                label="Description"
+                                type="text"
+                                value={feature.desc || {}}
+                                onChange={(val) => updateFeature(i, 'desc', val)}
+                              />
+                            </div>
+                          );
+                        })}
+                        <button
+                          type="button"
+                          onClick={addFeature}
+                          className="w-full flex items-center justify-center gap-2 text-sm font-medium text-primary-800 bg-primary-50 hover:bg-primary-100 border-2 border-dashed border-primary-200 hover:border-primary-300 px-4 py-3 rounded-xl transition-colors"
+                        >
+                          + Add Card
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()
               ) : (
                 <MultiLangInput
                   label={label}
@@ -261,7 +327,7 @@ const SiteContent = () => {
           <button
             onClick={() => handleSave(activeTab)}
             disabled={saving}
-            className="flex items-center gap-2 bg-cyan-600 text-white px-6 py-3 rounded-lg hover:bg-cyan-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-primary-800 text-white px-6 py-3 rounded-lg hover:bg-primary-900 transition-colors disabled:opacity-50"
           >
             {saving ? (
               <>

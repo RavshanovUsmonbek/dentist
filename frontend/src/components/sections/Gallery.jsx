@@ -10,8 +10,6 @@ const GalleryImage = ({ image }) => {
   const [hasError, setHasError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Convert image URL to full URL if it's a relative path
-  // API returns 'filename' field, fallback data uses 'src' or 'image_url'
   const imagePath = image.filename || image.image_url || image.src;
   const imageUrl = imagePath?.startsWith('http')
     ? imagePath
@@ -22,66 +20,60 @@ const GalleryImage = ({ image }) => {
   const altText = image.alt_text || image.alt || image.title || 'Gallery image';
 
   if (hasError) {
-    // Show placeholder if image fails to load
     return (
-      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-sky-100 to-sky-200">
+      <div className="flex items-center justify-center bg-primary-50 aspect-square rounded-xl">
         <div className="text-center p-6">
-          <FaImage className="text-6xl text-sky-600 mx-auto mb-3" />
-          <p className="text-sm text-gray-600">{altText}</p>
-          <p className="text-xs text-gray-500 mt-2 italic">Image not available</p>
+          <FaImage className="text-4xl text-primary-200 mx-auto mb-3" />
+          <p className="text-xs text-gray-400 font-sans">{altText}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <>
+    <div className="relative overflow-hidden rounded-xl group">
       {!isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-sky-100 to-sky-200">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-sky-600 border-t-transparent"></div>
+        <div className="flex items-center justify-center bg-primary-50 aspect-square rounded-xl">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-800 border-t-transparent" />
         </div>
       )}
       <img
         src={imageUrl}
         alt={altText}
-        className={`w-full h-full object-cover transition-all duration-300 hover:-translate-y-1 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full object-cover transition-all duration-500 group-hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}
         onLoad={() => setIsLoaded(true)}
         onError={() => setHasError(true)}
       />
-    </>
+      {/* Hover overlay */}
+      {isLoaded && (
+        <div className="absolute inset-0 bg-primary-900/0 group-hover:bg-primary-900/40 transition-all duration-300 rounded-xl flex items-end">
+          {altText && altText !== 'Gallery image' && (
+            <p className="text-white text-xs font-sans font-medium px-4 py-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">{altText}</p>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
 const Gallery = () => {
-  const { gallery, galleryCategories, loading, content } = useSite();
+  const { gallery, galleryCategories, loading } = useSite();
   const [activeCategory, setActiveCategory] = useState(null);
 
-  // Use API data if available, otherwise fallback to static data
   const displayGallery = gallery && gallery.length > 0 ? gallery : fallbackGallery;
 
-  // Use dynamic categories from API
   const categoriesToShow = galleryCategories && galleryCategories.length > 0
     ? galleryCategories.filter(cat => cat.enabled)
     : [];
 
-  // Set initial active category to first enabled category
-  useState(() => {
-    if (categoriesToShow.length > 0 && !activeCategory) {
-      setActiveCategory(categoriesToShow[0].slug);
-    }
-  }, [categoriesToShow]);
-
-  // If no active category set yet, set it to first category
   if (!activeCategory && categoriesToShow.length > 0) {
     setActiveCategory(categoriesToShow[0].slug);
   }
 
-  // Filter images by active category
   const filteredImages = activeCategory
     ? displayGallery.filter(img => (img.category || 'general') === activeCategory)
     : displayGallery;
 
-  // Get current category object and use its label and description
   const currentCategoryObj = categoriesToShow.find(cat => cat.slug === activeCategory);
   const currentTitle = currentCategoryObj?.label || 'Gallery';
   const currentSubtitle = currentCategoryObj?.description || 'Browse our professional gallery.';
@@ -90,9 +82,7 @@ const Gallery = () => {
     return (
       <section id="gallery" className="section-padding bg-white">
         <div className="container-custom">
-          <div className="text-center">
-            <p className="text-gray-600">Loading gallery...</p>
-          </div>
+          <p className="text-gray-400 text-center text-sm">Loading gallery...</p>
         </div>
       </section>
     );
@@ -101,50 +91,56 @@ const Gallery = () => {
   return (
     <section id="gallery" className="section-padding bg-white">
       <div className="container-custom">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-sky-700 mb-4">{currentTitle}</h2>
-          <div className="w-24 h-1 bg-cyan-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            {currentSubtitle}
-          </p>
+        {/* Section header */}
+        <div className="mb-12">
+          <div className="section-title-bar" />
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <h2 className="font-display text-4xl md:text-5xl font-semibold text-primary-800">
+              {currentTitle}
+            </h2>
+            <p className="text-gray-500 text-sm max-w-xs leading-relaxed font-sans">
+              {currentSubtitle}
+            </p>
+          </div>
         </div>
 
-        {/* Category Tabs */}
+        {/* Underline-style category tabs */}
         {categoriesToShow.length > 1 && (
-          <div className="flex justify-center flex-wrap gap-2 mb-8">
+          <div className="flex gap-0 mb-10 border-b border-gray-200">
             {categoriesToShow.map(cat => (
               <button
                 key={cat.slug}
                 onClick={() => setActiveCategory(cat.slug)}
-                className={`px-6 py-2 rounded-full font-medium transition-all ${
+                className={`relative px-6 py-3 text-sm font-sans font-medium transition-colors duration-200 ${
                   activeCategory === cat.slug
-                    ? 'bg-cyan-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'text-primary-800'
+                    : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
                 {cat.label}
+                {activeCategory === cat.slug && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold-500" />
+                )}
               </button>
             ))}
           </div>
         )}
 
-        <div className="flex flex-wrap justify-center gap-6">
-          {filteredImages.length > 0 ? (
-            filteredImages.map((image) => (
-              <div
-                key={image.id}
-                className="relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
-              >
+        {/* Masonry grid */}
+        {filteredImages.length > 0 ? (
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+            {filteredImages.map((image) => (
+              <div key={image.id} className="break-inside-avoid">
                 <GalleryImage image={image} />
               </div>
-            ))
-          ) : (
-            <div className="w-full text-center py-12">
-              <FaImage className="text-6xl text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">No images in this category yet.</p>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <FaImage className="text-5xl text-gray-200 mx-auto mb-4" />
+            <p className="text-gray-400 font-sans text-sm">No images in this category yet.</p>
+          </div>
+        )}
       </div>
     </section>
   );

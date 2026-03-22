@@ -11,10 +11,7 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -42,59 +39,69 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white shadow-md' : 'bg-primary-700'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? 'bg-cream-50/95 backdrop-blur-md border-b border-gray-200/60 shadow-sm'
+          : 'bg-transparent'
       }`}
     >
       <div className="container-custom">
         <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-2">
-            <FaTooth className={`text-2xl ${scrolled ? 'text-primary-600' : 'text-white'}`} />
-            <span className={`text-xl font-bold ${scrolled ? 'text-primary-700' : 'text-white'}`}>
+
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <FaTooth className="text-gold-500 text-xl flex-shrink-0" />
+            <span className={`font-display text-xl font-semibold tracking-wide transition-colors duration-300 ${
+              scrolled ? 'text-primary-800' : 'text-white'
+            }`}>
               {businessName}
             </span>
           </div>
 
-          <div className="hidden md:flex items-center space-x-6">
-            <nav className="flex space-x-8">
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-8">
+            <nav className="flex items-center gap-7">
               {navItems.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
                   onClick={(e) => scrollToSection(e, item.href)}
-                  className={`font-medium hover:text-accent-500 transition-colors duration-200 ${
-                    scrolled ? 'text-gray-700' : 'text-white'
+                  className={`relative text-xs font-sans font-medium tracking-wide uppercase transition-colors duration-200 group ${
+                    scrolled ? 'text-gray-600 hover:text-primary-800' : 'text-white/80 hover:text-white'
                   }`}
                 >
                   {item.name}
+                  <span className="absolute -bottom-0.5 left-0 right-0 h-px bg-gold-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
                 </a>
               ))}
             </nav>
             <LanguageSwitcher />
           </div>
 
+          {/* Mobile menu toggle */}
           <button
-            className="md:hidden"
+            className="md:hidden p-1"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <FaTimes className={`text-2xl ${scrolled ? 'text-gray-700' : 'text-white'}`} />
+              <FaTimes className={`text-xl ${scrolled ? 'text-gray-700' : 'text-white'}`} />
             ) : (
-              <FaBars className={`text-2xl ${scrolled ? 'text-gray-700' : 'text-white'}`} />
+              <FaBars className={`text-xl ${scrolled ? 'text-gray-700' : 'text-white'}`} />
             )}
           </button>
         </div>
 
+        {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-200">
-            <nav className="flex flex-col space-y-1 px-4 py-4">
+          <div className="md:hidden bg-cream-50 border-t border-gray-200">
+            <nav className="flex flex-col px-4 py-4">
               {navItems.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
                   onClick={(e) => scrollToSection(e, item.href)}
-                  className="px-4 py-3 text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-lg transition-colors duration-200"
+                  className="px-4 py-3 text-sm font-sans text-gray-600 hover:text-primary-800 hover:bg-primary-50 rounded-lg transition-colors duration-200"
                 >
                   {item.name}
                 </a>

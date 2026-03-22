@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
-import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaTooth, FaSmile, FaStethoscope, FaAmbulance, FaHeart, FaStar } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { adminApi } from '../services/adminApi';
-import Modal from '../components/Modal';
-import ConfirmDialog from '../components/ConfirmDialog';
+import Drawer from '../components/Drawer';
+import InlineConfirm from '../components/InlineConfirm';
+import Toast, { useToast } from '../components/Toast';
 import MultiLangInput from '../components/MultiLangInput';
 import { prepareTranslationsForAPI, extractTranslationsFromAPI } from '../utils/translationHelpers';
 
 const Services = () => {
   const { t, i18n } = useTranslation();
+  const { toast, showToast } = useToast();
 
   const getTranslated = (service, field) => {
     const lang = i18n.language;
@@ -19,8 +21,7 @@ const Services = () => {
   };
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [formData, setFormData] = useState({
     title: { uz: '', ru: '', en: '' },
@@ -29,7 +30,14 @@ const Services = () => {
     active: true
   });
 
-  const icons = ['FaTooth', 'FaSmile', 'FaStethoscope', 'FaAmbulance', 'FaHeart', 'FaStar'];
+  const icons = [
+    { name: 'FaTooth', component: FaTooth },
+    { name: 'FaSmile', component: FaSmile },
+    { name: 'FaStethoscope', component: FaStethoscope },
+    { name: 'FaAmbulance', component: FaAmbulance },
+    { name: 'FaHeart', component: FaHeart },
+    { name: 'FaStar', component: FaStar },
+  ];
 
   useEffect(() => {
     loadServices();
@@ -49,43 +57,41 @@ const Services = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Prepare data for API with translations
       const apiData = prepareTranslationsForAPI(formData, ['title', 'description']);
-
       if (selectedService) {
         await adminApi.updateService(selectedService.id, apiData);
       } else {
         await adminApi.createService(apiData);
       }
-      setIsModalOpen(false);
+      setIsDrawerOpen(false);
       resetForm();
       loadServices();
+      showToast(selectedService ? 'Service updated' : 'Service created');
     } catch (error) {
       console.error('Failed to save service:', error);
+      showToast('Failed to save service', 'error');
     }
   };
 
   const handleEdit = (service) => {
     setSelectedService(service);
-
-    // Extract translations from API response
     const translatedData = extractTranslationsFromAPI(service, ['title', 'description']);
-
     setFormData({
       title: translatedData.title,
       description: translatedData.description,
       icon: service.icon,
       active: service.active
     });
-    setIsModalOpen(true);
+    setIsDrawerOpen(true);
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (id) => {
     try {
-      await adminApi.deleteService(selectedService.id);
+      await adminApi.deleteService(id);
       loadServices();
+      showToast('Service deleted');
     } catch (error) {
-      console.error('Failed to delete service:', error);
+      showToast('Failed to delete service', 'error');
     }
   };
 
@@ -102,26 +108,27 @@ const Services = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-cyan-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-800 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
     <div>
+      <Toast message={toast.message} type={toast.type} />
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">{t('admin.services.title')}</h1>
+        <h1 className="text-2xl font-semibold text-primary-800">{t('admin.services.title')}</h1>
         <button
-          onClick={() => { resetForm(); setIsModalOpen(true); }}
-          className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors"
+          onClick={() => { resetForm(); setIsDrawerOpen(true); }}
+          className="flex items-center gap-2 bg-primary-800 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
         >
-          <FaPlus /> {t('admin.services.addService')}
+          <FaPlus className="text-xs" /> {t('admin.services.addService')}
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.services.serviceTitle')}</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.services.icon')}</th>
@@ -129,52 +136,82 @@ const Services = () => {
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('common.actions')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-100">
             {services.map((service) => (
-              <tr key={service.id} className="hover:bg-gray-50">
+              <tr key={service.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4">
                   <div>
                     <p className="font-medium text-gray-800">{getTranslated(service, 'title')}</p>
                     <p className="text-sm text-gray-500 line-clamp-1">{getTranslated(service, 'description')}</p>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-gray-500">{service.icon}</td>
                 <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-xs rounded-full ${service.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                  {(() => {
+                    const match = icons.find(i => i.name === service.icon);
+                    const Icon = match?.component;
+                    return Icon ? (
+                      <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary-50">
+                        <Icon className="text-primary-700 text-sm" />
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 text-xs">{service.icon}</span>
+                    );
+                  })()}
+                </td>
+                <td className="px-6 py-4">
+                  <span className={`px-2 py-1 text-xs rounded-full font-medium ${service.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                     {service.active ? t('common.active') : t('common.inactive')}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <button
-                    onClick={() => handleEdit(service)}
-                    className="text-blue-600 hover:text-blue-800 p-2"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => { setSelectedService(service); setIsDeleteOpen(true); }}
-                    className="text-red-600 hover:text-red-800 p-2"
-                  >
-                    <FaTrash />
-                  </button>
+                  <div className="flex items-center justify-end gap-1">
+                    <button
+                      onClick={() => handleEdit(service)}
+                      className="text-primary-600 hover:text-primary-800 hover:bg-primary-50 p-2 rounded-lg transition-colors"
+                    >
+                      <FaEdit className="text-sm" />
+                    </button>
+                    <InlineConfirm onConfirm={() => handleDelete(service.id)}>
+                      <button className="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors">
+                        <FaTrash className="text-sm" />
+                      </button>
+                    </InlineConfirm>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         {services.length === 0 && (
-          <p className="text-gray-500 text-center py-8">{t('admin.services.noServices')}</p>
+          <p className="text-gray-500 text-center py-8 text-sm">{t('admin.services.noServices')}</p>
         )}
       </div>
 
-      {/* Add/Edit Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); resetForm(); }}
+      <Drawer
+        isOpen={isDrawerOpen}
+        onClose={() => { setIsDrawerOpen(false); resetForm(); }}
         title={selectedService ? t('admin.services.editService') : t('admin.services.addService')}
         size="lg"
+        footer={
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => { setIsDrawerOpen(false); resetForm(); }}
+              className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm"
+            >
+              {t('common.cancel')}
+            </button>
+            <button
+              form="service-form"
+              type="submit"
+              className="px-4 py-2 text-white bg-primary-800 hover:bg-primary-700 rounded-lg transition-colors text-sm font-medium"
+            >
+              {selectedService ? t('common.edit') : t('common.create')}
+            </button>
+          </div>
+        }
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form id="service-form" onSubmit={handleSubmit} className="space-y-5">
           <MultiLangInput
             value={formData.title}
             onChange={(value) => setFormData({ ...formData, title: value })}
@@ -189,16 +226,24 @@ const Services = () => {
             required
           />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.services.icon')}</label>
-            <select
-              value={formData.icon}
-              onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-            >
-              {icons.map((icon) => (
-                <option key={icon} value={icon}>{icon}</option>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.services.icon')}</label>
+            <div className="flex flex-wrap gap-2">
+              {icons.map(({ name, component: Icon }) => (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, icon: name })}
+                  title={name}
+                  className={`w-11 h-11 flex items-center justify-center rounded-lg border-2 transition-all duration-150 ${
+                    formData.icon === name
+                      ? 'border-primary-800 bg-primary-50 text-primary-800'
+                      : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  }`}
+                >
+                  <Icon className="text-lg" />
+                </button>
               ))}
-            </select>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -206,36 +251,12 @@ const Services = () => {
               id="active"
               checked={formData.active}
               onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-              className="w-4 h-4 text-cyan-600 rounded focus:ring-cyan-500"
+              className="w-4 h-4 rounded accent-primary-800"
             />
             <label htmlFor="active" className="text-sm text-gray-700">{t('common.active')}</label>
           </div>
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={() => { setIsModalOpen(false); resetForm(); }}
-              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-            >
-              {t('common.cancel')}
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors"
-            >
-              {selectedService ? t('common.edit') : t('common.create')}
-            </button>
-          </div>
         </form>
-      </Modal>
-
-      <ConfirmDialog
-        isOpen={isDeleteOpen}
-        onClose={() => setIsDeleteOpen(false)}
-        onConfirm={handleDelete}
-        title="Delete Service"
-        message={`Are you sure you want to delete "${selectedService?.title}"? This action cannot be undone.`}
-        confirmText="Delete"
-      />
+      </Drawer>
     </div>
   );
 };

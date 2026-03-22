@@ -32,12 +32,20 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-gray-800 text-white min-h-screen flex flex-col">
-      <div className="p-4 border-b border-gray-700">
-        <h1 className="text-xl font-bold text-cyan-400">Admin Panel</h1>
+    <aside className="w-60 bg-white border-r border-gray-100 min-h-screen flex flex-col">
+      {/* Brand */}
+      <div className="px-5 py-5 border-b border-gray-100">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-7 h-7 rounded-lg bg-primary-800 flex items-center justify-center">
+            <FaTooth className="text-gold-400 text-xs" />
+          </div>
+          <span className="font-display text-lg font-semibold text-primary-800 leading-none">
+            Admin
+          </span>
+        </div>
         {user && (
-          <p className="text-sm text-gray-400 mt-1">
-            Welcome, {user.full_name || user.username}
+          <p className="text-xs text-gray-400">
+            {user.full_name || user.username}
           </p>
         )}
         <div className="mt-3">
@@ -45,22 +53,22 @@ const Sidebar = () => {
         </div>
       </div>
 
-      <nav className="flex-1 p-4">
-        <ul className="space-y-2">
+      <nav className="flex-1 px-3 py-4">
+        <ul className="space-y-0.5">
           {navItems.map(({ to, icon: Icon, label, end }) => (
             <li key={to}>
               <NavLink
                 to={to}
                 end={end}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+                  `flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'bg-cyan-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      ? 'bg-primary-50 text-primary-800 font-medium border-l-2 border-primary-800'
+                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800 border-l-2 border-transparent'
                   }`
                 }
               >
-                <Icon className="text-lg" />
+                <Icon className="text-sm flex-shrink-0" />
                 <span>{label}</span>
               </NavLink>
             </li>
@@ -68,12 +76,12 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-gray-700">
+      <div className="px-3 py-4 border-t border-gray-100">
         <button
           onClick={logout}
-          className="flex items-center gap-3 px-4 py-2 w-full text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors"
+          className="flex items-center gap-3 px-3 py-2 w-full text-gray-400 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-sm"
         >
-          <FaSignOutAlt className="text-lg" />
+          <FaSignOutAlt className="text-sm flex-shrink-0" />
           <span>{t('admin.sidebar.logout')}</span>
         </button>
       </div>
