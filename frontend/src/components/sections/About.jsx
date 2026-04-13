@@ -51,10 +51,10 @@ const About = () => {
   return (
     <section id="about" className="section-padding bg-white">
       <div className="container-custom">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start">
 
           {/* Photo column (LEFT) */}
-          <div className="relative order-2 lg:order-1">
+          <div className="relative order-2 md:order-1">
             {doctorPhoto ? (
               <div className="relative">
                 {/* Gold frame decoration */}
@@ -79,11 +79,11 @@ const About = () => {
             )}
 
             {/* Gold accent line between columns (desktop only) */}
-            <div className="hidden lg:block absolute -right-8 top-12 bottom-12 w-px bg-gradient-to-b from-transparent via-gold-400 to-transparent" />
+            <div className="hidden md:block absolute -right-8 top-12 bottom-12 w-px bg-gradient-to-b from-transparent via-gold-400 to-transparent" />
           </div>
 
           {/* Text column (RIGHT) */}
-          <div className="order-1 lg:order-2">
+          <div className="order-1 md:order-2">
             {/* Section label */}
             <div className="flex items-center gap-3 mb-6">
               <div className="section-title-bar mb-0 w-8 flex-shrink-0" style={{ marginBottom: 0 }} />

@@ -1,0 +1,20 @@
+[      60ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=13e7bfc0:14337
+[      75ms] [INFO] 🌐 i18next is made possible by our own product, Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙 @ http://localhost:5173/node_modules/.vite/deps/i18next.js?v=8fa31b2d:1519
+[  257863ms] [ERROR] Error fetching site data: ReferenceError: locationsContentRes is not defined
+    at http://localhost:5173/src/context/SiteContext.jsx?t=1776084184784:83:16 @ http://localhost:5173/src/context/SiteContext.jsx?t=1776084184784:91
+[  266630ms] ReferenceError: content is not defined
+    at http://localhost:5173/src/components/sections/Locations.jsx?t=1776084193626:68:10
+    at Array.map (<anonymous>)
+    at Locations (http://localhost:5173/src/components/sections/Locations.jsx?t=1776084193626:60:25)
+    at Object.react_stack_bottom_frame (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=13e7bfc0:12868:12)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=13e7bfc0:4213:19)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=13e7bfc0:5569:16)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=13e7bfc0:6140:20)
+    at runWithFiberInDEV (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=13e7bfc0:851:66)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=13e7bfc0:8429:92)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=13e7bfc0:8325:37)
+[  266630ms] [WARNING] %s
+
+%s
+ An error occurred in the <Locations> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=13e7bfc0:5257

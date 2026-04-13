@@ -35,6 +35,7 @@ const Snapshots = () => {
   const [importFile, setImportFile] = useState(null);
   const [importMeta, setImportMeta] = useState({ name: '', description: '' });
   const [importError, setImportError] = useState('');
+  const [importImageCount, setImportImageCount] = useState(null);
 
   useEffect(() => {
     loadSnapshots();
@@ -106,6 +107,7 @@ const Snapshots = () => {
     setImportError('');
     setImportData(null);
     setImportFile(null);
+    setImportImageCount(null);
 
     if (file.name.endsWith('.zip')) {
       try {
@@ -121,6 +123,10 @@ const Snapshots = () => {
         if (err) { setImportError(err); return; }
         setImportData(parsed);
         setImportFile(file);
+        const imageFiles = Object.keys(zip.files).filter(
+          name => name.startsWith('images/') && !zip.files[name].dir
+        );
+        setImportImageCount(imageFiles.length);
         if (!importMeta.name) {
           setImportMeta(m => ({ ...m, name: file.name.replace(/\.zip$/, '') }));
         }
@@ -168,6 +174,7 @@ const Snapshots = () => {
       setImportData(null);
       setImportFile(null);
       setImportMeta({ name: '', description: '' });
+      setImportImageCount(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       loadSnapshots();
     } catch {
@@ -294,7 +301,14 @@ const Snapshots = () => {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                 <span>{t('admin.snapshots.previewServices')}: <b>{importData.services?.length ?? 0}</b></span>
                 <span>{t('admin.snapshots.previewTestimonials')}: <b>{importData.testimonials?.length ?? 0}</b></span>
-                <span>{t('admin.snapshots.previewGallery')}: <b>{importData.gallery_images?.length ?? 0}</b></span>
+                <span>
+                  {t('admin.snapshots.previewGallery')}: <b>{importData.gallery_images?.length ?? 0}</b>
+                  {importImageCount !== null && importImageCount < (importData.gallery_images?.length ?? 0) && (
+                    <span className="ml-1 text-amber-600 font-normal">
+                      ({importImageCount} {t('admin.snapshots.imagesInZip')})
+                    </span>
+                  )}
+                </span>
                 <span>{t('admin.snapshots.previewCategories')}: <b>{importData.gallery_categories?.length ?? 0}</b></span>
                 <span>{t('admin.snapshots.previewLocations')}: <b>{importData.locations?.length ?? 0}</b></span>
                 <span>{t('admin.snapshots.previewSettings')}: <b>{importData.site_settings?.length ?? 0}</b></span>

@@ -70,6 +70,7 @@
     "locations": {
       "title": "Наши адреса",
       "subtitle": "Посетите нас по любому из наших удобных адресов. Мы рады вам помочь!",
+      "location": "Адрес",
       "hours": "Часы работы",
       "openInMaps": "Открыть в картах"
     }
@@ -289,6 +290,7 @@
       "previewServices": "Услуги",
       "previewTestimonials": "Отзывы",
       "previewGallery": "Изображения галереи",
+      "imagesInZip": "изображений в ZIP",
       "previewCategories": "Категории галереи",
       "previewLocations": "Адреса",
       "previewSettings": "Настройки",

@@ -1,0 +1,419 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - img [ref=e8]
+        - generic [ref=e10]: Xolboyev Rahimjon
+      - generic [ref=e11]:
+        - navigation [ref=e12]:
+          - link "Bosh sahifa" [ref=e13] [cursor=pointer]:
+            - /url: "#hero"
+            - text: Bosh sahifa
+          - link "Biz haqimizda" [ref=e14] [cursor=pointer]:
+            - /url: "#about"
+            - text: Biz haqimizda
+          - link "Xizmatlar" [ref=e15] [cursor=pointer]:
+            - /url: "#services"
+            - text: Xizmatlar
+          - link "Galereya" [ref=e16] [cursor=pointer]:
+            - /url: "#gallery"
+            - text: Galereya
+          - link "Fikrlar" [ref=e17] [cursor=pointer]:
+            - /url: "#testimonials"
+            - text: Fikrlar
+          - link "Manzillar" [ref=e18] [cursor=pointer]:
+            - /url: "#locations"
+            - text: Manzillar
+          - link "Bog'lanish" [ref=e19] [cursor=pointer]:
+            - /url: "#contact"
+            - text: Bog'lanish
+        - generic [ref=e20]:
+          - combobox [ref=e21] [cursor=pointer]:
+            - option "🇺🇿 O'zbekcha" [selected]
+            - option "🇷🇺 Русский"
+            - option "🇬🇧 English"
+          - generic:
+            - img
+  - main [ref=e22]:
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e29]: Professional Dental Care
+        - heading "Tabassumingiz — bizning ustuvorligimiz" [level=1] [ref=e30]
+        - paragraph [ref=e31]: Zamonaviy texnologiyalar va og'iz sog'lig'ingizga bag'ishlangan mehribon jamoa bilan ajoyib stomatologik xizmatdan bahramand bo'ling.
+        - generic [ref=e32]:
+          - button "Qabulga yozilish" [ref=e33]
+          - button "Bizning xizmatlar" [ref=e34]
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - paragraph [ref=e37]: 12+
+            - paragraph [ref=e38]: Years Experience
+          - generic [ref=e39]:
+            - paragraph [ref=e40]: 5k+
+            - paragraph [ref=e41]: Happy Patients
+          - generic [ref=e42]:
+            - paragraph [ref=e43]: 95%
+            - paragraph [ref=e44]: Satisfaction
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - img [ref=e48]
+          - paragraph [ref=e50]: Og'riqsiz Davolash
+          - paragraph [ref=e51]: Zamonaviy anestezilar va yumshoq texnikalar
+        - generic [ref=e52]:
+          - img [ref=e54]
+          - paragraph [ref=e56]: Sertifikatlangan Mutaxassislar
+          - paragraph [ref=e57]: Malakali stomatologiya mutaxassislari
+        - generic [ref=e58]:
+          - img [ref=e60]
+          - paragraph [ref=e62]: Zamonaviy Uskunalar
+          - paragraph [ref=e63]: Yuqori texnologiyali diagnostika va davolash
+        - generic [ref=e64]:
+          - img [ref=e66]
+          - paragraph [ref=e68]: Xavfsiz va Steril
+          - paragraph [ref=e69]: Shifoxona sifatidagi sterilizatsiya standartlari
+    - generic [ref=e75]:
+      - img "Dr. Sara Smit, DDS" [ref=e80]
+      - generic [ref=e83]:
+        - generic [ref=e86]: Klinikamiz haqida
+        - heading "Dr. Sara Smit, DDS" [level=2] [ref=e87]
+        - generic [ref=e88]:
+          - paragraph [ref=e89]: Smile Dental Care klinikasiga xush kelibsiz! Men Dr. Sara Smit, 15 yildan ortiq vaqt davomida stomatologiyaga ishtiyoq bilan xizmat qilib kelaman. Maqsadim — sizga qulay va iliq muhitda eng yuqori sifatli stomatologik yordam ko'rsatishdir.
+          - paragraph [ref=e90]: Har bir bemorga shaxsiy e'tibor va uning ehtiyojlariga moslashtirilgan davolanish rejasi taqdim etilishiga ishonamanو. Oddiy profilaktik tozalashdan to to'liq tabassum tiklanishigacha — siz professional va g'amxo'r qo'llarda ekanligingizga ishonchingiz komil bo'lishi mumkin.
+        - generic [ref=e91]:
+          - generic [ref=e92]:
+            - paragraph [ref=e93]: Ta'lim
+            - list [ref=e94]:
+              - listitem [ref=e95]:
+                - generic [ref=e96]: •
+                - generic [ref=e97]: Stomatologiya doktori, Kaliforniya universiteti
+              - listitem [ref=e98]:
+                - generic [ref=e99]: •
+                - generic [ref=e100]: Kengaytirilgan kosmetik stomatologiya sertifikati
+          - generic [ref=e101]:
+            - paragraph [ref=e102]: Tajriba
+            - list [ref=e103]:
+              - listitem [ref=e104]:
+                - generic [ref=e105]: •
+                - generic [ref=e106]: 15 yildan ortiq stomatologik amaliyot
+              - listitem [ref=e107]:
+                - generic [ref=e108]: •
+                - generic [ref=e109]: Kosmetik va restavratsion stomatologiya mutaxassisi
+          - generic [ref=e110]:
+            - paragraph [ref=e111]: A'zoliklar va mukofotlar
+            - list [ref=e112]:
+              - listitem [ref=e113]:
+                - generic [ref=e114]: •
+                - generic [ref=e115]: Amerika stomatologlar assotsiatsiyasi a'zosi
+              - listitem [ref=e116]:
+                - generic [ref=e117]: •
+                - generic [ref=e118]: 2023 yil eng yaxshi stomatolog mukofoti
+    - generic [ref=e120]:
+      - generic [ref=e123]:
+        - heading "Bizning xizmatlar" [level=2] [ref=e124]
+        - paragraph [ref=e125]: Ehtiyojlaringizga moslashtirilgan keng qamrovli professional xizmatlar
+      - generic [ref=e126]:
+        - generic [ref=e127]:
+          - generic: "01"
+          - generic [ref=e129]:
+            - img [ref=e131]
+            - heading "Umumiy stomatologiya" [level=3] [ref=e133]
+            - paragraph [ref=e134]: Og'iz sog'lig'ingizni saqlash uchun keng qamrovli tish tekshiruvi, tozalash va profilaktika xizmatlari.
+        - generic [ref=e135]:
+          - generic: "02"
+          - generic [ref=e137]:
+            - img [ref=e139]
+            - heading "Kosmetik stomatologiya" [level=3] [ref=e141]
+            - paragraph [ref=e142]: Tishlarni oqartirish, vinir va professional tabassum yaratish orqali tabassumingizni o'zgartiring.
+        - generic [ref=e143]:
+          - generic: "03"
+          - generic [ref=e145]:
+            - img [ref=e147]
+            - heading "Tish implantlari" [level=3] [ref=e149]
+            - paragraph [ref=e150]: Zamonaviy implant texnologiyasi yordamida yo'qolgan tishlarni almashtirish uchun doimiy, tabiiy ko'rinishli yechim.
+        - generic [ref=e151]:
+          - generic: "04"
+          - generic [ref=e153]:
+            - img [ref=e155]
+            - heading "Ortodontiya" [level=3] [ref=e157]
+            - paragraph [ref=e158]: An'anaviy breketlar yoki zamonaviy shaffof to'g'rilagichlar yordamida tishlaringizni to'g'rilang.
+        - generic [ref=e159]:
+          - generic: "05"
+          - generic [ref=e161]:
+            - img [ref=e163]
+            - heading "Kanal davolash" [level=3] [ref=e165]
+            - paragraph [ref=e166]: Zararlangan tishlarni saqlab qolish va noqulaylikni bartaraf etish uchun og'riqsiz kanal terapiyasi.
+        - generic [ref=e167]:
+          - generic: "06"
+          - generic [ref=e169]:
+            - img [ref=e171]
+            - heading "Yangi service" [level=3] [ref=e173]
+            - paragraph [ref=e174]: Yangi service
+    - generic [ref=e176]:
+      - generic [ref=e179]:
+        - heading "Umumiy" [level=2] [ref=e180]
+        - paragraph [ref=e181]: Umumiy galereya rasmlari
+      - generic [ref=e182]:
+        - button "Umumiy" [ref=e183]: Umumiy
+        - button "Diplomlar va sertifikatlar" [ref=e185]
+      - generic [ref=e186]:
+        - img "Usmonbek" [ref=e191]
+        - img "Meeting" [ref=e196]
+    - generic [ref=e198]:
+      - generic [ref=e201]:
+        - heading "Mijozlar fikrlari" [level=2] [ref=e202]
+        - paragraph [ref=e203]: Mijozlarimizning tajribasi haqida eshiting
+      - generic [ref=e204]:
+        - generic [ref=e205]:
+          - generic [ref=e206]: "\""
+          - blockquote [ref=e208]: "\"Juda zor qilib dovaladilar\""
+          - generic [ref=e209]:
+            - generic [ref=e211]: YO
+            - generic [ref=e212]:
+              - paragraph [ref=e213]: Yulduz Oromova
+              - generic [ref=e214]:
+                - img [ref=e215]
+                - img [ref=e217]
+                - img [ref=e219]
+                - img [ref=e221]
+                - img [ref=e223]
+          - generic [ref=e225]:
+            - button "Previous" [ref=e226]: ‹
+            - generic [ref=e227]:
+              - button "Go to testimonial 1" [ref=e228]
+              - button "Go to testimonial 2" [ref=e229]
+              - button "Go to testimonial 3" [ref=e230]
+              - button "Go to testimonial 4" [ref=e231]
+              - button "Go to testimonial 5" [ref=e232]
+              - button "Go to testimonial 6" [ref=e233]
+              - button "Go to testimonial 7" [ref=e234]
+              - button "Go to testimonial 8" [ref=e235]
+              - button "Go to testimonial 9" [ref=e236]
+            - button "Next" [ref=e237]: ›
+        - generic [ref=e238]:
+          - button "YO Yulduz Oromova Juda zor qilib dovaladilar..." [ref=e239]:
+            - generic [ref=e240]:
+              - generic [ref=e242]: YO
+              - generic [ref=e243]:
+                - paragraph [ref=e244]: Yulduz Oromova
+                - paragraph [ref=e245]: Juda zor qilib dovaladilar...
+          - button "UR Usmonbek Ravshanov Eee gap yoq oka... Juda chiroyli qilib qoyib berdi..." [ref=e246]:
+            - generic [ref=e247]:
+              - generic [ref=e249]: UR
+              - generic [ref=e250]:
+                - paragraph [ref=e251]: Usmonbek Ravshanov
+                - paragraph [ref=e252]: Eee gap yoq oka... Juda chiroyli qilib qoyib berdi...
+          - button "AB Alice Brown Best dental clinic I have visited. Highly recommen..." [ref=e253]:
+            - generic [ref=e254]:
+              - generic [ref=e256]: AB
+              - generic [ref=e257]:
+                - paragraph [ref=e258]: Alice Brown
+                - paragraph [ref=e259]: Best dental clinic I have visited. Highly recommen...
+          - button "JS Jane Smith Great clinic, very clean and professional...." [ref=e260]:
+            - generic [ref=e261]:
+              - generic [ref=e263]: JS
+              - generic [ref=e264]:
+                - paragraph [ref=e265]: Jane Smith
+                - paragraph [ref=e266]: Great clinic, very clean and professional....
+      - generic [ref=e267]:
+        - heading "Fikr qoldirish" [level=3] [ref=e268]
+        - generic [ref=e269]:
+          - generic [ref=e270]:
+            - textbox "Ismingiz *" [ref=e271]:
+              - /placeholder: " "
+            - generic: Ismingiz *
+          - generic [ref=e272]:
+            - paragraph [ref=e273]: Baholash
+            - generic [ref=e274]:
+              - button [ref=e275]:
+                - img [ref=e276]
+              - button [ref=e278]:
+                - img [ref=e279]
+              - button [ref=e281]:
+                - img [ref=e282]
+              - button [ref=e284]:
+                - img [ref=e285]
+              - button [ref=e287]:
+                - img [ref=e288]
+          - generic [ref=e290]:
+            - textbox "Fikringiz *" [ref=e291]:
+              - /placeholder: " "
+            - generic: Fikringiz *
+          - button "Fikr yuborish" [ref=e292]
+    - generic [ref=e294]:
+      - generic [ref=e297]:
+        - heading "Bizning manzillar" [level=2] [ref=e298]
+        - paragraph [ref=e299]: Qulay manzillarimizdan biriga tashrif buyuring. Biz sizga xizmat qilishga tayyormiz!
+      - generic [ref=e300]:
+        - generic [ref=e301]:
+          - generic [ref=e302]:
+            - generic [ref=e303]:
+              - paragraph [ref=e304]: "01"
+              - heading "TTZ clinic" [level=3] [ref=e305]
+            - img [ref=e306]
+          - paragraph [ref=e308]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+          - generic [ref=e309]:
+            - img [ref=e310]
+            - generic [ref=e312]:
+              - paragraph [ref=e313]: Ish vaqti
+              - generic [ref=e314]:
+                - generic [ref=e315]:
+                  - generic [ref=e316]: friday
+                  - generic [ref=e317]: 07:30 – 17:30
+                - generic [ref=e318]:
+                  - generic [ref=e319]: monday
+                  - generic [ref=e320]: 07:30 – 17:30
+                - generic [ref=e321]:
+                  - generic [ref=e322]: saturday
+                  - generic [ref=e323]: 07:30 – 17:30
+                - generic [ref=e324]:
+                  - generic [ref=e325]: wednesday
+                  - generic [ref=e326]: 07:30 – 17:30
+          - button "Xaritada ochish" [ref=e327]:
+            - img [ref=e328]
+            - generic [ref=e330]: Xaritada ochish
+            - img [ref=e331]
+        - generic [ref=e333]:
+          - generic [ref=e334]:
+            - generic [ref=e335]:
+              - paragraph [ref=e336]: "02"
+              - heading "Main office" [level=3] [ref=e337]
+            - img [ref=e338]
+          - paragraph [ref=e340]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+          - generic [ref=e341]:
+            - img [ref=e342]
+            - generic [ref=e344]:
+              - paragraph [ref=e345]: Ish vaqti
+              - generic [ref=e346]:
+                - generic [ref=e347]:
+                  - generic [ref=e348]: friday
+                  - generic [ref=e349]: 09:30 – 18:00
+                - generic [ref=e350]:
+                  - generic [ref=e351]: monday
+                  - generic [ref=e352]: 09:30 – 18:00
+                - generic [ref=e353]:
+                  - generic [ref=e354]: wednesday
+                  - generic [ref=e355]: 09:30 – 18:00
+          - button "Xaritada ochish" [ref=e356]:
+            - img [ref=e357]
+            - generic [ref=e359]: Xaritada ochish
+            - img [ref=e360]
+        - generic [ref=e362]:
+          - generic [ref=e363]:
+            - generic [ref=e364]:
+              - paragraph [ref=e365]: "03"
+              - heading "office 3" [level=3] [ref=e366]
+            - img [ref=e367]
+          - paragraph [ref=e369]: U.S Polo ASSN, 21, Taras Shevchenko Street, Aybek, Mirabad District, Tashkent, 100000, Uzbekistan
+          - generic [ref=e370]:
+            - img [ref=e371]
+            - generic [ref=e373]:
+              - paragraph [ref=e374]: Ish vaqti
+              - generic [ref=e376]:
+                - generic [ref=e377]: saturday
+                - generic [ref=e378]: 18:00 – 23:43
+          - button "Xaritada ochish" [ref=e379]:
+            - img [ref=e380]
+            - generic [ref=e382]: Xaritada ochish
+            - img [ref=e383]
+    - generic [ref=e386]:
+      - generic [ref=e389]:
+        - heading "Bog'laning" [level=2] [ref=e390]
+        - paragraph [ref=e391]: Savollaringiz bormi yoki qabulga yozilmoqchimisiz? Sizdan xabar olishdan xursand bo'lamiz. Quyidagi formani to'ldiring yoki bizga qo'ng'iroq qiling.
+      - generic [ref=e392]:
+        - generic [ref=e393]:
+          - heading "Xabar yuborish" [level=3] [ref=e394]
+          - generic [ref=e395]:
+            - generic [ref=e396]:
+              - textbox "Ismingiz *" [ref=e397]:
+                - /placeholder: " "
+              - generic: Ismingiz *
+            - generic [ref=e398]:
+              - textbox "Email *" [ref=e399]:
+                - /placeholder: " "
+              - generic: Email *
+            - generic [ref=e400]:
+              - textbox "Telefon" [ref=e401]:
+                - /placeholder: " "
+              - generic: Telefon
+            - generic [ref=e402]:
+              - textbox "Xabar *" [ref=e403]:
+                - /placeholder: " "
+              - generic: Xabar *
+            - button "Yuborish" [ref=e404]
+        - generic [ref=e405]:
+          - heading "Aloqa ma'lumotlari" [level=3] [ref=e406]
+          - generic [ref=e407]:
+            - generic [ref=e408]:
+              - generic [ref=e409]:
+                - img [ref=e410]
+                - generic [ref=e412]: +998 94 763 06 50
+              - generic [ref=e413]:
+                - img [ref=e414]
+                - generic [ref=e416]: +998 94 763 06 53
+              - generic [ref=e417]:
+                - img [ref=e418]
+                - generic [ref=e420]: info@smiledentalcare.com
+            - generic [ref=e421]:
+              - paragraph [ref=e422]: TTZ clinic
+              - generic [ref=e424]:
+                - img [ref=e425]
+                - generic [ref=e427]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+            - generic [ref=e428]:
+              - paragraph [ref=e429]: Main office
+              - generic [ref=e431]:
+                - img [ref=e432]
+                - generic [ref=e434]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+            - generic [ref=e435]:
+              - paragraph [ref=e436]: office 3
+              - generic [ref=e438]:
+                - img [ref=e439]
+                - generic [ref=e441]: U.S Polo ASSN, 21, Taras Shevchenko Street, Aybek, Mirabad District, Tashkent, 100000, Uzbekistan
+  - contentinfo [ref=e444]:
+    - generic [ref=e445]:
+      - generic [ref=e446]:
+        - generic [ref=e447]:
+          - generic [ref=e448]:
+            - img [ref=e449]
+            - generic [ref=e451]: Xolboyev Rahimjon
+          - paragraph [ref=e452]: Mehr va mahorat bilan ajoyib stomatologik xizmat ko'rsatish. Tabassumingiz bizning ustuvorligimiz.
+          - generic [ref=e453]:
+            - link "Facebook" [ref=e454] [cursor=pointer]:
+              - /url: https://www.facebook.com/profile.php?id=100084071602092
+              - img [ref=e455]
+            - link "Twitter" [ref=e457] [cursor=pointer]:
+              - /url: https://www.facebook.com/profile.php?id=100084071602092
+              - img [ref=e458]
+            - link "Instagram" [ref=e460] [cursor=pointer]:
+              - /url: https://www.facebook.com/profile.php?id=100084071602092
+              - img [ref=e461]
+        - generic [ref=e463]:
+          - paragraph [ref=e464]: Aloqa va manzillar
+          - generic [ref=e465]:
+            - generic [ref=e466]:
+              - img [ref=e467]
+              - generic [ref=e469]: +998 94 763 06 50
+            - generic [ref=e470]:
+              - img [ref=e471]
+              - generic [ref=e473]: +998 94 763 06 53
+            - generic [ref=e474]:
+              - img [ref=e475]
+              - generic [ref=e477]: info@smiledentalcare.com
+          - generic [ref=e478]:
+            - generic [ref=e479]:
+              - paragraph [ref=e480]: TTZ clinic
+              - list [ref=e481]:
+                - listitem [ref=e482]:
+                  - img [ref=e483]
+                  - generic [ref=e485]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+            - generic [ref=e486]:
+              - paragraph [ref=e487]: Main office
+              - list [ref=e488]:
+                - listitem [ref=e489]:
+                  - img [ref=e490]
+                  - generic [ref=e492]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+            - generic [ref=e493]:
+              - paragraph [ref=e494]: office 3
+              - list [ref=e495]:
+                - listitem [ref=e496]:
+                  - img [ref=e497]
+                  - generic [ref=e499]: U.S Polo ASSN, 21, Taras Shevchenko Street, Aybek, Mirabad District, Tashkent, 100000, Uzbekistan
+      - paragraph [ref=e501]: "@XolbayevRahimjon. Barcha huquqlar himoyalangan."

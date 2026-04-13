@@ -386,11 +386,28 @@ func (h *AdminSnapshotsHandler) importSnapshotZip(w http.ResponseWriter, r *http
 		return
 	}
 
+	// Count gallery image filenames referenced in the snapshot
+	var galleryFilenames []string
+	if raw, ok := jsonData["gallery_images"]; ok {
+		var imgs []struct {
+			Filename string `json:"filename"`
+		}
+		if b, err := json.Marshal(raw); err == nil {
+			json.Unmarshal(b, &imgs)
+		}
+		for _, img := range imgs {
+			if img.Filename != "" {
+				galleryFilenames = append(galleryFilenames, img.Filename)
+			}
+		}
+	}
+
 	// Extract images/ to uploadPath
 	if err := os.MkdirAll(h.uploadPath, 0755); err != nil {
 		sendInternalError(w, "Failed to prepare upload directory")
 		return
 	}
+	extracted := 0
 	for _, f := range zr.File {
 		if !strings.HasPrefix(f.Name, "images/") || f.FileInfo().IsDir() {
 			continue
@@ -405,7 +422,9 @@ func (h *AdminSnapshotsHandler) importSnapshotZip(w http.ResponseWriter, r *http
 		}
 		data, _ := io.ReadAll(rc)
 		rc.Close()
-		os.WriteFile(filepath.Join(h.uploadPath, filename), data, 0644)
+		if err := os.WriteFile(filepath.Join(h.uploadPath, filename), data, 0644); err == nil {
+			extracted++
+		}
 	}
 
 	// If ?restore=true, restore DB
@@ -429,5 +448,15 @@ func (h *AdminSnapshotsHandler) importSnapshotZip(w http.ResponseWriter, r *http
 		sendInternalError(w, "Failed to save imported snapshot")
 		return
 	}
-	sendCreated(w, snapshot)
+
+	type importResult struct {
+		*models.Snapshot
+		ImagesExtracted int `json:"images_extracted"`
+		ImagesTotal     int `json:"images_total"`
+	}
+	sendCreated(w, importResult{
+		Snapshot:        snapshot,
+		ImagesExtracted: extracted,
+		ImagesTotal:     len(galleryFilenames),
+	})
 }

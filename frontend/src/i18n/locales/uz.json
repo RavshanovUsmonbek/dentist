@@ -70,6 +70,7 @@
     "locations": {
       "title": "Bizning manzillar",
       "subtitle": "Qulay manzillarimizdan biriga tashrif buyuring. Biz sizga xizmat qilishga tayyormiz!",
+      "location": "Manzil",
       "hours": "Ish vaqti",
       "openInMaps": "Xaritada ochish"
     }
@@ -289,6 +290,7 @@
       "previewServices": "Xizmatlar",
       "previewTestimonials": "Fikrlar",
       "previewGallery": "Galereya rasmlari",
+      "imagesInZip": "rasm ZIP ichida",
       "previewCategories": "Galereya kategoriyalari",
       "previewLocations": "Manzillar",
       "previewSettings": "Sozlamalar",

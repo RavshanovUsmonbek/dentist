@@ -1,0 +1,20 @@
+# Production override — remove dev volume mounts that require source code on the host.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile production up -d
+#
+# This file is deployed alongside docker-compose.yml by the CI pipeline.
+# Do NOT run this in development.
+
+version: '3.8'
+
+services:
+  backend:
+    # Strip dev source-mount and air temp dir; keep only the uploads volume.
+    volumes:
+      - uploads_data:/app/uploads
+
+  frontend:
+    # Strip dev source-mount and node_modules bind; prod image is self-contained.
+    volumes: []
+
+volumes:
+  uploads_data:

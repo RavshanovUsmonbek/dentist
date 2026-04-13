@@ -59,7 +59,7 @@ const Header = () => {
           </div>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8">
             <nav className="flex items-center gap-7">
               {navItems.map((item) => (
                 <a
@@ -80,7 +80,7 @@ const Header = () => {
 
           {/* Mobile menu toggle */}
           <button
-            className="md:hidden p-1"
+            className="lg:hidden p-1"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -94,7 +94,7 @@ const Header = () => {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-cream-50 border-t border-gray-200">
+          <div className="lg:hidden bg-cream-50 border-t border-gray-200">
             <nav className="flex flex-col px-4 py-4">
               {navItems.map((item) => (
                 <a

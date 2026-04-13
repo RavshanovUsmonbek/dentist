@@ -60,7 +60,7 @@ const Hero = () => {
         <div className="absolute top-1/2 right-1/3 w-2 h-32 bg-gold-500 opacity-20" />
       </div>
 
-      <div className={`relative z-10 container-custom w-full transition-all duration-1000 ${visible ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`relative z-10 container-custom w-full px-4 sm:px-6 lg:px-8 transition-all duration-1000 ${visible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center min-h-screen py-32 lg:py-24">
 
           {/* Text column */}

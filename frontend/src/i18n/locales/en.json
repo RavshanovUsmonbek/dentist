@@ -70,6 +70,7 @@
     "locations": {
       "title": "Our Locations",
       "subtitle": "Visit us at any of our convenient locations. We're here to serve you!",
+      "location": "Location",
       "hours": "Hours",
       "openInMaps": "Open in Maps"
     }
@@ -289,6 +290,7 @@
       "previewServices": "Services",
       "previewTestimonials": "Testimonials",
       "previewGallery": "Gallery Images",
+      "imagesInZip": "images in ZIP",
       "previewCategories": "Gallery Categories",
       "previewLocations": "Locations",
       "previewSettings": "Settings",

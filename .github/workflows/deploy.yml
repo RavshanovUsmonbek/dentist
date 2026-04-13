@@ -1,0 +1,190 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache-dependency-path: backend/go.sum
+
+      - name: Run backend tests
+        working-directory: backend
+        run: go test ./internal/services/... ./internal/handlers/... ./internal/repository/...
+
+  test-frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm run test:run
+
+  build-backend:
+    name: Build Backend
+    needs: test-backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache-dependency-path: backend/go.sum
+
+      - name: Compile backend binary
+        working-directory: backend
+        run: go build -o ./tmp/api ./cmd/api/main.go
+
+  build-frontend:
+    name: Build Frontend
+    needs: test-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+  push-images:
+    name: Push Images to GHCR
+    needs: [build-backend, build-frontend]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      backend-image: ${{ steps.images.outputs.backend }}
+      frontend-image: ${{ steps.images.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute lowercase image names
+        id: images
+        run: |
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "backend=ghcr.io/${REPO}/backend:latest" >> $GITHUB_OUTPUT
+          echo "frontend=ghcr.io/${REPO}/frontend:latest" >> $GITHUB_OUTPUT
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ steps.images.outputs.backend }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          build-args: VITE_API_URL=${{ secrets.VITE_API_URL }}
+          tags: ${{ steps.images.outputs.frontend }}
+
+  deploy:
+    name: Deploy to VPS
+    needs: push-images
+    runs-on: ubuntu-latest
+    env:
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+      GHCR_USER: ${{ github.actor }}
+      BACKEND_IMAGE: ${{ needs.push-images.outputs.backend-image }}
+      FRONTEND_IMAGE: ${{ needs.push-images.outputs.frontend-image }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Copy updated compose files and nginx config to VPS — no .git, no source code.
+      - name: Copy compose files and nginx config to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "docker-compose.yml,docker-compose.prod.yml,nginx/"
+          target: ${{ secrets.VPS_APP_DIR }}
+
+      - name: Pull images and restart containers
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: GHCR_TOKEN,GHCR_USER,BACKEND_IMAGE,FRONTEND_IMAGE
+          script: |
+            set -e
+            cd ${{ secrets.VPS_APP_DIR }}
+
+            # Authenticate to GHCR (read-only token)
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+
+            # Pull the freshly built images (no source code, no build on VPS)
+            BACKEND_IMAGE="$BACKEND_IMAGE" FRONTEND_IMAGE="$FRONTEND_IMAGE" \
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+              --env-file .env.production --profile production pull backend frontend
+
+            # Restart with zero-downtime rolling update
+            BACKEND_IMAGE="$BACKEND_IMAGE" FRONTEND_IMAGE="$FRONTEND_IMAGE" \
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+              --env-file .env.production --profile production up -d
+
+            docker image prune -f
+            echo "Deploy started: $(date)"
+
+            # Health check: poll /api/health up to 60s
+            for i in $(seq 1 12); do
+              sleep 5
+              STATUS=$(docker exec dentist_backend wget -qO- http://localhost:8080/api/health 2>/dev/null && echo "ok" || echo "fail")
+              if [ "$STATUS" = "ok" ]; then
+                echo "Health check passed after $((i * 5))s"
+                exit 0
+              fi
+              echo "Waiting for backend... attempt $i/12"
+            done
+            echo "ERROR: Backend health check timed out after 60s"
+            exit 1

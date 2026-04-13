@@ -1,0 +1,379 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - img [ref=e8]
+        - generic [ref=e10]: Xolboyev Rahimjon
+      - button "Toggle menu" [ref=e11]:
+        - img [ref=e12]
+  - main [ref=e14]:
+    - generic [ref=e18]:
+      - generic [ref=e21]: Professional Dental Care
+      - heading "Your Smile, Our Priority" [level=1] [ref=e22]:
+        - text: Your Smile
+        - generic [ref=e23]: ", Our Priority"
+      - paragraph [ref=e24]: Experience exceptional dental care with state-of-the-art technology and a compassionate team dedicated to your oral health.
+      - generic [ref=e25]:
+        - button "Schedule Appointment" [ref=e26]
+        - button "Our Services" [ref=e27]
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - paragraph [ref=e30]: 12+
+          - paragraph [ref=e31]: Years Experience
+        - generic [ref=e32]:
+          - paragraph [ref=e33]: 5k+
+          - paragraph [ref=e34]: Happy Patients
+        - generic [ref=e35]:
+          - paragraph [ref=e36]: 100%
+          - paragraph [ref=e37]: Satisfaction
+    - generic [ref=e43]:
+      - img "Dr. Sarah Smith, DDS" [ref=e48]
+      - generic [ref=e51]:
+        - generic [ref=e54]: About Our Practice
+        - heading "Dr. Sarah Smith, DDS" [level=2] [ref=e55]
+        - generic [ref=e56]:
+          - paragraph [ref=e57]: Welcome to Smile Dental Care! I'm Dr. Sarah Smith, and I've been passionate about dentistry for over 15 years. My commitment is to provide you with the highest quality dental care in a comfortable, welcoming environment.
+          - paragraph [ref=e58]: I believe that every patient deserves personalized attention and a treatment plan tailored to their unique needs. Whether you're here for a routine cleaning or a complete smile makeover, you can trust that you're in capable, caring hands.
+        - generic [ref=e59]:
+          - generic [ref=e60]:
+            - paragraph [ref=e61]: Education
+            - list [ref=e62]:
+              - listitem [ref=e63]:
+                - generic [ref=e64]: •
+                - generic [ref=e65]: Doctor of Dental Surgery, University of California
+              - listitem [ref=e66]:
+                - generic [ref=e67]: •
+                - generic [ref=e68]: Advanced Cosmetic Dentistry Certification
+          - generic [ref=e69]:
+            - paragraph [ref=e70]: Experience
+            - list [ref=e71]:
+              - listitem [ref=e72]:
+                - generic [ref=e73]: •
+                - generic [ref=e74]: 15+ years of dental practice
+              - listitem [ref=e75]:
+                - generic [ref=e76]: •
+                - generic [ref=e77]: Specialist in cosmetic and restorative dentistry
+          - generic [ref=e78]:
+            - paragraph [ref=e79]: Memberships & Awards
+            - list [ref=e80]:
+              - listitem [ref=e81]:
+                - generic [ref=e82]: •
+                - generic [ref=e83]: American Dental Association Member
+              - listitem [ref=e84]:
+                - generic [ref=e85]: •
+                - generic [ref=e86]: Best Dentist Award 2023
+    - generic [ref=e88]:
+      - generic [ref=e91]:
+        - heading "Our Services" [level=2] [ref=e92]
+        - paragraph [ref=e93]: Comprehensive professional services tailored to your needs
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - generic: "01"
+          - generic [ref=e97]:
+            - img [ref=e99]
+            - heading "General Dentistry" [level=3] [ref=e101]
+            - paragraph [ref=e102]: Comprehensive dental checkups, cleanings, and preventive care to maintain your oral health.
+        - generic [ref=e103]:
+          - generic: "02"
+          - generic [ref=e105]:
+            - img [ref=e107]
+            - heading "Cosmetic Dentistry" [level=3] [ref=e109]
+            - paragraph [ref=e110]: Transform your smile with teeth whitening, veneers, and professional smile makeovers.
+        - generic [ref=e111]:
+          - generic: "03"
+          - generic [ref=e113]:
+            - img [ref=e115]
+            - heading "Dental Implants" [level=3] [ref=e117]
+            - paragraph [ref=e118]: Permanent, natural-looking solution for missing teeth with advanced implant technology.
+        - generic [ref=e119]:
+          - generic: "04"
+          - generic [ref=e121]:
+            - img [ref=e123]
+            - heading "Orthodontics" [level=3] [ref=e125]
+            - paragraph [ref=e126]: Straighten your teeth with traditional braces or modern clear aligner systems.
+        - generic [ref=e127]:
+          - generic: "05"
+          - generic [ref=e129]:
+            - img [ref=e131]
+            - heading "Root Canal Treatment" [level=3] [ref=e133]
+            - paragraph [ref=e134]: Pain-free root canal therapy to save infected teeth and relieve discomfort.
+        - generic [ref=e135]:
+          - generic: "06"
+          - generic [ref=e137]:
+            - img [ref=e139]
+            - heading "New Service" [level=3] [ref=e141]
+            - paragraph [ref=e142]: New service
+    - generic [ref=e144]:
+      - generic [ref=e147]:
+        - heading "General" [level=2] [ref=e148]
+        - paragraph [ref=e149]: General gallery images
+      - generic [ref=e150]:
+        - button "General" [ref=e151]: General
+        - button "Diplomas & Certifications" [ref=e153]
+      - generic [ref=e154]:
+        - generic [ref=e157]:
+          - img [ref=e158]
+          - paragraph [ref=e160]: Usmonbek
+        - generic [ref=e163]:
+          - img [ref=e164]
+          - paragraph [ref=e166]: Meeting
+    - generic [ref=e168]:
+      - generic [ref=e171]:
+        - heading "Client Testimonials" [level=2] [ref=e172]
+        - paragraph [ref=e173]: Hear what our clients have to say about their experience
+      - generic [ref=e174]:
+        - generic [ref=e175]:
+          - generic [ref=e176]: "\""
+          - blockquote [ref=e178]: "\"Juda zor qilib dovaladilar\""
+          - generic [ref=e179]:
+            - generic [ref=e181]: YO
+            - generic [ref=e182]:
+              - paragraph [ref=e183]: Yulduz Oromova
+              - generic [ref=e184]:
+                - img [ref=e185]
+                - img [ref=e187]
+                - img [ref=e189]
+                - img [ref=e191]
+                - img [ref=e193]
+          - generic [ref=e195]:
+            - button "Previous" [ref=e196]: ‹
+            - generic [ref=e197]:
+              - button "Go to testimonial 1" [ref=e198]
+              - button "Go to testimonial 2" [ref=e199]
+              - button "Go to testimonial 3" [ref=e200]
+              - button "Go to testimonial 4" [ref=e201]
+              - button "Go to testimonial 5" [ref=e202]
+              - button "Go to testimonial 6" [ref=e203]
+              - button "Go to testimonial 7" [ref=e204]
+              - button "Go to testimonial 8" [ref=e205]
+              - button "Go to testimonial 9" [ref=e206]
+            - button "Next" [ref=e207]: ›
+        - generic [ref=e208]:
+          - button "YO Yulduz Oromova Juda zor qilib dovaladilar..." [ref=e209]:
+            - generic [ref=e210]:
+              - generic [ref=e212]: YO
+              - generic [ref=e213]:
+                - paragraph [ref=e214]: Yulduz Oromova
+                - paragraph [ref=e215]: Juda zor qilib dovaladilar...
+          - button "UR Usmonbek Ravshanov Eee gap yoq oka... Juda chiroyli qilib qoyib berdi..." [ref=e216]:
+            - generic [ref=e217]:
+              - generic [ref=e219]: UR
+              - generic [ref=e220]:
+                - paragraph [ref=e221]: Usmonbek Ravshanov
+                - paragraph [ref=e222]: Eee gap yoq oka... Juda chiroyli qilib qoyib berdi...
+          - button "AB Alice Brown Best dental clinic I have visited. Highly recommen..." [ref=e223]:
+            - generic [ref=e224]:
+              - generic [ref=e226]: AB
+              - generic [ref=e227]:
+                - paragraph [ref=e228]: Alice Brown
+                - paragraph [ref=e229]: Best dental clinic I have visited. Highly recommen...
+          - button "JS Jane Smith Great clinic, very clean and professional...." [ref=e230]:
+            - generic [ref=e231]:
+              - generic [ref=e233]: JS
+              - generic [ref=e234]:
+                - paragraph [ref=e235]: Jane Smith
+                - paragraph [ref=e236]: Great clinic, very clean and professional....
+      - generic [ref=e237]:
+        - heading "Leave a Review" [level=3] [ref=e238]
+        - generic [ref=e239]:
+          - generic [ref=e240]:
+            - textbox "Your Name *" [ref=e241]:
+              - /placeholder: " "
+            - generic: Your Name *
+          - generic [ref=e242]:
+            - paragraph [ref=e243]: Your Rating
+            - generic [ref=e244]:
+              - button [ref=e245]:
+                - img [ref=e246]
+              - button [ref=e248]:
+                - img [ref=e249]
+              - button [ref=e251]:
+                - img [ref=e252]
+              - button [ref=e254]:
+                - img [ref=e255]
+              - button [ref=e257]:
+                - img [ref=e258]
+          - generic [ref=e260]:
+            - textbox "Your Review *" [ref=e261]:
+              - /placeholder: " "
+            - generic: Your Review *
+          - button "Submit Review" [ref=e262]
+    - generic [ref=e264]:
+      - generic [ref=e267]:
+        - heading "Our Locations" [level=2] [ref=e268]
+        - paragraph [ref=e269]: Visit us at any of our convenient locations. We're here to serve you!
+      - generic [ref=e270]:
+        - generic [ref=e271]:
+          - generic [ref=e272]:
+            - generic [ref=e273]:
+              - paragraph [ref=e274]: Location 01
+              - heading "TTZ clinic" [level=3] [ref=e275]
+            - img [ref=e276]
+          - paragraph [ref=e278]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+          - generic [ref=e279]:
+            - img [ref=e280]
+            - generic [ref=e282]:
+              - paragraph [ref=e283]: Hours
+              - generic [ref=e284]:
+                - generic [ref=e285]:
+                  - generic [ref=e286]: friday
+                  - generic [ref=e287]: 07:30 – 17:30
+                - generic [ref=e288]:
+                  - generic [ref=e289]: monday
+                  - generic [ref=e290]: 07:30 – 17:30
+                - generic [ref=e291]:
+                  - generic [ref=e292]: saturday
+                  - generic [ref=e293]: 07:30 – 17:30
+                - generic [ref=e294]:
+                  - generic [ref=e295]: wednesday
+                  - generic [ref=e296]: 07:30 – 17:30
+          - button "Open in Maps" [ref=e297]:
+            - img [ref=e298]
+            - generic [ref=e300]: Open in Maps
+            - img [ref=e301]
+        - generic [ref=e303]:
+          - generic [ref=e304]:
+            - generic [ref=e305]:
+              - paragraph [ref=e306]: Location 02
+              - heading "Main office" [level=3] [ref=e307]
+            - img [ref=e308]
+          - paragraph [ref=e310]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+          - generic [ref=e311]:
+            - img [ref=e312]
+            - generic [ref=e314]:
+              - paragraph [ref=e315]: Hours
+              - generic [ref=e316]:
+                - generic [ref=e317]:
+                  - generic [ref=e318]: friday
+                  - generic [ref=e319]: 09:30 – 18:00
+                - generic [ref=e320]:
+                  - generic [ref=e321]: monday
+                  - generic [ref=e322]: 09:30 – 18:00
+                - generic [ref=e323]:
+                  - generic [ref=e324]: wednesday
+                  - generic [ref=e325]: 09:30 – 18:00
+          - button "Open in Maps" [ref=e326]:
+            - img [ref=e327]
+            - generic [ref=e329]: Open in Maps
+            - img [ref=e330]
+        - generic [ref=e332]:
+          - generic [ref=e333]:
+            - generic [ref=e334]:
+              - paragraph [ref=e335]: Location 03
+              - heading "office 3" [level=3] [ref=e336]
+            - img [ref=e337]
+          - paragraph [ref=e339]: U.S Polo ASSN, 21, Taras Shevchenko Street, Aybek, Mirabad District, Tashkent, 100000, Uzbekistan
+          - generic [ref=e340]:
+            - img [ref=e341]
+            - generic [ref=e343]:
+              - paragraph [ref=e344]: Hours
+              - generic [ref=e346]:
+                - generic [ref=e347]: saturday
+                - generic [ref=e348]: 18:00 – 23:43
+          - button "Open in Maps" [ref=e349]:
+            - img [ref=e350]
+            - generic [ref=e352]: Open in Maps
+            - img [ref=e353]
+    - generic [ref=e356]:
+      - generic [ref=e359]:
+        - heading "Contact Us" [level=2] [ref=e360]
+        - paragraph [ref=e361]: Have questions or want to schedule an appointment? We'd love to hear from you. Fill out the form below or give us a call.
+      - generic [ref=e362]:
+        - generic [ref=e363]:
+          - heading "Send us a Message" [level=3] [ref=e364]
+          - generic [ref=e365]:
+            - generic [ref=e366]:
+              - textbox "Your Name *" [ref=e367]:
+                - /placeholder: " "
+              - generic: Your Name *
+            - generic [ref=e368]:
+              - textbox "Email *" [ref=e369]:
+                - /placeholder: " "
+              - generic: Email *
+            - generic [ref=e370]:
+              - textbox "Phone" [ref=e371]:
+                - /placeholder: " "
+              - generic: Phone
+            - generic [ref=e372]:
+              - textbox "Message *" [ref=e373]:
+                - /placeholder: " "
+              - generic: Message *
+            - button "Send Message" [ref=e374]
+        - generic [ref=e375]:
+          - heading "Contact Information" [level=3] [ref=e376]
+          - generic [ref=e377]:
+            - generic [ref=e378]:
+              - generic [ref=e379]:
+                - img [ref=e380]
+                - generic [ref=e382]: +998 94 763 06 50
+              - generic [ref=e383]:
+                - img [ref=e384]
+                - generic [ref=e386]: +998 94 763 06 53
+              - generic [ref=e387]:
+                - img [ref=e388]
+                - generic [ref=e390]: info@smiledentalcare.com
+            - generic [ref=e391]:
+              - paragraph [ref=e392]: TTZ clinic
+              - generic [ref=e394]:
+                - img [ref=e395]
+                - generic [ref=e397]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+            - generic [ref=e398]:
+              - paragraph [ref=e399]: Main office
+              - generic [ref=e401]:
+                - img [ref=e402]
+                - generic [ref=e404]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+            - generic [ref=e405]:
+              - paragraph [ref=e406]: office 3
+              - generic [ref=e408]:
+                - img [ref=e409]
+                - generic [ref=e411]: U.S Polo ASSN, 21, Taras Shevchenko Street, Aybek, Mirabad District, Tashkent, 100000, Uzbekistan
+  - contentinfo [ref=e414]:
+    - generic [ref=e415]:
+      - generic [ref=e416]:
+        - generic [ref=e417]:
+          - generic [ref=e418]:
+            - img [ref=e419]
+            - generic [ref=e421]: Xolboyev Rahimjon
+          - paragraph [ref=e422]: Providing exceptional dental care with compassion and expertise. Your smile is our priority.
+          - generic [ref=e423]:
+            - link "Facebook" [ref=e424] [cursor=pointer]:
+              - /url: https://www.facebook.com/profile.php?id=100084071602092
+              - img [ref=e425]
+            - link "Twitter" [ref=e427] [cursor=pointer]:
+              - /url: https://www.facebook.com/profile.php?id=100084071602092
+              - img [ref=e428]
+            - link "Instagram" [ref=e430] [cursor=pointer]:
+              - /url: https://www.facebook.com/profile.php?id=100084071602092
+              - img [ref=e431]
+        - generic [ref=e433]:
+          - paragraph [ref=e434]: Contact & Locations
+          - generic [ref=e435]:
+            - generic [ref=e436]:
+              - img [ref=e437]
+              - generic [ref=e439]: +998 94 763 06 50
+            - generic [ref=e440]:
+              - img [ref=e441]
+              - generic [ref=e443]: +998 94 763 06 53
+            - generic [ref=e444]:
+              - img [ref=e445]
+              - generic [ref=e447]: info@smiledentalcare.com
+          - generic [ref=e448]:
+            - generic [ref=e449]:
+              - paragraph [ref=e450]: TTZ clinic
+              - list [ref=e451]:
+                - listitem [ref=e452]:
+                  - img [ref=e453]
+                  - generic [ref=e455]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+            - generic [ref=e456]:
+              - paragraph [ref=e457]: Main office
+              - list [ref=e458]:
+                - listitem [ref=e459]:
+                  - img [ref=e460]
+                  - generic [ref=e462]: 14, Yuzrabat Street, TTZ-1, Mirzo Ulugbek district, Tashkent, 100000, Uzbekistan
+            - generic [ref=e463]:
+              - paragraph [ref=e464]: office 3
+              - list [ref=e465]:
+                - listitem [ref=e466]:
+                  - img [ref=e467]
+                  - generic [ref=e469]: U.S Polo ASSN, 21, Taras Shevchenko Street, Aybek, Mirabad District, Tashkent, 100000, Uzbekistan
+      - paragraph [ref=e471]: "@XolbayevRahimjon. All rights reserved."

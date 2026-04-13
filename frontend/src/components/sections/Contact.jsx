@@ -79,7 +79,7 @@ const Contact = () => {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-2xl overflow-hidden shadow-sm border border-gray-200/60">
 
           {/* Form column */}
-          <div className="lg:col-span-3 bg-white p-10 md:p-14">
+          <div className="lg:col-span-3 bg-white p-6 sm:p-10 md:p-14">
             <h3 className="font-display text-2xl font-semibold text-primary-800 mb-8">{formTitle}</h3>
 
             {formStatus.success && (
@@ -174,7 +174,7 @@ const Contact = () => {
           </div>
 
           {/* Info panel */}
-          <div className="lg:col-span-2 bg-primary-800 p-10 md:p-14 text-white">
+          <div className="lg:col-span-2 bg-primary-800 p-6 sm:p-10 md:p-14 text-white">
             <h3 className="font-display text-2xl font-semibold text-white mb-8">{t('contact.infoTitle')}</h3>
 
             {multiLocationEnabled && hasLocations ? (
