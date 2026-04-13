@@ -15,8 +15,6 @@ type Config struct {
 	JWTExpiration    string
 	UploadPath       string
 	UploadURLPrefix  string
-	TelegramBotToken string
-	TelegramChatID   string
 }
 
 func Load() *Config {
@@ -31,10 +29,8 @@ func Load() *Config {
 		DatabaseURL:      getEnv("DATABASE_URL", ""),
 		JWTSecret:        getEnv("JWT_SECRET", ""),
 		JWTExpiration:    getEnv("JWT_EXPIRATION", "24h"),
-		UploadPath:       getEnv("UPLOAD_PATH", "./uploads"),
-		UploadURLPrefix:  getEnv("UPLOAD_URL_PREFIX", "/uploads"),
-		TelegramBotToken: getEnv("TELEGRAM_BOT_TOKEN", ""),
-		TelegramChatID:   getEnv("TELEGRAM_CHAT_ID", ""),
+		UploadPath:      getEnv("UPLOAD_PATH", "./uploads"),
+		UploadURLPrefix: getEnv("UPLOAD_URL_PREFIX", "/uploads"),
 	}
 }
 

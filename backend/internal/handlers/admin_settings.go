@@ -4,8 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/usmonbek/dentist-backend/internal/models"
 	"github.com/usmonbek/dentist-backend/internal/repository"
 )
+
+// secretSentinel is the placeholder value returned for secret keys that are set.
+const secretSentinel = "__secret_set__"
 
 // AdminSettingsHandler handles admin settings and content endpoints
 type AdminSettingsHandler struct {
@@ -31,13 +35,30 @@ func (h *AdminSettingsHandler) HandleSettings(w http.ResponseWriter, r *http.Req
 	}
 }
 
+// maskSecrets replaces the value of any secret setting with the sentinel so the
+// real token/key is never transmitted over the wire.
+func maskSecrets(settings []models.SiteSetting) []models.SiteSetting {
+	out := make([]models.SiteSetting, len(settings))
+	copy(out, settings)
+	for i, s := range out {
+		if repository.SecretSettingKeys[s.Key] {
+			if s.Value != "" {
+				out[i].Value = secretSentinel
+			}
+			// Always clear translations for secret fields
+			out[i].Translations = nil
+		}
+	}
+	return out
+}
+
 func (h *AdminSettingsHandler) getSettings(w http.ResponseWriter, r *http.Request) {
 	settings, err := h.settingsRepo.GetAllSettings()
 	if err != nil {
 		sendInternalError(w, "Failed to fetch settings")
 		return
 	}
-	sendSuccess(w, settings)
+	sendSuccess(w, maskSecrets(settings))
 }
 
 func (h *AdminSettingsHandler) updateSettings(w http.ResponseWriter, r *http.Request) {
@@ -54,11 +75,18 @@ func (h *AdminSettingsHandler) updateSettings(w http.ResponseWriter, r *http.Req
 		// Try to unmarshal as map (multi-lang object)
 		var langMap map[string]string
 		if err := json.Unmarshal(val, &langMap); err == nil {
-			translationUpdates[key] = langMap
+			// Secret keys must not be stored as translations
+			if !repository.SecretSettingKeys[key] {
+				translationUpdates[key] = langMap
+			}
 		} else {
 			// Plain string value
 			var strVal string
 			if err := json.Unmarshal(val, &strVal); err == nil {
+				// Skip sentinel — client sent it back unchanged, do not overwrite
+				if repository.SecretSettingKeys[key] && strVal == secretSentinel {
+					continue
+				}
 				stringUpdates[key] = strVal
 			}
 		}

@@ -246,6 +246,19 @@ export const adminApi = {
     return response.data;
   },
 
+  importSnapshotZip: async (file, name, description, restore = false) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('name', name);
+    formData.append('description', description || '');
+    const response = await adminAxios.post(
+      `/admin/snapshots/import${restore ? '?restore=true' : ''}`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+    return response.data;
+  },
+
   exportSnapshot: async (id, name) => {
     const response = await adminAxios.get(`/admin/snapshots/${id}/export`, {
       responseType: 'blob',
@@ -253,7 +266,7 @@ export const adminApi = {
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const a = document.createElement('a');
     a.href = url;
-    a.setAttribute('download', `snapshot-${name || id}.json`);
+    a.setAttribute('download', `snapshot-${name || id}.zip`);
     document.body.appendChild(a);
     a.click();
     a.remove();

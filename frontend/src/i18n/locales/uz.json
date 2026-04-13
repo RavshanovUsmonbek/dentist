@@ -303,6 +303,7 @@
       "exportFailed": "Snapshotni eksport qilib bo'lmadi.",
       "importSuccess": "Snapshot muvaffaqiyatli import qilindi.",
       "importFailed": "Snapshotni import qilib bo'lmadi.",
+      "secretsNote": "Telegram ma'lumotlari snapshotlarga kiritilmaydi va import yoki tiklash jarayonida o'zgarmaydi.",
       "loadFailed": "Snapshotlarni yuklash imkonsiz."
     },
     "multiLang": {

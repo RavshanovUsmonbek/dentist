@@ -1,8 +1,110 @@
 import { useState, useEffect } from 'react';
-import { FaSave } from 'react-icons/fa';
+import { FaSave, FaTelegram, FaEye, FaEyeSlash } from 'react-icons/fa';
 import Toast, { useToast } from '../components/Toast';
 import { useTranslation } from 'react-i18next';
 import { adminApi } from '../services/adminApi';
+
+const SECRET_SENTINEL = '__secret_set__';
+
+/**
+ * SecretField — secure input for sensitive values (tokens, passwords).
+ *
+ * Behaviour:
+ * - When value === SECRET_SENTINEL (set on server): shows masked display + Change / Remove buttons.
+ *   The actual secret is never sent back to the frontend.
+ * - "Change" → reveals a password input (empty, ready for new value).
+ * - "Cancel" → reverts to the masked display without touching the stored secret.
+ * - "Remove" → clears the value (sends "" to backend on save, which removes the secret).
+ * - When not set: shows password input directly.
+ * - Show/hide toggle on the input.
+ */
+const SecretField = ({ label, fieldKey, value, onChange }) => {
+  const isSet = value === SECRET_SENTINEL;
+  const [editing, setEditing] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  const handleChange = () => {
+    setEditing(true);
+    onChange(fieldKey, '');
+  };
+
+  const handleCancel = () => {
+    setEditing(false);
+    onChange(fieldKey, SECRET_SENTINEL);
+  };
+
+  const handleRemove = () => {
+    setEditing(false);
+    onChange(fieldKey, '');
+  };
+
+  if (isSet && !editing) {
+    return (
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+        <div className="flex items-center gap-2">
+          <div className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-400 text-sm font-mono tracking-widest select-none">
+            ••••••••••••••••••••
+          </div>
+          <button
+            type="button"
+            onClick={handleChange}
+            className="px-3 py-2 text-sm font-medium text-primary-800 border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors whitespace-nowrap"
+          >
+            Change
+          </button>
+          <button
+            type="button"
+            onClick={handleRemove}
+            className="px-3 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors whitespace-nowrap"
+          >
+            Remove
+          </button>
+        </div>
+        <p className="mt-1 text-xs text-green-600 font-medium">✓ Configured</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <input
+            type={visible ? 'text' : 'password'}
+            value={value}
+            onChange={(e) => onChange(fieldKey, e.target.value)}
+            autoComplete="new-password"
+            spellCheck={false}
+            className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-800/30 focus:border-transparent font-mono text-sm"
+            placeholder={isSet ? '' : 'Enter value…'}
+          />
+          <button
+            type="button"
+            onClick={() => setVisible(v => !v)}
+            className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+            tabIndex={-1}
+          >
+            {visible ? <FaEyeSlash className="text-sm" /> : <FaEye className="text-sm" />}
+          </button>
+        </div>
+        {editing && (
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="px-3 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
+      {!isSet && !value && (
+        <p className="mt-1 text-xs text-gray-400">Not configured — notifications are disabled.</p>
+      )}
+    </div>
+  );
+};
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -45,7 +147,12 @@ const Settings = () => {
     setSaving(true);
 
     try {
-      await adminApi.updateSettings(settings);
+      // Strip sentinel values — never send them back; backend would reject them anyway,
+      // but we filter here too so unchanged secrets are omitted from the request entirely.
+      const payload = Object.fromEntries(
+        Object.entries(settings).filter(([, v]) => v !== SECRET_SENTINEL)
+      );
+      await adminApi.updateSettings(payload);
       showToast(t('admin.settings.saveSuccess'));
     } catch (error) {
       console.error('Failed to save settings:', error);
@@ -156,6 +263,31 @@ const Settings = () => {
                   placeholder="https://instagram.com/..."
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Telegram Notifications */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2 flex items-center gap-2">
+              <FaTelegram className="text-[#2CA5E0]" /> Telegram Notifications
+            </h2>
+            <p className="text-sm text-gray-500 mb-6">
+              Contact form submissions will be sent to your Telegram chat. Create a bot via{' '}
+              <span className="font-medium text-gray-700">@BotFather</span>, then obtain your chat ID.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <SecretField
+                label="Bot Token"
+                fieldKey="telegram_bot_token"
+                value={settings.telegram_bot_token ?? ''}
+                onChange={handleChange}
+              />
+              <SecretField
+                label="Chat ID"
+                fieldKey="telegram_chat_id"
+                value={settings.telegram_chat_id ?? ''}
+                onChange={handleChange}
+              />
             </div>
           </div>
         </div>

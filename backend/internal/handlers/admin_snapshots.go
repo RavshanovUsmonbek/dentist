@@ -1,9 +1,14 @@
 package handlers
 
 import (
+	"archive/zip"
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/usmonbek/dentist-backend/internal/models"
@@ -22,6 +27,7 @@ type AdminSnapshotsHandler struct {
 	locationRepo    *repository.LocationRepository
 	settingsRepo    *repository.SettingsRepository
 	validator       *services.Validator
+	uploadPath      string
 }
 
 // NewAdminSnapshotsHandler creates a new AdminSnapshotsHandler
@@ -34,6 +40,7 @@ func NewAdminSnapshotsHandler(
 	locationRepo    *repository.LocationRepository,
 	settingsRepo    *repository.SettingsRepository,
 	validator       *services.Validator,
+	uploadPath      string,
 ) *AdminSnapshotsHandler {
 	return &AdminSnapshotsHandler{
 		snapshotRepo:    snapshotRepo,
@@ -44,6 +51,7 @@ func NewAdminSnapshotsHandler(
 		locationRepo:    locationRepo,
 		settingsRepo:    settingsRepo,
 		validator:       validator,
+		uploadPath:      uploadPath,
 	}
 }
 
@@ -222,20 +230,58 @@ func (h *AdminSnapshotsHandler) exportSnapshot(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	b, err := json.MarshalIndent(snapshot.Data, "", "  ")
+	jsonBytes, err := json.MarshalIndent(snapshot.Data, "", "  ")
 	if err != nil {
-		sendInternalError(w, "Failed to export snapshot")
+		sendInternalError(w, "Failed to marshal snapshot")
 		return
 	}
 
-	filename := fmt.Sprintf("snapshot-%d.json", snapshot.ID)
-	w.Header().Set("Content-Type", "application/json")
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+
+	// Add snapshot.json
+	fw, _ := zw.Create("snapshot.json")
+	fw.Write(jsonBytes)
+
+	// Add images referenced by gallery_images[*].filename
+	if raw, ok := snapshot.Data["gallery_images"]; ok {
+		var images []struct {
+			Filename string `json:"filename"`
+		}
+		if b, err := json.Marshal(raw); err == nil {
+			json.Unmarshal(b, &images)
+		}
+		for _, img := range images {
+			if img.Filename == "" {
+				continue
+			}
+			data, err := os.ReadFile(filepath.Join(h.uploadPath, img.Filename))
+			if err != nil {
+				continue // skip files missing from disk — don't fail the whole export
+			}
+			if fw, err := zw.Create("images/" + img.Filename); err == nil {
+				fw.Write(data)
+			}
+		}
+	}
+	zw.Close()
+
+	filename := fmt.Sprintf("snapshot-%d.zip", snapshot.ID)
+	w.Header().Set("Content-Type", "application/zip")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filename))
 	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	w.Write(buf.Bytes())
 }
 
 func (h *AdminSnapshotsHandler) importSnapshot(w http.ResponseWriter, r *http.Request) {
+	if strings.Contains(r.Header.Get("Content-Type"), "multipart/form-data") {
+		h.importSnapshotZip(w, r)
+	} else {
+		h.importSnapshotJSON(w, r)
+	}
+}
+
+func (h *AdminSnapshotsHandler) importSnapshotJSON(w http.ResponseWriter, r *http.Request) {
 	var req models.ImportSnapshotRequest
 	if err := decodeJSON(r, &req); err != nil {
 		sendBadRequest(w, "Invalid request body")
@@ -284,5 +330,104 @@ func (h *AdminSnapshotsHandler) importSnapshot(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	sendCreated(w, snapshot)
+}
+
+func (h *AdminSnapshotsHandler) importSnapshotZip(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(200 << 20); err != nil {
+		sendBadRequest(w, "Failed to parse form")
+		return
+	}
+	file, _, err := r.FormFile("file")
+	if err != nil {
+		sendBadRequest(w, "Missing file field")
+		return
+	}
+	defer file.Close()
+
+	zipBytes, err := io.ReadAll(file)
+	if err != nil {
+		sendInternalError(w, "Failed to read file")
+		return
+	}
+
+	zr, err := zip.NewReader(bytes.NewReader(zipBytes), int64(len(zipBytes)))
+	if err != nil {
+		sendBadRequest(w, "Invalid ZIP file")
+		return
+	}
+
+	// Parse snapshot.json from the ZIP
+	var jsonData datatypes.JSONMap
+	for _, f := range zr.File {
+		if f.Name != "snapshot.json" {
+			continue
+		}
+		rc, err := f.Open()
+		if err != nil {
+			sendInternalError(w, "Failed to read snapshot.json")
+			return
+		}
+		data, _ := io.ReadAll(rc)
+		rc.Close()
+		if err := json.Unmarshal(data, &jsonData); err != nil {
+			sendBadRequest(w, "Invalid snapshot.json")
+			return
+		}
+		break
+	}
+	if jsonData == nil {
+		sendBadRequest(w, "snapshot.json not found in ZIP")
+		return
+	}
+
+	if err := repository.ValidateSnapshotData(jsonData); err != nil {
+		sendBadRequest(w, fmt.Sprintf("Invalid snapshot data: %v", err))
+		return
+	}
+
+	// Extract images/ to uploadPath
+	if err := os.MkdirAll(h.uploadPath, 0755); err != nil {
+		sendInternalError(w, "Failed to prepare upload directory")
+		return
+	}
+	for _, f := range zr.File {
+		if !strings.HasPrefix(f.Name, "images/") || f.FileInfo().IsDir() {
+			continue
+		}
+		filename := filepath.Base(f.Name)
+		if filename == "" || filename == "." {
+			continue
+		}
+		rc, err := f.Open()
+		if err != nil {
+			continue
+		}
+		data, _ := io.ReadAll(rc)
+		rc.Close()
+		os.WriteFile(filepath.Join(h.uploadPath, filename), data, 0644)
+	}
+
+	// If ?restore=true, restore DB
+	if r.URL.Query().Get("restore") == "true" {
+		if err := h.snapshotRepo.RestoreData(jsonData); err != nil {
+			sendInternalError(w, fmt.Sprintf("Failed to restore: %v", err))
+			return
+		}
+	}
+
+	name := r.FormValue("name")
+	if name == "" {
+		name = "Imported snapshot"
+	}
+	snapshot := &models.Snapshot{
+		Name:        name,
+		Description: r.FormValue("description"),
+		Data:        jsonData,
+	}
+	if err := h.snapshotRepo.Create(snapshot); err != nil {
+		sendInternalError(w, "Failed to save imported snapshot")
+		return
+	}
 	sendCreated(w, snapshot)
 }

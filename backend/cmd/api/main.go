@@ -52,17 +52,6 @@ func main() {
 	// 	log.Printf("Warning: Email service not configured: %v", err)
 	// }
 
-	// Initialize Telegram service
-	telegramService := services.NewTelegramService(
-		cfg.TelegramBotToken,
-		cfg.TelegramChatID,
-	)
-	if cfg.TelegramBotToken != "" && cfg.TelegramChatID != "" {
-		log.Println("Telegram notifications enabled")
-	} else {
-		log.Println("Telegram notifications disabled (no bot token or chat ID configured)")
-	}
-
 	validator := services.NewValidator()
 
 	// Initialize auth service
@@ -89,6 +78,10 @@ func main() {
 	contactRepo := repository.NewContactRepository(db)
 	settingsRepo := repository.NewSettingsRepository(db)
 
+	// Initialize Telegram service (credentials read from DB settings at send-time)
+	telegramService := services.NewTelegramService(settingsRepo)
+	log.Println("Telegram notifications enabled (configure bot token and chat ID in admin panel)")
+
 	// Initialize handlers
 	contactHandler := handlers.NewContactHandler(contactRepo, telegramService, validator)
 	uploadHandler := handlers.NewUploadHandler(cfg.UploadPath, cfg.UploadURLPrefix, 10<<20) // 10MB max
@@ -109,6 +102,7 @@ func main() {
 		snapshotRepo, serviceRepo, testimonialRepo,
 		galleryRepo, galleryCategoryRepo, locationRepo,
 		settingsRepo, validator,
+		cfg.UploadPath,
 	)
 
 	// Setup router

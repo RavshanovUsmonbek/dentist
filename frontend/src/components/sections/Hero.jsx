@@ -121,9 +121,9 @@ const Hero = () => {
               style={{ transitionDelay: '500ms', opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(16px)' }}
             >
               {[
-                { value: '15+', label: 'Years Experience' },
-                { value: '2k+', label: 'Happy Patients' },
-                { value: '100%', label: 'Satisfaction' },
+                { value: pickLang(heroContent.stats_years_experience) || '15+', label: 'Years Experience' },
+                { value: pickLang(heroContent.stats_patients) || '2k+', label: 'Happy Patients' },
+                { value: pickLang(heroContent.stats_satisfaction) || '100%', label: 'Satisfaction' },
               ].map(({ value, label }) => (
                 <div key={label}>
                   <p className="font-display text-3xl font-semibold text-gold-400">{value}</p>

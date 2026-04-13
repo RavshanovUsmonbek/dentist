@@ -32,6 +32,9 @@ const SiteContent = () => {
       { key: 'subtitle', label: t('admin.content.fields.subtitle'), type: 'textarea' },
       { key: 'cta_primary_text', label: t('admin.content.fields.ctaPrimaryText'), type: 'text' },
       { key: 'cta_secondary_text', label: t('admin.content.fields.ctaSecondaryText'), type: 'text' },
+      { key: 'stats_years_experience', label: 'Years of Experience (e.g. 15+)', type: 'text' },
+      { key: 'stats_patients', label: 'Patients Served (e.g. 2k+)', type: 'text' },
+      { key: 'stats_satisfaction', label: 'Satisfaction % (e.g. 100%)', type: 'text' },
       { key: 'features', type: 'feature_cards', label: 'Feature Cards' },
     ],
     about: [
@@ -55,12 +58,10 @@ const SiteContent = () => {
       { key: 'subtitle', label: t('admin.content.fields.sectionSubtitle'), type: 'textarea' },
       { key: 'form_title', label: t('admin.content.fields.formTitle'), type: 'text' },
       { key: 'success_message', label: t('admin.content.fields.successMessage'), type: 'textarea' },
-      { key: 'hours_title', label: t('admin.content.fields.hoursTitle'), type: 'text' },
     ],
     footer: [
       { key: 'description', label: t('admin.content.fields.footerDescription'), type: 'textarea' },
       { key: 'copyright_text', label: t('admin.content.fields.copyrightText'), type: 'text' },
-      { key: 'hours_title', label: t('admin.content.fields.hoursTitle'), type: 'text' },
     ],
   };
 

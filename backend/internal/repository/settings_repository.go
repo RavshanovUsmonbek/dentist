@@ -20,6 +20,14 @@ func NewSettingsRepository(db *gorm.DB) *SettingsRepository {
 	return &SettingsRepository{db: db}
 }
 
+// SecretSettingKeys is the canonical set of site_settings keys whose values
+// must never appear in cleartext outside the server — not in API responses,
+// not in snapshot blobs, and not in export files.
+var SecretSettingKeys = map[string]bool{
+	"telegram_bot_token": true,
+	"telegram_chat_id":   true,
+}
+
 // jsonValToString converts a JSONB translation value to a string.
 // For plain strings it returns the string directly.
 // For arrays/objects it returns JSON-encoded string so callers get valid JSON.
@@ -95,6 +103,16 @@ func (r *SettingsRepository) GetSetting(key string) (*models.SiteSetting, error)
 		return nil, err
 	}
 	return &setting, nil
+}
+
+// GetSettingValue returns the value of a setting by key, or "" if not found.
+// Satisfies the services.SettingsGetter interface.
+func (r *SettingsRepository) GetSettingValue(key string) string {
+	s, err := r.GetSetting(key)
+	if err != nil || s == nil {
+		return ""
+	}
+	return s.Value
 }
 
 // UpdateSetting updates a setting value by key
@@ -194,11 +212,17 @@ func (r *SettingsRepository) UpdateContent(section, key, value string) error {
 func (r *SettingsRepository) UpdateContentSection(section string, content map[string]string) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		for key, value := range content {
-			// Update value column and also update the 'uz' translation so that
-			// GetContentMapByLang returns the new value (translations take priority over value).
+			// Upsert: create the row if it doesn't exist yet, otherwise update.
+			// Also mirror the value into the 'uz' translation so GetContentMapByLang
+			// returns the new value (translations take priority over the value column).
 			err := tx.Exec(
-				`UPDATE site_content SET value = ?, translations = translations || jsonb_build_object('uz', ?::text) WHERE section = ? AND key = ?`,
-				value, value, section, key,
+				`INSERT INTO site_content (section, key, value, translations, updated_at)
+				 VALUES (?, ?, ?, jsonb_build_object('uz', ?::text), NOW())
+				 ON CONFLICT (section, key) DO UPDATE
+				   SET value = EXCLUDED.value,
+				       translations = site_content.translations || jsonb_build_object('uz', ?::text),
+				       updated_at = NOW()`,
+				section, key, value, value, value,
 			).Error
 			if err != nil {
 				return err
@@ -208,22 +232,30 @@ func (r *SettingsRepository) UpdateContentSection(section string, content map[st
 	})
 }
 
-// UpdateContentSectionTranslations updates multiple content items with per-language translations
+// UpdateContentSectionTranslations updates multiple content items with per-language translations.
+// Rows are upserted so new keys (e.g. stats fields) are created automatically on first save.
 func (r *SettingsRepository) UpdateContentSectionTranslations(section string, content map[string]map[string]string) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		for key, langValues := range content {
-			// Use uz value as the base value column
+			// Use uz value as the canonical value column
 			baseValue := langValues["uz"]
 			translations := make(datatypes.JSONMap)
 			for lang, val := range langValues {
 				translations[lang] = val
 			}
-			if err := tx.Model(&models.SiteContent{}).
-				Where("section = ? AND key = ?", section, key).
-				Updates(map[string]interface{}{
-					"value":        baseValue,
-					"translations": translations,
-				}).Error; err != nil {
+			translationsJSON, err := json.Marshal(translations)
+			if err != nil {
+				return err
+			}
+			if err := tx.Exec(
+				`INSERT INTO site_content (section, key, value, translations, updated_at)
+				 VALUES (?, ?, ?, ?::jsonb, NOW())
+				 ON CONFLICT (section, key) DO UPDATE
+				   SET value        = EXCLUDED.value,
+				       translations = EXCLUDED.translations,
+				       updated_at   = NOW()`,
+				section, key, baseValue, string(translationsJSON),
+			).Error; err != nil {
 				return err
 			}
 		}

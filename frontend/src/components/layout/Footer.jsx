@@ -3,13 +3,20 @@ import { useTranslation } from 'react-i18next';
 import { useSite } from '../../context/SiteContext';
 
 const Footer = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { settings, content, locations } = useSite();
   const currentYear = new Date().getFullYear();
 
   const footerContent = content?.footer || {};
   const businessName = settings?.business_name || 'Smile Dental Care';
-  const footerDescription = footerContent.description || 'Providing exceptional dental care with compassion and expertise. Your smile is our priority.';
+
+  const lang = i18n.language;
+  const pickLang = (obj) => (typeof obj === 'object' && obj !== null)
+    ? (obj[lang] || obj.uz || obj.ru || obj.en || '')
+    : (obj || '');
+
+  const footerDescription = pickLang(footerContent.description) || 'Providing exceptional dental care with compassion and expertise. Your smile is our priority.';
+  const copyrightText = pickLang(footerContent.copyright_text);
   const phone = settings?.business_phone;
   const phoneSecondary = settings?.business_phone_secondary;
   const email = settings?.business_email;
@@ -145,7 +152,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <p className="text-white/30 text-xs font-sans">&copy; {currentYear} {businessName}. {t('footer.allRightsReserved')}</p>
+          <p className="text-white/30 text-xs font-sans">{copyrightText || `© ${currentYear} ${businessName}. ${t('footer.allRightsReserved')}`}</p>
           <div className="w-8 h-px bg-gold-500/40" />
         </div>
       </div>

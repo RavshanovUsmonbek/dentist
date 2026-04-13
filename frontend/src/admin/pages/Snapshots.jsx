@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaPlus, FaDownload, FaUndo, FaTrash, FaFileImport } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import JSZip from 'jszip';
 import { adminApi } from '../services/adminApi';
 import Drawer from '../components/Drawer';
 import InlineConfirm from '../components/InlineConfirm';
@@ -31,6 +32,7 @@ const Snapshots = () => {
 
   // Import
   const [importData, setImportData] = useState(null);
+  const [importFile, setImportFile] = useState(null);
   const [importMeta, setImportMeta] = useState({ name: '', description: '' });
   const [importError, setImportError] = useState('');
 
@@ -98,12 +100,37 @@ const Snapshots = () => {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setImportError('');
     setImportData(null);
+    setImportFile(null);
 
+    if (file.name.endsWith('.zip')) {
+      try {
+        const zip = await JSZip.loadAsync(file);
+        const jsonEntry = zip.file('snapshot.json');
+        if (!jsonEntry) {
+          setImportError('snapshot.json not found in ZIP');
+          return;
+        }
+        const text = await jsonEntry.async('text');
+        const parsed = JSON.parse(text);
+        const err = validateImport(parsed);
+        if (err) { setImportError(err); return; }
+        setImportData(parsed);
+        setImportFile(file);
+        if (!importMeta.name) {
+          setImportMeta(m => ({ ...m, name: file.name.replace(/\.zip$/, '') }));
+        }
+      } catch {
+        setImportError(t('admin.snapshots.importInvalidFile'));
+      }
+      return;
+    }
+
+    // JSON fallback (backward compat)
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
@@ -132,9 +159,14 @@ const Snapshots = () => {
     }
     setActionLoading(true);
     try {
-      await adminApi.importSnapshot({ ...importMeta, data: importData }, restore);
+      if (importFile) {
+        await adminApi.importSnapshotZip(importFile, importMeta.name, importMeta.description, restore);
+      } else {
+        await adminApi.importSnapshot({ ...importMeta, data: importData }, restore);
+      }
       showToast(t('admin.snapshots.importSuccess'));
       setImportData(null);
+      setImportFile(null);
       setImportMeta({ name: '', description: '' });
       if (fileInputRef.current) fileInputRef.current.value = '';
       loadSnapshots();
@@ -246,7 +278,7 @@ const Snapshots = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".json"
+              accept=".zip,.json"
               onChange={handleFileChange}
               className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
             />
@@ -271,6 +303,10 @@ const Snapshots = () => {
                   <span className="col-span-2 text-gray-400">{t('admin.snapshots.previewDate')}: {importData.snapshotted_at}</span>
                 )}
               </div>
+
+              <p className="mt-3 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                {t('admin.snapshots.secretsNote')}
+              </p>
 
               <div className="mt-4 grid gap-3">
                 <input
@@ -358,6 +394,9 @@ const Snapshots = () => {
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 resize-none"
             />
           </div>
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            {t('admin.snapshots.secretsNote')}
+          </p>
         </div>
       </Drawer>
     </div>

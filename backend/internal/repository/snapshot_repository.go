@@ -99,21 +99,31 @@ func (r *SnapshotRepository) CaptureData(
 		return nil, fmt.Errorf("site_settings: %w", err)
 	}
 
+	// Redact secret values — they must never appear in the snapshot blob or export files.
+	redactedSettings := make([]models.SiteSetting, len(siteSettings))
+	copy(redactedSettings, siteSettings)
+	for i, s := range redactedSettings {
+		if SecretSettingKeys[s.Key] {
+			redactedSettings[i].Value = ""
+			redactedSettings[i].Translations = nil
+		}
+	}
+
 	siteContent, err := settingsRepo.GetAllContent()
 	if err != nil {
 		return nil, fmt.Errorf("site_content: %w", err)
 	}
 
 	raw := map[string]interface{}{
-		"version":           "1",
-		"snapshotted_at":    time.Now().UTC().Format(time.RFC3339),
-		"services":          services,
-		"testimonials":      testimonials,
+		"version":            "1",
+		"snapshotted_at":     time.Now().UTC().Format(time.RFC3339),
+		"services":           services,
+		"testimonials":       testimonials,
 		"gallery_categories": categories,
-		"gallery_images":    gallery,
-		"locations":         locations,
-		"site_settings":     siteSettings,
-		"site_content":      siteContent,
+		"gallery_images":     gallery,
+		"locations":          locations,
+		"site_settings":      redactedSettings,
+		"site_content":       siteContent,
 	}
 
 	// Round-trip through JSON to get a plain map[string]interface{}
@@ -128,6 +138,33 @@ func (r *SnapshotRepository) CaptureData(
 
 // RestoreData wipes and recreates all 7 entity types inside a single transaction
 func (r *SnapshotRepository) RestoreData(data datatypes.JSONMap) error {
+	// Save current secret values BEFORE the transaction wipes site_settings.
+	type secretRow struct {
+		Key         string
+		Value       string
+		Type        string
+		Description string
+	}
+	var currentSecrets []secretRow
+	{
+		keys := make([]string, 0, len(SecretSettingKeys))
+		for k := range SecretSettingKeys {
+			keys = append(keys, k)
+		}
+		var rows []models.SiteSetting
+		if err := r.db.Where("key IN ?", keys).Find(&rows).Error; err != nil {
+			return fmt.Errorf("saving current secret settings: %w", err)
+		}
+		for _, row := range rows {
+			if row.Value != "" {
+				currentSecrets = append(currentSecrets, secretRow{
+					Key: row.Key, Value: row.Value,
+					Type: row.Type, Description: row.Description,
+				})
+			}
+		}
+	}
+
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		// Delete all existing rows
 		tables := []string{
@@ -210,6 +247,20 @@ func (r *SnapshotRepository) RestoreData(data datatypes.JSONMap) error {
 		for _, q := range seqResets {
 			if err := tx.Exec(q).Error; err != nil {
 				return fmt.Errorf("resetting sequence: %w", err)
+			}
+		}
+
+		// Restore saved secret values. UPSERT handles the case where the snapshot
+		// pre-dates migration 000030 and the rows do not exist after re-insert.
+		for _, s := range currentSecrets {
+			if err := tx.Exec(
+				`INSERT INTO site_settings (key, value, type, description, translations, updated_at)
+				 VALUES (?, ?, ?, ?, '{}', NOW())
+				 ON CONFLICT (key) DO UPDATE
+				   SET value = EXCLUDED.value, updated_at = NOW()`,
+				s.Key, s.Value, s.Type, s.Description,
+			).Error; err != nil {
+				return fmt.Errorf("restoring secret setting %q: %w", s.Key, err)
 			}
 		}
 		return nil

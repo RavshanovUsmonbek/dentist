@@ -303,6 +303,7 @@
       "exportFailed": "Failed to export snapshot.",
       "importSuccess": "Snapshot imported successfully.",
       "importFailed": "Failed to import snapshot.",
+      "secretsNote": "Telegram credentials are excluded from snapshots and will not be affected by import or restore.",
       "loadFailed": "Failed to load snapshots."
     },
     "multiLang": {

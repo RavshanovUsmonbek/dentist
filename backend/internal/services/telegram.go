@@ -7,18 +7,19 @@ import (
 	"net/http"
 )
 
-// TelegramService handles sending notifications to Telegram
-type TelegramService struct {
-	botToken string
-	chatID   string
+// SettingsGetter is a minimal interface for fetching a setting value by key.
+type SettingsGetter interface {
+	GetSettingValue(key string) string
 }
 
-// NewTelegramService creates a new TelegramService
-func NewTelegramService(botToken, chatID string) *TelegramService {
-	return &TelegramService{
-		botToken: botToken,
-		chatID:   chatID,
-	}
+// TelegramService handles sending notifications to Telegram
+type TelegramService struct {
+	settings SettingsGetter
+}
+
+// NewTelegramService creates a new TelegramService backed by dynamic DB settings.
+func NewTelegramService(settings SettingsGetter) *TelegramService {
+	return &TelegramService{settings: settings}
 }
 
 // TelegramMessage represents a message to send via Telegram Bot API
@@ -30,8 +31,11 @@ type TelegramMessage struct {
 
 // SendContactNotification sends a contact form notification to Telegram
 func (s *TelegramService) SendContactNotification(name, email, phone, message string) error {
+	botToken := s.settings.GetSettingValue("telegram_bot_token")
+	chatID := s.settings.GetSettingValue("telegram_chat_id")
+
 	// Skip if not configured
-	if s.botToken == "" || s.chatID == "" {
+	if botToken == "" || chatID == "" {
 		return nil // Gracefully skip if not configured
 	}
 
@@ -55,7 +59,7 @@ func (s *TelegramService) SendContactNotification(name, email, phone, message st
 	)
 
 	msg := TelegramMessage{
-		ChatID:    s.chatID,
+		ChatID:    chatID,
 		Text:      text,
 		ParseMode: "Markdown",
 	}
@@ -65,7 +69,7 @@ func (s *TelegramService) SendContactNotification(name, email, phone, message st
 		return fmt.Errorf("failed to marshal telegram message: %w", err)
 	}
 
-	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", s.botToken)
+	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", botToken)
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return fmt.Errorf("failed to send telegram request: %w", err)
