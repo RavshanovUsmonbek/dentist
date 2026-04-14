@@ -77,8 +77,10 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ${NGINX_SSL_PATH:-./nginx/ssl}:/etc/nginx/ssl:ro
     depends_on:
-      - backend
-      - frontend
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_started
     networks:
       - dentist_network
 
