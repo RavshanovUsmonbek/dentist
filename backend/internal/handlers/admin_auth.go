@@ -85,6 +85,62 @@ func (h *AdminAuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	sendJSON(w, response, http.StatusOK)
 }
 
+// HandleChangePassword handles POST /api/admin/change-password
+func (h *AdminAuthHandler) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		sendMethodNotAllowed(w)
+		return
+	}
+
+	claims := middleware.GetUserFromContext(r)
+	if claims == nil {
+		sendUnauthorized(w, "Not authenticated")
+		return
+	}
+
+	var req struct {
+		CurrentPassword string `json:"current_password"`
+		NewPassword     string `json:"new_password"`
+	}
+	if err := decodeJSON(r, &req); err != nil {
+		sendBadRequest(w, "Invalid request body")
+		return
+	}
+	if req.CurrentPassword == "" || req.NewPassword == "" {
+		sendBadRequest(w, "current_password and new_password are required")
+		return
+	}
+	if len(req.NewPassword) < 6 {
+		sendBadRequest(w, "New password must be at least 6 characters")
+		return
+	}
+
+	user, err := h.adminRepo.FindByID(claims.UserID)
+	if err != nil {
+		sendNotFound(w, "User not found")
+		return
+	}
+
+	if !h.authService.CheckPassword(user.PasswordHash, req.CurrentPassword) {
+		sendUnauthorized(w, "Current password is incorrect")
+		return
+	}
+
+	hash, err := h.authService.HashPassword(req.NewPassword)
+	if err != nil {
+		sendInternalError(w, "Failed to hash password")
+		return
+	}
+
+	user.PasswordHash = hash
+	if err := h.adminRepo.Update(user); err != nil {
+		sendInternalError(w, "Failed to update password")
+		return
+	}
+
+	sendSuccess(w, map[string]string{"message": "Password updated successfully"})
+}
+
 // HandleMe handles GET /api/admin/me
 func (h *AdminAuthHandler) HandleMe(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {

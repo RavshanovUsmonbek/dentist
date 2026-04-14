@@ -39,6 +39,14 @@ export const adminApi = {
     return response.data;
   },
 
+  changePassword: async (currentPassword, newPassword) => {
+    const response = await adminAxios.post('/admin/change-password', {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+    return response.data;
+  },
+
   // Services CRUD
   getServices: async () => {
     const response = await adminAxios.get('/admin/services');

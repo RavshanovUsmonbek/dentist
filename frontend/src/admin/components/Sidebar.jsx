@@ -10,7 +10,8 @@ import {
   FaFileAlt,
   FaSignOutAlt,
   FaMapMarkerAlt,
-  FaCamera
+  FaCamera,
+  FaLock
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
@@ -29,6 +30,7 @@ const Sidebar = () => {
     { to: '/admin/settings', icon: FaCog, label: t('admin.sidebar.settings') },
     { to: '/admin/content', icon: FaFileAlt, label: t('admin.sidebar.content') },
     { to: '/admin/snapshots', icon: FaCamera, label: t('admin.sidebar.snapshots') },
+    { to: '/admin/change-password', icon: FaLock, label: t('admin.sidebar.changePassword') },
   ];
 
   return (

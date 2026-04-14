@@ -93,6 +93,7 @@
       "settings": "Настройки",
       "content": "Контент",
       "snapshots": "Снимки",
+      "changePassword": "Сменить пароль",
       "logout": "Выйти"
     },
     "dashboard": {

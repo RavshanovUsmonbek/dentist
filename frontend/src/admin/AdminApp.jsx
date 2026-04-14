@@ -11,6 +11,7 @@ import Contacts from './pages/Contacts';
 import Settings from './pages/Settings';
 import SiteContent from './pages/SiteContent';
 import Snapshots from './pages/Snapshots';
+import ChangePassword from './pages/ChangePassword';
 
 const AdminApp = () => {
   return (
@@ -27,6 +28,7 @@ const AdminApp = () => {
           <Route path="settings" element={<Settings />} />
           <Route path="content" element={<SiteContent />} />
           <Route path="snapshots" element={<Snapshots />} />
+          <Route path="change-password" element={<ChangePassword />} />
         </Route>
       </Routes>
     </AuthProvider>

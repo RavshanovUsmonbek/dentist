@@ -93,6 +93,7 @@
       "settings": "Settings",
       "content": "Content",
       "snapshots": "Snapshots",
+      "changePassword": "Change Password",
       "logout": "Logout"
     },
     "dashboard": {

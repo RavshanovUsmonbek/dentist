@@ -134,6 +134,7 @@ func main() {
 	if authService != nil {
 		// Admin user info
 		mux.HandleFunc("/api/admin/me", middleware.AuthFunc(authService, adminAuthHandler.HandleMe))
+		mux.HandleFunc("/api/admin/change-password", middleware.AuthFunc(authService, adminAuthHandler.HandleChangePassword))
 
 		// Admin services
 		mux.HandleFunc("/api/admin/services", middleware.AuthFunc(authService, adminServicesHandler.HandleServices))
