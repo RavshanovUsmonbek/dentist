@@ -213,26 +213,28 @@ const Snapshots = () => {
       {/* Snapshots Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
         {snapshots.length === 0 ? (
+
           <div className="text-center py-12 text-gray-500 text-sm">
             {t('admin.snapshots.noSnapshots')}
           </div>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.snapshots.snapshotName')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.snapshots.snapshotDescription')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.snapshots.createdAt')}</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('common.actions')}</th>
+                <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.snapshots.snapshotName')}</th>
+                <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.snapshots.snapshotDescription')}</th>
+                <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.snapshots.createdAt')}</th>
+                <th className="px-3 py-3 md:px-6 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {snapshots.map((snap) => (
                 <tr key={snap.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-gray-800 text-sm">{snap.name}</td>
-                  <td className="px-6 py-4 text-gray-500 text-sm">{snap.description || '—'}</td>
-                  <td className="px-6 py-4 text-gray-400 text-xs">{formatDate(snap.created_at)}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-3 py-3 md:px-6 md:py-4 font-medium text-gray-800 text-sm">{snap.name}</td>
+                  <td className="px-3 py-3 md:px-6 md:py-4 text-gray-500 text-sm">{snap.description || '—'}</td>
+                  <td className="px-3 py-3 md:px-6 md:py-4 text-gray-400 text-xs whitespace-nowrap">{formatDate(snap.created_at)}</td>
+                  <td className="px-3 py-3 md:px-6 md:py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => handleExport(snap)}
@@ -267,6 +269,7 @@ const Snapshots = () => {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

@@ -127,25 +127,26 @@ const Services = () => {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.services.serviceTitle')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.services.icon')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.services.status')}</th>
+              <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.services.serviceTitle')}</th>
+              <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.services.icon')}</th>
+              <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.services.status')}</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {services.map((service) => (
               <tr key={service.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4">
+                <td className="px-3 py-3 md:px-6 md:py-4">
                   <div>
                     <p className="font-medium text-gray-800">{getTranslated(service, 'title')}</p>
                     <p className="text-sm text-gray-500 line-clamp-1">{getTranslated(service, 'description')}</p>
                   </div>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-3 py-3 md:px-6 md:py-4">
                   {(() => {
                     const match = icons.find(i => i.name === service.icon);
                     const Icon = match?.component;
@@ -158,7 +159,7 @@ const Services = () => {
                     );
                   })()}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-3 py-3 md:px-6 md:py-4">
                   <span className={`px-2 py-1 text-xs rounded-full font-medium ${service.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                     {service.active ? t('common.active') : t('common.inactive')}
                   </span>
@@ -182,6 +183,7 @@ const Services = () => {
             ))}
           </tbody>
         </table>
+        </div>
         {services.length === 0 && (
           <p className="text-gray-500 text-center py-8 text-sm">{t('admin.services.noServices')}</p>
         )}

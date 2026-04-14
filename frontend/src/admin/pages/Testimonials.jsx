@@ -251,60 +251,61 @@ const Testimonials = () => {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.testimonials.patientName')}</th>
+              <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.testimonials.patientName')}</th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-primary-800 select-none"
+                className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-primary-800 select-none"
                 onClick={() => toggleSort('rating')}
               >
                 {t('admin.testimonials.rating')}<SortIcon col="rating" />
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.testimonials.testimonialText')}</th>
+              <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.testimonials.testimonialText')}</th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-primary-800 select-none"
+                className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-primary-800 select-none"
                 onClick={() => toggleSort('active')}
               >
                 {t('admin.services.status')}<SortIcon col="active" />
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-primary-800 select-none"
+                className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-primary-800 select-none"
                 onClick={() => toggleSort('created_at')}
               >
                 Date<SortIcon col="created_at" />
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('common.actions')}</th>
+              <th className="px-3 py-3 md:px-6 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {filteredTestimonials.map((testimonial) => (
               <tr key={testimonial.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4">
+                <td className="px-3 py-3 md:px-6 md:py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center shrink-0">
                       <span className="text-primary-700 font-semibold text-xs">{testimonial.initials}</span>
                     </div>
                     <span className="font-medium text-gray-800 text-sm">{testimonial.name}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-3 py-3 md:px-6 md:py-4">
                   <div className="flex items-center gap-0.5">
                     {renderStars(testimonial.rating)}
                   </div>
                 </td>
-                <td className="px-6 py-4 max-w-xs">
+                <td className="px-3 py-3 md:px-6 md:py-4 max-w-xs">
                   <p className="text-sm text-gray-500 italic truncate">"{testimonial.text}"</p>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-3 py-3 md:px-6 md:py-4">
                   <span className={`px-2 py-1 text-xs rounded-full font-medium ${testimonial.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                     {testimonial.active ? t('common.active') : t('common.inactive')}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">
+                <td className="px-3 py-3 md:px-6 md:py-4 text-sm text-gray-400 whitespace-nowrap">
                   {new Date(testimonial.created_at).toLocaleDateString()}
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-3 py-3 md:px-6 md:py-4 text-right">
                   <div className="flex items-center justify-end gap-1">
                     <button onClick={() => handleEdit(testimonial)} className="text-primary-600 hover:text-primary-800 hover:bg-primary-50 p-2 rounded-lg transition-colors">
                       <FaEdit className="text-sm" />
@@ -320,6 +321,7 @@ const Testimonials = () => {
             ))}
           </tbody>
         </table>
+        </div>
         {filteredTestimonials.length === 0 && (
           <p className="text-gray-500 text-center py-8 text-sm">
             {search || statusFilter !== 'all' ? 'No results match your filters.' : t('admin.testimonials.noTestimonials')}

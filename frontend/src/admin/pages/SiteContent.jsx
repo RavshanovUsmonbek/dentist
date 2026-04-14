@@ -161,12 +161,12 @@ const SiteContent = () => {
 
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 mb-6">
+      <div className="flex overflow-x-auto border-b border-gray-200 mb-6 -mx-4 px-4 md:mx-0 md:px-0">
         {sections.map(({ id, label }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+            className={`px-3 py-2 sm:px-6 sm:py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               activeTab === id
                 ? 'border-primary-800 text-primary-800'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -196,7 +196,7 @@ const SiteContent = () => {
                           <img
                             src={url.startsWith('http') ? url : `${API_URL.replace('/api', '')}${url}`}
                             alt={label}
-                            className="w-48 h-48 object-cover rounded-lg border-2 border-gray-300"
+                            className="w-full max-w-xs h-40 sm:w-48 sm:h-48 object-cover rounded-lg border-2 border-gray-300"
                           />
                         </div>
                       ) : null;

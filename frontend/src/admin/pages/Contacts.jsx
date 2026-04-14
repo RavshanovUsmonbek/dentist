@@ -88,21 +88,22 @@ const Contacts = () => {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.status')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.name')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.email')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.phone')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.date')}</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('common.actions')}</th>
+              <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.status')}</th>
+              <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.name')}</th>
+              <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.email')}</th>
+              <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.phone')}</th>
+              <th className="px-3 py-3 md:px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.contacts.date')}</th>
+              <th className="px-3 py-3 md:px-6 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {contacts.map((contact) => (
               <tr key={contact.id} className={`hover:bg-gray-50 transition-colors ${!contact.read ? 'bg-blue-50/50' : ''}`}>
-                <td className="px-6 py-4">
+                <td className="px-3 py-3 md:px-6 md:py-4">
                   <button onClick={() => handleToggleRead(contact)} className="p-1">
                     {contact.read ? (
                       <FaEnvelopeOpen className="text-gray-400" />
@@ -111,13 +112,13 @@ const Contacts = () => {
                     )}
                   </button>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-3 py-3 md:px-6 md:py-4">
                   <span className={`text-sm ${!contact.read ? 'font-semibold text-gray-800' : 'text-gray-700'}`}>{contact.name}</span>
                 </td>
-                <td className="px-6 py-4 text-gray-500 text-sm">{contact.email}</td>
-                <td className="px-6 py-4 text-gray-500 text-sm">{contact.phone || '-'}</td>
-                <td className="px-6 py-4 text-gray-400 text-xs">{formatDate(contact.created_at)}</td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-3 py-3 md:px-6 md:py-4 text-gray-500 text-sm">{contact.email}</td>
+                <td className="px-3 py-3 md:px-6 md:py-4 text-gray-500 text-sm">{contact.phone || '-'}</td>
+                <td className="px-3 py-3 md:px-6 md:py-4 text-gray-400 text-xs whitespace-nowrap">{formatDate(contact.created_at)}</td>
+                <td className="px-3 py-3 md:px-6 md:py-4 text-right">
                   <div className="flex items-center justify-end gap-1">
                     <button onClick={() => handleView(contact)} className="text-primary-600 hover:text-primary-800 hover:bg-primary-50 p-2 rounded-lg transition-colors">
                       <FaEye className="text-sm" />
@@ -133,6 +134,7 @@ const Contacts = () => {
             ))}
           </tbody>
         </table>
+        </div>
         {contacts.length === 0 && (
           <p className="text-gray-500 text-center py-8 text-sm">{t('admin.contacts.noContacts')}</p>
         )}
@@ -165,7 +167,7 @@ const Contacts = () => {
       >
         {selectedContact && (
           <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">{t('admin.contacts.name')}</p>
                 <p className="text-gray-800 text-sm">{selectedContact.name}</p>

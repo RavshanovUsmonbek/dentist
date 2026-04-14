@@ -284,30 +284,32 @@ const Locations = () => {
               {BUSINESS_DAYS.map(day => {
                 const daysWithHours = getDaysWithHours(day);
                 return (
-                  <div key={day} className="grid grid-cols-12 gap-2 items-center">
-                    <div className="col-span-2">
+                  <div key={day} className="flex flex-col sm:grid sm:grid-cols-12 gap-2 sm:items-center border-b border-gray-50 pb-2 last:border-0 last:pb-0 sm:border-0 sm:pb-0">
+                    <div className="sm:col-span-2">
                       <span className="text-xs font-medium capitalize text-gray-600">{t(`admin.locations.${day}`)}</span>
                     </div>
-                    <div className="col-span-3">
-                      <input
-                        type="time"
-                        value={formData.business_hours?.[day]?.start || ''}
-                        onChange={(e) => handleHoursChange(day, 'start', e.target.value)}
-                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent text-xs"
-                      />
+                    <div className="flex items-center gap-2 sm:contents">
+                      <div className="flex-1 sm:col-span-3">
+                        <input
+                          type="time"
+                          value={formData.business_hours?.[day]?.start || ''}
+                          onChange={(e) => handleHoursChange(day, 'start', e.target.value)}
+                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent text-xs"
+                        />
+                      </div>
+                      <div className="shrink-0 sm:col-span-1 text-center">
+                        <span className="text-gray-400 text-xs">–</span>
+                      </div>
+                      <div className="flex-1 sm:col-span-3">
+                        <input
+                          type="time"
+                          value={formData.business_hours?.[day]?.end || ''}
+                          onChange={(e) => handleHoursChange(day, 'end', e.target.value)}
+                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent text-xs"
+                        />
+                      </div>
                     </div>
-                    <div className="col-span-1 text-center">
-                      <span className="text-gray-400 text-xs">–</span>
-                    </div>
-                    <div className="col-span-3">
-                      <input
-                        type="time"
-                        value={formData.business_hours?.[day]?.end || ''}
-                        onChange={(e) => handleHoursChange(day, 'end', e.target.value)}
-                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent text-xs"
-                      />
-                    </div>
-                    <div className="col-span-3">
+                    <div className="sm:col-span-3">
                       {daysWithHours.length > 0 && (
                         <select
                           onChange={(e) => handleCopyHours(day, e.target.value)}

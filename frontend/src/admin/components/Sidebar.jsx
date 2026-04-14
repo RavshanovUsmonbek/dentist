@@ -16,7 +16,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const { logout, user } = useAuth();
   const { t } = useTranslation();
 
@@ -34,7 +34,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-60 bg-white border-r border-gray-100 min-h-screen flex flex-col">
+    <aside className={`fixed inset-y-0 left-0 z-30 w-60 bg-white border-r border-gray-100 flex flex-col transition-transform duration-200 ease-in-out sm:relative sm:translate-x-0 sm:inset-auto sm:z-auto sm:min-h-screen ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       {/* Brand */}
       <div className="px-5 py-5 border-b border-gray-100">
         <div className="flex items-center gap-2 mb-3">
@@ -62,6 +62,7 @@ const Sidebar = () => {
               <NavLink
                 to={to}
                 end={end}
+                onClick={onClose}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-sm ${
                     isActive
