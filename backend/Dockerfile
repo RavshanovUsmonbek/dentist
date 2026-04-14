@@ -26,6 +26,11 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -o api \
     cmd/api/main.go
 
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -ldflags="-w -s" \
+    -o reset-password \
+    cmd/reset-password/main.go
+
 # Stage 2: Runtime
 FROM alpine:latest
 
@@ -44,6 +49,7 @@ WORKDIR /app
 
 # Copy binary from builder
 COPY --from=builder /build/api .
+COPY --from=builder /build/reset-password .
 
 # Copy migrations directory
 COPY --from=builder /build/migrations ./migrations
@@ -59,7 +65,7 @@ EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:8080/api/health || exit 1
+    CMD wget --quiet --tries=1 -O /dev/null http://localhost:8080/api/health || exit 1
 
 # Run the application
 CMD ["./api"]

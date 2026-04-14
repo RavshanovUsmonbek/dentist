@@ -24,7 +24,7 @@ fi
 
 # Run the password reset tool inside the backend container
 echo "Running password reset..."
-docker exec dentist_backend sh -c "cd /app && go run cmd/reset-password/main.go '$USERNAME' '$PASSWORD'"
+docker exec dentist_backend sh -c "cd /app && ./reset-password '$USERNAME' '$PASSWORD'"
 
 echo ""
 echo "================================"
