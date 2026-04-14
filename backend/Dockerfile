@@ -54,8 +54,8 @@ COPY --from=builder /build/reset-password .
 # Copy migrations directory
 COPY --from=builder /build/migrations ./migrations
 
-# Change ownership
-RUN chown -R appuser:appuser /app
+# Create uploads dir and set ownership so the named volume initializes with correct permissions
+RUN mkdir -p /app/uploads && chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
