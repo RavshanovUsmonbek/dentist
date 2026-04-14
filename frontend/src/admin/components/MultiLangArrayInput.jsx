@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 
@@ -11,7 +11,6 @@ const LANGUAGES = [
 const MultiLangArrayInput = ({ value = {}, onChange, label }) => {
   const { i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState(i18n.language);
-  useEffect(() => { setActiveTab(i18n.language); }, [i18n.language]);
 
   // value structure: { uz: ['item1', 'item2'], ru: ['item1', 'item2'], en: ['item1', 'item2'] }
 

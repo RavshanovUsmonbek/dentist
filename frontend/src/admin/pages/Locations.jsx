@@ -99,7 +99,7 @@ const Locations = () => {
     const dayHours = currentHours[day] || { start: '', end: '' };
 
     if (!value && !dayHours[field === 'start' ? 'end' : 'start']) {
-      const { [day]: removed, ...rest } = currentHours;
+      const { [day]: _, ...rest } = currentHours;
       setFormData({ ...formData, business_hours: rest });
     } else {
       setFormData({

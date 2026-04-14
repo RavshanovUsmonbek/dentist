@@ -7,7 +7,7 @@ import { useSite } from '../../context/SiteContext';
 const FEATURE_ICONS = [FaTooth, FaAward, FaMicroscope, FaShieldAlt];
 
 const Hero = () => {
-  const { content, loading } = useSite();
+  const { content } = useSite();
   const { i18n } = useTranslation();
   const [visible, setVisible] = useState(false);
 

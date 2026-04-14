@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const LANGUAGES = [
@@ -10,7 +10,6 @@ const LANGUAGES = [
 const MultiLangInput = ({ value = {}, onChange, type = 'text', label, placeholder, required = false }) => {
   const { i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState(i18n.language);
-  useEffect(() => { setActiveTab(i18n.language); }, [i18n.language]);
 
   const handleChange = (lang, newValue) => {
     onChange({

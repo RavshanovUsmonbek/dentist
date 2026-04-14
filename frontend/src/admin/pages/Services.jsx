@@ -90,7 +90,7 @@ const Services = () => {
       await adminApi.deleteService(id);
       loadServices();
       showToast('Service deleted');
-    } catch (error) {
+    } catch {
       showToast('Failed to delete service', 'error');
     }
   };

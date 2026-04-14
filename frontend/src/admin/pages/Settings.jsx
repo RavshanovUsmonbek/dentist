@@ -113,16 +113,6 @@ const Settings = () => {
   const [saving, setSaving] = useState(false);
   const { toast, showToast } = useToast();
 
-  const settingsConfig = [
-    { key: 'business_name', label: 'Business Name', type: 'text' },
-    { key: 'business_phone', label: 'Primary Phone', type: 'text', placeholder: '+998 93 123 4567' },
-    { key: 'business_phone_secondary', label: 'Secondary Phone', type: 'text', placeholder: '+998 90 987 6543' },
-    { key: 'business_email', label: 'Email Address', type: 'email' },
-    { key: 'social_facebook', label: 'Facebook URL', type: 'url' },
-    { key: 'social_twitter', label: 'Twitter URL', type: 'url' },
-    { key: 'social_instagram', label: 'Instagram URL', type: 'url' },
-  ];
-
   useEffect(() => {
     loadSettings();
   }, []);

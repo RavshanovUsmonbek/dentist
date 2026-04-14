@@ -2,263 +2,151 @@
 
 After completing this guide, all future deploys happen automatically on every push to `main`.
 
-**Prerequisites:**
-- VPS running Ubuntu 22.04+ with SSH access
-- Repo hosted on GitHub
-
 ---
 
-## Part A — Local machine (do this first)
+## Part A — Local Machine
 
-### Step 1 — Set HTTP-only Nginx config
-
-No domain yet, so use a plain HTTP config. Replace the entire contents of `nginx/conf.d/default.conf` with:
-
-```nginx
-~upstream backend {
-    server backend:8080;
-}
-
-upstream frontend {
-    server frontend:80;
-}
-
-server {
-    listen 80;
-    server_name _;
-
-    add_header X-Frame-Options "SAMEORIGIN" always;
-    add_header X-Content-Type-Options "nosniff" always;
-
-    location /api/ {
-        proxy_pass http://backend;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_buffering off;
-        proxy_request_buffering off;
-    }
-
-    location /uploads/ {
-        proxy_pass http://backend;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    location / {
-        proxy_pass http://frontend;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_intercept_errors on;
-        error_page 404 = @frontend;
-    }
-
-    location @frontend {
-        proxy_pass http://frontend;
-    }
-}~
-```
-
-Commit and push:
+### Step 1 — Generate SSH deploy key
 
 ```bash
-git add nginx/conf.d/default.conf
-git commit -m "Nginx HTTP-only config (no domain yet)"
-git push
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/dentist_deploy -N ""
+```
+
+### Step 2 — Add public key to VPS (run as root on VPS)
+
+```bash
+ssh root@YOUR_VPS_IP
+
+useradd -m -s /bin/bash deploy
+usermod -aG docker deploy
+mkdir -p /home/deploy/.ssh
+chmod 700 /home/deploy/.ssh
+echo "PASTE_PUBLIC_KEY_HERE" >> /home/deploy/.ssh/authorized_keys
+chmod 600 /home/deploy/.ssh/authorized_keys
+chown -R deploy:deploy /home/deploy/.ssh
+mkdir -p /home/deploy/dentist
+chown deploy:deploy /home/deploy/dentist
+```
+
+Get the public key with:
+
+```bash
+cat ~/.ssh/dentist_deploy.pub
+```
+
+### Step 3 — Test SSH connection
+
+```bash
+ssh -i ~/.ssh/dentist_deploy deploy@YOUR_VPS_IP
 ```
 
 ---
 
-## Part B — VPS (SSH in as the deploy user, run top to bottom)
+## Part B — VPS (logged in as deploy user)
 
-### Step 2 — Install Docker and Git
+### Step 4 — Create production environment file
 
-```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y git curl
-
-# Install Docker from Docker's official repo (includes the compose plugin)
-curl -fsSL https://get.docker.com | sudo sh
-
-# Allow your user to run Docker without sudo
-sudo usermod -aG docker $USER
-newgrp docker
-
-# Verify
-docker --version
-docker compose version
-```
-
-### Step 3 — Clone the repository
+Replace `CHANGE_ME` with your chosen Postgres password and `YOUR_VPS_IP` with your server IP:
 
 ```bash
-sudo mkdir -p /opt/dentist
-sudo chown $USER:$USER /opt/dentist
-cd /opt/dentist
+POSTGRES_PASS=CHANGE_ME
+JWT=$(openssl rand -base64 32)
 
-# Public repo
-git clone https://github.com/<your-org>/<your-repo>.git .
-
-# Private repo — use SSH (requires deploy key added to GitHub first; see Step 5)
-# git clone git@github.com:<your-org>/<your-repo>.git .
-```
-
-### Step 4 — Create the production environment file
-
-Generate secrets:
-
-```bash
-openssl rand -hex 20        # → use as POSTGRES_PASSWORD
-openssl rand -base64 32     # → use as JWT_SECRET
-```
-
-Create the file:
-
-```bash
-nano /opt/dentist/.env.production
-```
-
-Paste and fill in your values:
-
-```env
-# ── Docker mode ────────────────────────────────────────
+cat > /home/deploy/dentist/.env.production << EOF
 BACKEND_DOCKERFILE=Dockerfile
 FRONTEND_DOCKERFILE=Dockerfile
 BACKEND_COMMAND=./api
 FRONTEND_COMMAND=nginx -g daemon off;
 FRONTEND_INTERNAL_PORT=80
 
-# ── PostgreSQL ─────────────────────────────────────────
 POSTGRES_DB=dentist_db
 POSTGRES_USER=dentist_user
-POSTGRES_PASSWORD=<paste from openssl>
+POSTGRES_PASSWORD=$POSTGRES_PASS
 POSTGRES_PORT=5433
 
-# ── Backend ────────────────────────────────────────────
-DATABASE_URL=postgres://dentist_user:<POSTGRES_PASSWORD>@postgres:5432/dentist_db?sslmode=disable
-JWT_SECRET=<paste from openssl>
+DATABASE_URL=postgres://dentist_user:$POSTGRES_PASS@postgres:5432/dentist_db?sslmode=disable
+
+BACKEND_PORT=8080
+FRONTEND_URL=http://144.91.106.251
+
+JWT_SECRET=$JWT
 JWT_EXPIRATION=24h
-PORT=8080
 
-# ── URLs — use VPS IP until a domain is set up ─────────
-FRONTEND_URL=http://<your-vps-ip>
-VITE_API_URL=http://<your-vps-ip>/api
+UPLOAD_PATH=./uploads
+UPLOAD_URL_PREFIX=/uploads
 
-# ── Telegram notifications (optional) ─────────────────
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
+
+VITE_API_URL=http://144.91.106.251/api
+
+BACKEND_IMAGE=ghcr.io/usmonbekravshanov/dentist/backend:latest
+FRONTEND_IMAGE=ghcr.io/usmonbekravshanov/dentist/frontend:latest
+EOF
+
+chmod 600 /home/deploy/dentist/.env.production
 ```
 
-Lock down the file:
+Verify:
 
 ```bash
-chmod 600 /opt/dentist/.env.production
-```
-
-### Step 5 — Create the GitHub Actions SSH deploy key
-
-```bash
-ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/deploy_key -N ""
-
-# Authorize the key so GitHub Actions can SSH in
-cat ~/.ssh/deploy_key.pub >> ~/.ssh/authorized_keys
-
-# Print both — you need them in Part C
-cat ~/.ssh/deploy_key      # private key  → GitHub Actions secret
-cat ~/.ssh/deploy_key.pub  # public key   → GitHub deploy key (private repos only)
-```
-
-### Step 6 — Smoke test (first manual deploy)
-
-```bash
-cd /opt/dentist
-docker compose --env-file .env.production --profile production up --build -d
-
-# Check all containers are running
-docker compose --env-file .env.production --profile production ps
-
-# Check the app responds
-curl http://<your-vps-ip>/api/health
-# Expected: {"status":"healthy",...}
+cat /home/deploy/dentist/.env.production
 ```
 
 ---
 
 ## Part C — GitHub (in the browser)
 
-### Step 7 — Add GitHub Actions secrets
+### Step 5 — Add repository secrets
 
-Go to **repo → Settings → Secrets and variables → Actions → New repository secret**
+Go to **Repo → Settings → Secrets and variables → Actions → New repository secret**
 
-| Secret name   | Value |
-|---------------|-------|
-| `VPS_HOST`    | VPS IP address (e.g. `123.45.67.89`) |
-| `VPS_USER`    | SSH username (e.g. `deploy`, `ubuntu`) |
-| `VPS_SSH_KEY` | Entire private key from Step 5 (including `-----BEGIN...` and `-----END...` lines) |
-| `VPS_APP_DIR` | `/opt/dentist` |
+| Secret | Value |
+|---|---|
+| `VPS_HOST` | VPS IP address |
+| `VPS_USER` | `deploy` |
+| `VPS_SSH_KEY` | Output of `cat ~/.ssh/dentist_deploy` (entire private key) |
+| `VPS_APP_DIR` | `/home/deploy/dentist` |
+| `GHCR_TOKEN` | GitHub classic PAT with `read:packages` scope |
+| `VITE_API_URL` | `http://YOUR_VPS_IP/api` |
 
-### Step 8 — Add GitHub deploy key (private repos only)
-
-Go to **repo → Settings → Deploy keys → Add deploy key**
-
-- Title: `VPS deploy`
-- Key: paste the **public key** from Step 5
-- Allow write access: **No**
+To create `GHCR_TOKEN`: GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → check `read:packages` only.
 
 ---
 
-## Part D — Verify automation
+## Part D — Trigger first deploy
 
 ```bash
-git commit --allow-empty -m "Test CI/CD pipeline"
-git push
+git add .
+git commit -m "Add CI/CD pipeline"
+git push origin main
 ```
 
-Watch it run: **GitHub → Actions → CI/CD**
+Watch it run: **GitHub → Actions → Deploy**
 
-Tests run first, then on pass the VPS is updated automatically. If the deploy job goes green, you're done.
+All 5 jobs run in order: test → build → push images → deploy. If the deploy job goes green, the app is live at `http://YOUR_VPS_IP`.
 
 ---
 
 ## Adding a Domain + SSL Later
 
-When you have a domain, do this once:
+**1. Point DNS at the VPS** — add an `A` record: `yourdomain.com → YOUR_VPS_IP`
 
-**1. Point DNS at the VPS** — add an `A` record: `yourdomain.com → <vps-ip>`
-
-**2. Get an SSL certificate** (stop the app first so port 80 is free):
+**2. Get an SSL certificate:**
 
 ```bash
-ssh deploy@<vps-ip>
-cd /opt/dentist
-docker compose --env-file .env.production --profile production down
+ssh deploy@YOUR_VPS_IP
 sudo apt install -y certbot
 sudo certbot certonly --standalone -d yourdomain.com
 ```
 
-**3. Restore the HTTPS Nginx config locally** — replace `nginx/conf.d/default.conf` with the full HTTPS version (the one in git history before the HTTP-only commit), then replace `REPLACE_WITH_YOUR_DOMAIN` with your actual domain:
+**3. Update `.env.production` on the VPS:**
 
 ```bash
-git show HEAD~1:nginx/conf.d/default.conf > nginx/conf.d/default.conf
-# then edit the file to set your domain
-nano nginx/conf.d/default.conf
-git add nginx/conf.d/default.conf
-git commit -m "Enable HTTPS for yourdomain.com"
-git push
+nano /home/deploy/dentist/.env.production
 ```
 
-**4. Update `.env.production` on the VPS:**
-
-```bash
-nano /opt/dentist/.env.production
-```
-
-Change these three lines:
+Change:
 
 ```env
 FRONTEND_URL=https://yourdomain.com
@@ -266,43 +154,29 @@ VITE_API_URL=https://yourdomain.com/api
 NGINX_SSL_PATH=/etc/letsencrypt
 ```
 
-**5. Redeploy:**
-
-```bash
-cd /opt/dentist
-docker compose --env-file .env.production --profile production up --build -d
-```
+**4. Push to main to redeploy.**
 
 ---
 
 ## Ongoing Operations
 
-### Rotate a secret
-```bash
-ssh deploy@<vps-ip>
-nano /opt/dentist/.env.production
-cd /opt/dentist
-docker compose --env-file .env.production --profile production up -d backend
-```
-
 ### View logs
+
 ```bash
-ssh deploy@<vps-ip>
-cd /opt/dentist
-docker compose --env-file .env.production --profile production logs -f
+ssh -i ~/.ssh/dentist_deploy deploy@YOUR_VPS_IP
+cd /home/deploy/dentist
+docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.production --profile production logs -f
 ```
 
-### Roll back to a previous version
+### Rotate a secret
+
 ```bash
-ssh deploy@<vps-ip>
-cd /opt/dentist
-git log --oneline -10
-git checkout <commit-hash>
-docker compose --env-file .env.production --profile production up --build -d
+nano /home/deploy/dentist/.env.production
+docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.production --profile production up -d backend
 ```
 
-### Renew SSL manually (if auto-renewal ever fails)
+### Check container status
+
 ```bash
-sudo certbot renew
-docker compose --env-file .env.production --profile production restart nginx
+docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.production --profile production ps
 ```

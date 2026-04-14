@@ -112,6 +112,7 @@ export const SiteProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useSite = () => {
   const context = useContext(SiteContext);
   if (!context) {

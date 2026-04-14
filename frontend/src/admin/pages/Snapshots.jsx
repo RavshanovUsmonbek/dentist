@@ -9,6 +9,7 @@ import Toast, { useToast } from '../components/Toast';
 
 const REQUIRED_KEYS = ['services', 'testimonials', 'gallery_categories', 'gallery_images', 'locations', 'site_settings', 'site_content'];
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const validateImport = (parsed) => {
   if (!parsed.version || parsed.version !== '1') return 'Invalid version — expected "1"';
   for (const key of REQUIRED_KEYS) {
@@ -37,9 +38,8 @@ const Snapshots = () => {
   const [importError, setImportError] = useState('');
   const [importImageCount, setImportImageCount] = useState(null);
 
-  useEffect(() => {
-    loadSnapshots();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { loadSnapshots(); }, []);
 
   const loadSnapshots = async () => {
     try {

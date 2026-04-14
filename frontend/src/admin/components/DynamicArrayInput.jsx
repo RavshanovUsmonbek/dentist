@@ -1,28 +1,18 @@
-import { useState, useEffect } from 'react';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 
+const parseItems = (value) => {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    try { const p = JSON.parse(value); return Array.isArray(p) ? p : []; }
+    catch { return []; }
+  }
+  return [];
+};
+
 const DynamicArrayInput = ({ value, onChange, label, placeholder = "Enter item..." }) => {
-  const [items, setItems] = useState([]);
+  const items = parseItems(value);
 
-  // Parse JSON string to array on mount and when value changes
-  useEffect(() => {
-    if (typeof value === 'string') {
-      try {
-        const parsed = JSON.parse(value);
-        setItems(Array.isArray(parsed) ? parsed : []);
-      } catch (e) {
-        setItems([]);
-      }
-    } else if (Array.isArray(value)) {
-      setItems(value);
-    } else {
-      setItems([]);
-    }
-  }, [value]);
-
-  // Update parent with JSON string
   const updateParent = (newItems) => {
-    setItems(newItems);
     onChange(JSON.stringify(newItems));
   };
 

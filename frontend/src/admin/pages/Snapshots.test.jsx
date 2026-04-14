@@ -91,11 +91,6 @@ vi.mock('react-i18next', () => ({
 
 import { adminApi } from '../services/adminApi';
 
-const renderSnapshots = async () => {
-  const { default: Snapshots } = await import('./Snapshots');
-  return render(<Snapshots />);
-};
-
 beforeEach(() => {
   vi.clearAllMocks();
   adminApi.getSnapshots.mockResolvedValue({ data: [] });
